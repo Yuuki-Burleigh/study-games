@@ -46,6 +46,46 @@ export function pickMixed(questions, n) {
   return shuffle(out);
 }
 
+// ---- weak-spot weighting ----
+// Per-template stats decay by 10% each answer, so recent results count more than old ones.
+export function recordResult(stats, templateId, ok) {
+  const s = stats[templateId] || { seen: 0, miss: 0 };
+  return { ...stats, [templateId]: { seen: s.seen * 0.9 + 1, miss: s.miss * 0.9 + (ok ? 0 : 1) } };
+}
+
+// Smoothed miss rate: 0.5 with no data, toward 1 for templates you keep missing, toward 0 for ones you've mastered.
+export function missRate(stat) {
+  return ((stat?.miss || 0) + 1) / ((stat?.seen || 0) + 2);
+}
+
+// Each format gets an equal share up front (1 / templates of that type); within that, weaker templates weigh more.
+// The 0.2 floor keeps mastered templates coming back occasionally.
+export function templateWeights(templates, stats = {}) {
+  const perType = {};
+  for (const t of templates) perType[t.type] = (perType[t.type] || 0) + 1;
+  return templates.map((t) => (0.2 + missRate(stats[t.id])) / perType[t.type]);
+}
+
+export function weightedIndex(weights, rand = Math.random) {
+  let x = rand() * weights.reduce((a, b) => a + b, 0);
+  for (let i = 0; i < weights.length; i++) if ((x -= weights[i]) < 0) return i;
+  return weights.length - 1;
+}
+
+// Topics you're weakest on (need a few answers before judging), worst first.
+export function weakTopics(templates, stats = {}, minSeen = 2) {
+  const by = {};
+  for (const t of templates) {
+    const s = stats[t.id];
+    if (!s || s.seen < minSeen) continue;
+    (by[t.topic] ||= []).push(missRate(s));
+  }
+  return Object.entries(by)
+    .map(([topic, rates]) => ({ topic, rate: rates.reduce((a, b) => a + b, 0) / rates.length }))
+    .filter((x) => x.rate > 0.4)
+    .sort((a, b) => b.rate - a.rate);
+}
+
 // n random cards; terms and definitions shuffled independently.
 export function buildMatchRound(cards, n = 6) {
   const picked = shuffle(cards).slice(0, n);

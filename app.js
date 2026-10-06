@@ -1,5 +1,5 @@
 import { instantiate, newSeed } from './gen-kit.js';
-import { shuffle, pickMixed, checkAnswer, buildMatchRound, validateDeck, xpFor, nextStreak, normalizeOutput } from './game.js';
+import { shuffle, pickMixed, checkAnswer, recordResult, templateWeights, weightedIndex, weakTopics, buildMatchRound, validateDeck, xpFor, nextStreak, normalizeOutput } from './game.js';
 
 const app = document.getElementById('app');
 const QUIZ_LENGTH = 10;
@@ -126,11 +126,13 @@ const missedKey = (deck) => `missed:${deck.id}`;
 // Generated problems: a random template (matching the filters) instantiated from a random seed.
 // Their ids are "<template>#<seed>", so a missed one can be rebuilt exactly later.
 const templatesFor = (deck, topic, types) => deck.templates.filter((t) => (!topic || t.topic === topic) && (!types.length || types.includes(t.type)));
+const statsKey = (deck) => `tstats:${deck.id}`;
+// Weighted toward the templates you miss (see templateWeights), formats balanced.
 function generateBatch(deck, topic, types, n) {
-  // Pick a format first, then a template within it, so formats with more templates don't crowd out the rest.
-  const byType = Object.values(Object.groupBy(templatesFor(deck, topic, types), (t) => t.type));
-  const any = (arr) => arr[Math.floor(Math.random() * arr.length)];
-  return byType.length ? Array.from({ length: n }, () => instantiate(any(any(byType)), newSeed())) : [];
+  const ts = templatesFor(deck, topic, types);
+  if (!ts.length) return [];
+  const weights = templateWeights(ts, store.get(statsKey(deck), {}));
+  return Array.from({ length: n }, () => instantiate(ts[weightedIndex(weights)], newSeed()));
 }
 function questionById(deck, id) {
   const [tid, seed] = id.split('#');
@@ -176,6 +178,7 @@ async function deckScreen(id, params) {
   const mode = (icon, name, blurb, onclick, cls = '') => el('button', { class: `mode ${cls}`, onclick },
     el('span', { class: 'icon', 'aria-hidden': 'true' }, icon), el('strong', {}, name), el('span', {}, blurb));
   const bestQuiz = store.get(`best:${deck.id}`, null);
+  const weak = weakTopics(deck.templates, store.get(statsKey(deck), {}));
   const bestMatch = store.get(`match:${deck.id}`, null);
 
   render(
@@ -197,6 +200,10 @@ async function deckScreen(id, params) {
     templatesFor(deck, topic, []).length > 0 && el('button', { class: 'hero-play endless', onclick: () => go('quiz', 'endless=1') },
       el('div', {}, el('strong', {}, 'Endless practice'), el('span', {}, `Fresh problems from ${templatesFor(deck, topic, []).length} templates with random values. Stop whenever.`)),
       el('span', { class: 'big-arrow', 'aria-hidden': 'true' }, '∞')),
+    weak.length > 0 && el('div', { class: 'weak' },
+      el('span', {}, '🎯 Your weak spots:'),
+      weak.slice(0, 3).map((w) => el('button', { class: 'chip', onclick: () => { location.hash = `#/deck/${id}/quiz?endless=1&topic=${encodeURIComponent(w.topic)}`; } }, w.topic)),
+      el('span', { class: 'muted' }, 'Endless already serves these more often.')),
     el('div', { class: 'section-label' }, 'PICK A CHALLENGE'),
     el('div', { class: 'modes' },
       count('bug') > 0 && mode('🐞', 'Error hunt', `${count('bug')} programs with one broken line${plus('bug')}`, () => go('quiz', 'types=bug')),
@@ -228,7 +235,11 @@ async function quizScreen(id, params) {
   if (types.length && !reviewing) pool = pool.filter((q) => types.includes(typeOf(q)));
   const prep = (q) => (typeOf(q) === 'mc' ? { ...q, order: shuffle(q.choices) } : q);
   // Endless: mostly generated, with a hand-written problem mixed in now and then.
-  const nextEndless = () => (Math.random() < 0.75 || !pool.length ? generateBatch(deck, topic, types, 1)[0] : shuffle(pool)[0]);
+  const missedPool = pool.filter((q) => missedIds.has(q.id));
+  const nextEndless = () => {
+    if (Math.random() < 0.75 || !pool.length) return generateBatch(deck, topic, types, 1)[0];
+    return shuffle(missedPool.length && Math.random() < 0.5 ? missedPool : pool)[0];
+  };
   let questions;
   if (reviewing) questions = shuffle(pool);
   else if (endless) questions = [nextEndless()].filter(Boolean);
@@ -365,6 +376,7 @@ async function quizScreen(id, params) {
       lockUI();
       markUI(ok);
       answered++;
+      if (q.generated) store.set(statsKey(deck), recordResult(store.get(statsKey(deck), {}), q.id.split('#')[0], checkAnswer(q, response)));
       let gain = 0;
       if (ok) {
         score++; combo++; bestCombo = Math.max(bestCombo, combo);

@@ -2,7 +2,8 @@
 """Run every Java problem in the decks and fail if a stored answer disagrees with real Java.
 
 Checks: output (exact stdout), trace (prints `var` after the code), bug (the line javac or the JVM blames),
-mc marked "run": true (stdout must equal the answer) and mc marked "check": "compiles" (only the answer compiles).
+mc marked "run": true (stdout must equal the answer) and mc marked "check": "compiles" (only the answer compiles;
+an optional "wrap" like "%s { }" turns each choice into a full statement first).
 If a deck has "generators", every template is sampled (SAMPLES seeds each, default 20) and checked the same way,
 so a template whose answer formula disagrees with Java for some random values fails here.
 Needs javac, java and node on PATH.
@@ -28,15 +29,20 @@ def java(body):
         return "runtime", (int(m.group(1)) - 1 if m else None), r.stdout
     return "ok", None, r.stdout
 
+def norm(text):
+    """Same rule as normalizeOutput in game.js: ignore trailing spaces on a line and trailing newlines."""
+    return "\n".join(l.rstrip(" ") for l in text.replace("\r\n", "\n").split("\n")).rstrip("\n")
+
 def verdict(q):
     """None if q isn't machine-checkable, else (ok, what_java_said)."""
     t = q.get("type", "mc")
     if t == "mc" and q.get("check") == "compiles":
-        compiles = [c for c in q["choices"] if java(c)[0] == "ok"]
+        wrap = q.get("wrap", "%s")  # e.g. "%s { }" when each choice is a loop header
+        compiles = [c for c in q["choices"] if java(wrap.replace("%s", c))[0] == "ok"]
         ok, got = compiles == [q["answer"]], f"compiling choices: {compiles}"
     elif t == "output" or (t == "mc" and q.get("run")):
         kind, _, out = java(q["code"])
-        ok, got = kind == "ok" and out.rstrip("\n") == q["answer"], out.rstrip("\n")
+        ok, got = kind == "ok" and norm(out) == norm(q["answer"]), norm(out)
     elif t == "trace":
         kind, _, out = java(q["code"] + f"\nSystem.out.print({q['var']});")
         ok, got = kind == "ok" and out == q["answer"], out

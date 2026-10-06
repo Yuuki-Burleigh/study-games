@@ -1,0 +1,623 @@
+{
+ "id": "cs209-loops",
+ "title": "CS 209: For Loops",
+ "course": "CS 209",
+ "description": "for loops: counting passes, accumulating, scope and braces, ++ / += / -=, mixed with concatenation and integer division. Lecture 10-6.",
+ "scope": "courses/cs209.md",
+ "generators": "generators/cs209-loops.js",
+ "cards": [
+  {
+   "id": "l-why",
+   "term": "Loop",
+   "definition": "Repeats a step many times instead of writing it out again and again.",
+   "topic": "For loop basics"
+  },
+  {
+   "id": "l-kinds",
+   "term": "for vs while",
+   "definition": "for: you know how many times to repeat. while / do-while: you don't know in advance.",
+   "topic": "For loop basics"
+  },
+  {
+   "id": "l-syntax",
+   "term": "for (init; test; update)",
+   "definition": "for (int i = 1; i <= 5; i++) { ... } — start the counter, keep going while the test is true, change the counter each time.",
+   "topic": "For loop basics"
+  },
+  {
+   "id": "l-order",
+   "term": "Order a for loop runs in",
+   "definition": "init (once) → test → body → update → test → body → update … until the test is false.",
+   "topic": "For loop basics"
+  },
+  {
+   "id": "l-init",
+   "term": "Loop counter initialization",
+   "definition": "int i = 0; — runs exactly once, before the first test.",
+   "topic": "For loop basics"
+  },
+  {
+   "id": "l-test",
+   "term": "Test / condition",
+   "definition": "i < 5 — checked before EVERY pass, including the first. False → the loop ends.",
+   "topic": "For loop basics"
+  },
+  {
+   "id": "l-pp",
+   "term": "i++",
+   "definition": "Same as i = i + 1.",
+   "topic": "For loop basics"
+  },
+  {
+   "id": "l-mm",
+   "term": "i--",
+   "definition": "Same as i = i - 1. Used to count down.",
+   "topic": "For loop basics"
+  },
+  {
+   "id": "l-pe",
+   "term": "i += 2",
+   "definition": "Same as i = i + 2. Also works with a variable: total += price.",
+   "topic": "For loop basics"
+  },
+  {
+   "id": "l-me",
+   "term": "i -= 3",
+   "definition": "Same as i = i - 3.",
+   "topic": "For loop basics"
+  },
+  {
+   "id": "l-cmp",
+   "term": "< > <= >=",
+   "definition": "Comparison operators. <= and >= put the = second; =< and => don't compile.",
+   "topic": "For loop basics"
+  },
+  {
+   "id": "l-acc",
+   "term": "Accumulator",
+   "definition": "A variable that builds up a result across passes: int sum = 0; then sum += i; inside the loop.",
+   "topic": "Counting & accumulating"
+  },
+  {
+   "id": "l-after",
+   "term": "Printing the result",
+   "definition": "Put the println AFTER the loop's closing brace to print the final total once.",
+   "topic": "Counting & accumulating"
+  },
+  {
+   "id": "l-count",
+   "term": "Counting passes",
+   "definition": "for (int i = a; i < b; i++) runs b - a times; with <= it runs b - a + 1 times.",
+   "topic": "Counting & accumulating"
+  },
+  {
+   "id": "l-nobrace",
+   "term": "No braces",
+   "definition": "Without { }, only the FIRST statement after the for repeats.",
+   "topic": "Scope & braces"
+  },
+  {
+   "id": "l-iscope",
+   "term": "Counter scope",
+   "definition": "A counter declared in the for (int i = ...) only exists inside the loop. Using i after it won't compile.",
+   "topic": "Scope & braces"
+  }
+ ],
+ "questions": [
+  {
+   "type": "mc",
+   "id": "lm-times5",
+   "topic": "Counting & accumulating",
+   "prompt": "How many times does the body run?",
+   "choices": [
+    "5",
+    "4",
+    "6",
+    "It never stops"
+   ],
+   "answer": "5",
+   "explanation": "i takes 0, 1, 2, 3, 4. At 5 the test i < 5 is false, so it stops: 5 passes.",
+   "code": "for (int i = 0; i < 5; i++) {\n    System.out.print(\"*\");\n}"
+  },
+  {
+   "type": "mc",
+   "id": "lm-times6",
+   "topic": "Counting & accumulating",
+   "prompt": "How many times does the body run?",
+   "choices": [
+    "6",
+    "5",
+    "7",
+    "4"
+   ],
+   "answer": "6",
+   "explanation": "i takes 0 through 5 because <= includes 5: that's 6 values.",
+   "code": "for (int i = 0; i <= 5; i++) {\n    System.out.print(\"*\");\n}"
+  },
+  {
+   "type": "mc",
+   "id": "lm-times-step",
+   "topic": "Counting & accumulating",
+   "prompt": "How many times does the body run?",
+   "choices": [
+    "4",
+    "3",
+    "5",
+    "10"
+   ],
+   "answer": "4",
+   "explanation": "i is 1, 4, 7, 10. The next value, 13, fails i <= 10.",
+   "code": "for (int i = 1; i <= 10; i += 3) {\n    System.out.print(\"*\");\n}"
+  },
+  {
+   "type": "mc",
+   "id": "lm-zero",
+   "topic": "Counting & accumulating",
+   "prompt": "How many times does the body run?",
+   "choices": [
+    "0",
+    "1",
+    "5",
+    "It never stops"
+   ],
+   "answer": "0",
+   "explanation": "The test is checked BEFORE the first pass: 5 < 5 is false, so the body never runs.",
+   "code": "for (int i = 5; i < 5; i++) {\n    System.out.print(\"*\");\n}"
+  },
+  {
+   "type": "mc",
+   "id": "lm-order",
+   "topic": "For loop basics",
+   "prompt": "In what order do the parts of a for loop run?",
+   "choices": [
+    "init once, then test → body → update, repeating",
+    "init → body → test → update, repeating",
+    "test → init → body → update, repeating",
+    "init → update → test → body, repeating"
+   ],
+   "answer": "init once, then test → body → update, repeating",
+   "explanation": "The init runs exactly once. The test comes before every pass, which is why a loop can run zero times."
+  },
+  {
+   "type": "mc",
+   "id": "lm-kind",
+   "topic": "For loop basics",
+   "prompt": "You keep asking for passwords until one is right. Which kind of loop fits best?",
+   "choices": [
+    "A while loop: you don't know how many tries it'll take",
+    "A for loop: it always fits",
+    "A for loop, because it has a counter",
+    "No loop; write the check 10 times"
+   ],
+   "answer": "A while loop: you don't know how many tries it'll take",
+   "explanation": "for is for a known number of repeats. When you can't know the count in advance, that's the while / do-while kind (syntax coming later)."
+  },
+  {
+   "type": "mc",
+   "id": "lm-pluseq",
+   "topic": "For loop basics",
+   "prompt": "What does  total += price;  do?",
+   "choices": [
+    "Sets total to total + price",
+    "Sets total to price",
+    "Adds total to price and stores it in price",
+    "Compares total and price"
+   ],
+   "answer": "Sets total to total + price",
+   "explanation": "x += y is shorthand for x = x + y. The variable on the left is the one that changes."
+  },
+  {
+   "type": "mc",
+   "id": "lm-op",
+   "topic": "For loop basics",
+   "prompt": "Which test means \"keep going while i is at most 10\"?",
+   "choices": [
+    "i <= 10",
+    "i =< 10",
+    "i < 10",
+    "i => 10"
+   ],
+   "answer": "i <= 10",
+   "explanation": "The = goes second: <=. i < 10 stops one early (at 9), and =< isn't an operator at all."
+  },
+  {
+   "type": "mc",
+   "id": "lm-semi",
+   "topic": "Scope & braces",
+   "prompt": "What does this print?",
+   "choices": [
+    "x",
+    "xxx",
+    "Nothing",
+    "Compile error"
+   ],
+   "answer": "x",
+   "explanation": "The ; right after the for( ) is an empty loop body: the loop runs 3 times doing nothing. The { } block is a separate statement that runs once afterwards.",
+   "code": "for (int i = 0; i < 3; i++);\n{\n    System.out.print(\"x\");\n}",
+   "run": true
+  },
+  {
+   "type": "mc",
+   "id": "lm-nobrace",
+   "topic": "Scope & braces",
+   "prompt": "What does this print?",
+   "choices": [
+    "aaab",
+    "ababab",
+    "aaabbb",
+    "ab"
+   ],
+   "answer": "aaab",
+   "explanation": "No braces: only the first statement (print a) repeats. print b runs once, after the loop.",
+   "code": "for (int i = 0; i < 3; i++)\n    System.out.print(\"a\");\n    System.out.print(\"b\");",
+   "run": true
+  },
+  {
+   "type": "mc",
+   "id": "lm-where-print",
+   "topic": "Counting & accumulating",
+   "prompt": "You want to print the final sum ONCE. Where does the println go?",
+   "choices": [
+    "After the loop's closing }",
+    "Inside the loop, after sum += i",
+    "Before the loop",
+    "Inside the for ( ) parentheses"
+   ],
+   "answer": "After the loop's closing }",
+   "explanation": "Inside the loop it would print every partial sum. After the closing brace, the loop has finished and sum holds the total."
+  },
+  {
+   "type": "mc",
+   "id": "lm-iscope",
+   "topic": "Scope & braces",
+   "prompt": "What happens with this code?",
+   "choices": [
+    "It won't compile: i only exists inside the loop",
+    "Prints 3",
+    "Prints 2",
+    "Prints 0"
+   ],
+   "answer": "It won't compile: i only exists inside the loop",
+   "explanation": "i is declared in the for( ), so its scope is the loop. Line 4 uses a name that no longer exists.",
+   "code": "for (int i = 0; i < 3; i++) {\n    System.out.print(i);\n}\nSystem.out.println(i);"
+  },
+  {
+   "type": "mc",
+   "id": "lm-concat",
+   "topic": "Loops + earlier topics",
+   "prompt": "What does this print?",
+   "choices": [
+    "2 4 6",
+    "11 22 33",
+    "1 2 3",
+    "246"
+   ],
+   "answer": "2 4 6",
+   "explanation": "i + i is number + number, so it adds (2, 4, 6) before the \" \" turns it into text.",
+   "code": "for (int i = 1; i <= 3; i++) {\n    System.out.print(i + i + \" \");\n}",
+   "run": true
+  },
+  {
+   "type": "mc",
+   "id": "lm-intavg",
+   "topic": "Loops + earlier topics",
+   "prompt": "What does this print?",
+   "choices": [
+    "2.0",
+    "2.5",
+    "2",
+    "10.0"
+   ],
+   "answer": "2.0",
+   "explanation": "sum is 1 + 2 + 3 + 4 = 10. 10 / 4 is int / int = 2 before it's stored, so 2.0.",
+   "code": "int sum = 0;\nfor (int i = 1; i <= 4; i++) {\n    sum += i;\n}\ndouble avg = sum / 4;\nSystem.out.println(avg);",
+   "run": true
+  },
+  {
+   "type": "mc",
+   "id": "lm-decl",
+   "topic": "For loop basics",
+   "prompt": "Which for loop header compiles?",
+   "choices": [
+    "for (int i = 0; i < 3; i++)",
+    "for (int i = 0, i < 3, i++)",
+    "for (int i = 0; i => 3; i++)",
+    "For (int i = 0; i < 3; i++)"
+   ],
+   "answer": "for (int i = 0; i < 3; i++)",
+   "explanation": "Semicolons separate the three parts, => isn't an operator, and Java is case-sensitive (for, not For).",
+   "check": "compiles",
+   "wrap": "%s { }"
+  },
+  {
+   "type": "output",
+   "id": "lo-star",
+   "topic": "For loop basics",
+   "prompt": "Type exactly what this prints.",
+   "code": "for (int i = 1; i <= 3; i++) {\n    System.out.print(i);\n    System.out.println(\"*\");\n}",
+   "answer": "1*\n2*\n3*",
+   "explanation": "print(i) leaves the cursor on the line, then println(\"*\") adds * and ends the line. No space is printed between them."
+  },
+  {
+   "type": "output",
+   "id": "lo-0123",
+   "topic": "For loop basics",
+   "prompt": "Type exactly what this prints.",
+   "code": "for (int i = 0; i < 4; i++)\n    System.out.print(i);",
+   "answer": "0123",
+   "explanation": "Starts at 0 and stops before 4. With no spaces printed, the digits run together."
+  },
+  {
+   "type": "output",
+   "id": "lo-down",
+   "topic": "For loop basics",
+   "prompt": "Type exactly what this prints.",
+   "code": "for (int i = 5; i > 0; i--) {\n    System.out.print(i + \" \");\n}",
+   "answer": "5 4 3 2 1 ",
+   "explanation": "Counts down from 5; at 0 the test i > 0 is false. (Trailing spaces don't matter when you type it.)"
+  },
+  {
+   "type": "output",
+   "id": "lo-step3",
+   "topic": "For loop basics",
+   "prompt": "Type exactly what this prints.",
+   "code": "for (int i = 0; i < 10; i += 3) {\n    System.out.print(i + \",\");\n}",
+   "answer": "0,3,6,9,",
+   "explanation": "i is 0, 3, 6, 9; the next value, 12, fails i < 10."
+  },
+  {
+   "type": "output",
+   "id": "lo-rows",
+   "topic": "For loop basics",
+   "prompt": "Type exactly what this prints.",
+   "code": "for (int i = 1; i <= 3; i++) {\n    System.out.println(\"Row \" + i);\n}",
+   "answer": "Row 1\nRow 2\nRow 3",
+   "explanation": "println ends each line, so each row is on its own line."
+  },
+  {
+   "type": "output",
+   "id": "lo-112233",
+   "topic": "Loops + earlier topics",
+   "prompt": "Type exactly what this prints.",
+   "code": "for (int i = 1; i <= 3; i++) {\n    System.out.print(\"\" + i + i);\n}",
+   "answer": "112233",
+   "explanation": "\"\" first makes it text, so i is appended twice: 11, 22, 33."
+  },
+  {
+   "type": "output",
+   "id": "lo-minus",
+   "topic": "For loop basics",
+   "prompt": "Type exactly what this prints.",
+   "code": "for (int i = 10; i > 0; i -= 3) {\n    System.out.print(i + \" \");\n}",
+   "answer": "10 7 4 1 ",
+   "explanation": "10, 7, 4, 1. The next value would be -2, which fails i > 0."
+  },
+  {
+   "type": "output",
+   "id": "lo-sum",
+   "topic": "Counting & accumulating",
+   "prompt": "Type exactly what this prints.",
+   "code": "int sum = 0;\nfor (int i = 3; i <= 6; i++) {\n    sum = sum + i;\n}\nSystem.out.println(\"Sum: \" + sum);",
+   "answer": "Sum: 18",
+   "explanation": "3 + 4 + 5 + 6 = 18, printed once after the loop."
+  },
+  {
+   "type": "output",
+   "id": "lo-inside",
+   "topic": "Counting & accumulating",
+   "prompt": "Type exactly what this prints.",
+   "code": "int sum = 0;\nfor (int i = 1; i <= 3; i++) {\n    sum += i;\n    System.out.println(sum);\n}",
+   "answer": "1\n3\n6",
+   "explanation": "The println is INSIDE the loop, so it prints the running total each pass: 1, 1+2, 1+2+3."
+  },
+  {
+   "type": "output",
+   "id": "lo-half",
+   "topic": "Loops + earlier topics",
+   "prompt": "Type exactly what this prints.",
+   "code": "for (int i = 1; i <= 4; i++) {\n    System.out.print(i / 2 + \" \");\n}",
+   "answer": "0 1 1 2 ",
+   "explanation": "Integer division: 1/2=0, 2/2=1, 3/2=1, 4/2=2."
+  },
+  {
+   "type": "output",
+   "id": "lo-mod",
+   "topic": "Loops + earlier topics",
+   "prompt": "Type exactly what this prints.",
+   "code": "for (int i = 1; i <= 6; i++) {\n    System.out.print(i % 3);\n}",
+   "answer": "120120",
+   "explanation": "% 3 cycles 1, 2, 0, 1, 2, 0 as i goes up."
+  },
+  {
+   "type": "output",
+   "id": "lo-chars",
+   "topic": "Loops + earlier topics",
+   "prompt": "Type exactly what this prints.",
+   "code": "char c = 'a';\nfor (int i = 0; i < 3; i++) {\n    System.out.print(c + i + \" \");\n}",
+   "answer": "97 98 99 ",
+   "explanation": "c + i is char + int = a number (97 + i), and that's done before the \" \" joins."
+  },
+  {
+   "type": "trace",
+   "id": "lt-sum",
+   "topic": "Counting & accumulating",
+   "prompt": "After this runs, what is the value of sum?",
+   "code": "int sum = 0;\nfor (int i = 1; i <= 4; i++) {\n    sum += i;\n}",
+   "var": "sum",
+   "answer": "10",
+   "explanation": "1 + 2 + 3 + 4 = 10."
+  },
+  {
+   "type": "trace",
+   "id": "lt-count",
+   "topic": "Counting & accumulating",
+   "prompt": "After this runs, what is the value of count?",
+   "code": "int count = 0;\nfor (int i = 0; i < 10; i += 2) {\n    count++;\n}",
+   "var": "count",
+   "answer": "5",
+   "explanation": "i is 0, 2, 4, 6, 8: five passes, so count goes up 5 times."
+  },
+  {
+   "type": "trace",
+   "id": "lt-double",
+   "topic": "Counting & accumulating",
+   "prompt": "After this runs, what is the value of x?",
+   "code": "int x = 1;\nfor (int i = 0; i < 4; i++) {\n    x = x * 2;\n}",
+   "var": "x",
+   "answer": "16",
+   "explanation": "Doubling 4 times: 2, 4, 8, 16."
+  },
+  {
+   "type": "trace",
+   "id": "lt-minus",
+   "topic": "Counting & accumulating",
+   "prompt": "After this runs, what is the value of total?",
+   "code": "int total = 100;\nfor (int i = 0; i < 3; i++) {\n    total -= 15;\n}",
+   "var": "total",
+   "answer": "55",
+   "explanation": "3 passes of -15: 100 - 45 = 55."
+  },
+  {
+   "type": "trace",
+   "id": "lt-down",
+   "topic": "Counting & accumulating",
+   "prompt": "After this runs, what is the value of sum?",
+   "code": "int sum = 0;\nfor (int i = 10; i >= 1; i -= 3) {\n    sum += i;\n}",
+   "var": "sum",
+   "answer": "22",
+   "explanation": "i is 10, 7, 4, 1 (then -2 fails i >= 1): 10 + 7 + 4 + 1 = 22."
+  },
+  {
+   "type": "trace",
+   "id": "lt-last",
+   "topic": "Scope & braces",
+   "prompt": "After this runs, what is the value of n?",
+   "code": "int n = 0;\nfor (int i = 0; i < 5; i++) {\n    n = i;\n}",
+   "var": "n",
+   "answer": "4",
+   "explanation": "The last pass has i = 4. i does become 5, but then the test fails and the body doesn't run, so n stays 4."
+  },
+  {
+   "type": "trace",
+   "id": "lt-str",
+   "topic": "Loops + earlier topics",
+   "prompt": "After this runs, what is the value of s?",
+   "code": "String s = \"\";\nfor (int i = 1; i <= 3; i++) {\n    s = s + i;\n}",
+   "var": "s",
+   "answer": "123",
+   "explanation": "s is a String, so each pass appends the digit as text."
+  },
+  {
+   "type": "trace",
+   "id": "lt-rev",
+   "topic": "Loops + earlier topics",
+   "prompt": "After this runs, what is the value of s?",
+   "code": "String s = \"\";\nfor (int i = 1; i <= 3; i++) {\n    s = i + s;\n}",
+   "var": "s",
+   "answer": "321",
+   "explanation": "Each new digit goes on the FRONT: \"1\", then \"21\", then \"321\"."
+  },
+  {
+   "type": "trace",
+   "id": "lt-sq",
+   "topic": "Counting & accumulating",
+   "prompt": "After this runs, what is the value of a?",
+   "code": "int a = 0;\nfor (int i = 0; i < 4; i++) {\n    a += i * i;\n}",
+   "var": "a",
+   "answer": "14",
+   "explanation": "0 + 1 + 4 + 9 = 14 (* happens before +=)."
+  },
+  {
+   "type": "trace",
+   "id": "lt-avg",
+   "topic": "Loops + earlier topics",
+   "prompt": "After this runs, what is the value of avg?",
+   "code": "int sum = 0;\nfor (int i = 1; i <= 4; i++) {\n    sum += i;\n}\ndouble avg = sum / 4;",
+   "var": "avg",
+   "answer": "2.0",
+   "explanation": "sum is 10, and 10 / 4 is integer division (2) before it's stored: 2.0. Use 4.0 to get 2.5."
+  },
+  {
+   "type": "trace",
+   "id": "lt-nobrace",
+   "topic": "Scope & braces",
+   "prompt": "After this runs, what is the value of y?",
+   "code": "int x = 0;\nint y = 0;\nfor (int i = 0; i < 4; i++)\n    x++;\n    y++;",
+   "var": "y",
+   "answer": "1",
+   "explanation": "Without braces only x++ is in the loop. y++ runs once afterwards, however it's indented."
+  },
+  {
+   "type": "bug",
+   "id": "lb-scope",
+   "topic": "Scope & braces",
+   "prompt": "Which line won't compile?",
+   "code": "int sum = 0;\nfor (int i = 1; i <= 3; i++) {\n    sum += i;\n}\nSystem.out.println(sum + i);",
+   "answer": 5,
+   "explanation": "i was declared in the for( ), so it doesn't exist after the loop's closing brace."
+  },
+  {
+   "type": "bug",
+   "id": "lb-commas",
+   "topic": "Finding errors",
+   "prompt": "Which line won't compile?",
+   "code": "int sum = 0;\nfor (int i = 0, i < 3, i++) {\n    sum += i;\n}",
+   "answer": 2,
+   "explanation": "The three parts of a for header are separated by semicolons, not commas."
+  },
+  {
+   "type": "bug",
+   "id": "lb-arrow",
+   "topic": "Finding errors",
+   "prompt": "Which line won't compile?",
+   "code": "int total = 0;\nfor (int i = 10; i => 1; i--) {\n    total += i;\n}\nSystem.out.println(total);",
+   "answer": 2,
+   "explanation": "=> isn't an operator in Java. \"Greater than or equal\" is >=."
+  },
+  {
+   "type": "bug",
+   "id": "lb-uninit",
+   "topic": "Finding errors",
+   "prompt": "Which line won't compile?",
+   "code": "int sum;\nfor (int i = 0; i < 3; i++) {\n    sum += i;\n}",
+   "answer": 3,
+   "explanation": "sum += i means sum = sum + i, and sum never got a starting value. Start accumulators at 0."
+  },
+  {
+   "type": "bug",
+   "id": "lb-undecl",
+   "topic": "Finding errors",
+   "prompt": "Which line won't compile?",
+   "code": "int total = 0;\nfor (i = 0; i < 4; i++) {\n    total += 2;\n}",
+   "answer": 2,
+   "explanation": "i is never declared. The init needs a type: int i = 0."
+  },
+  {
+   "type": "bug",
+   "id": "lb-redecl",
+   "topic": "Scope & braces",
+   "prompt": "Which line won't compile?",
+   "code": "for (int i = 0; i < 3; i++) {\n    int i = 5;\n    System.out.print(i);\n}",
+   "answer": 2,
+   "explanation": "i already exists inside the loop (declared in the header), so it can't be declared again."
+  },
+  {
+   "type": "bug",
+   "id": "lb-zero",
+   "topic": "Finding errors",
+   "prompt": "This compiles. Which line crashes when it runs?",
+   "code": "int total = 12;\nfor (int i = 0; i < 3; i++) {\n    System.out.println(total / i);\n}",
+   "answer": 3,
+   "explanation": "On the very first pass i is 0, so total / i divides by zero. It compiles fine and crashes at runtime."
+  },
+  {
+   "type": "bug",
+   "id": "lb-paren",
+   "topic": "Finding errors",
+   "prompt": "Which line won't compile?",
+   "code": "int n = 0;\nfor (int i = 0; i < 3; i++ {\n    n += i;\n}",
+   "answer": 2,
+   "explanation": "The for header's ( ) is never closed."
+  }
+ ]
+}

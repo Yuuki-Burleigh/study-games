@@ -6,7 +6,8 @@ My personal study site. Each class topic is a deck of **original problems** writ
 - **Quick play**: 10 problems mixing four formats: multiple choice, type the exact output, trace a variable,
   and find the broken line. Half are hand-written, half freshly generated.
 - **Endless practice**: problems generated from templates with random values (numbers, names, words), so you can keep
-  going without repeats. Every template's answer logic is checked against real Java in CI.
+  going without repeats. It leans toward the templates you miss (your weak spots show on the deck page).
+  Every template's answer logic is checked against real Java in CI.
 - **Error hunt / Type it / Multiple choice**: drill one format. **Fix mistakes** replays what I got wrong.
 - **Flashcards** and **Match** (pair 6 terms against the clock) to warm up.
 

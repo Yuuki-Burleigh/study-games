@@ -6,7 +6,7 @@ const game = await import('../game.js').catch(() => ({}));
 const readJSON = (p) => JSON.parse(readFileSync(new URL(p, import.meta.url), 'utf8'));
 
 test('game.js exports the engine', () => {
-  for (const f of ['shuffle', 'checkAnswer', 'buildMatchRound', 'validateDeck', 'normalizeOutput', 'xpFor', 'nextStreak']) {
+  for (const f of ['shuffle', 'checkAnswer', 'buildMatchRound', 'validateDeck', 'normalizeOutput', 'xpFor', 'nextStreak', 'recordResult', 'missRate', 'templateWeights', 'weightedIndex', 'weakTopics']) {
     assert.equal(typeof game[f], 'function', f);
   }
   const src = [1, 2, 3, 4, 5, 6, 7, 8];
@@ -46,6 +46,30 @@ test('pickMixed spreads questions across types', () => {
     assert.ok(n >= 2 && n <= 3, `${t}: ${n}`);
   }
   assert.equal(game.pickMixed(qs.slice(0, 3), 10).length, 3, 'small pool');
+});
+
+test('weak-spot weighting', () => {
+  const ts = [
+    { id: 'a', type: 'mc', topic: 'X' }, { id: 'b', type: 'mc', topic: 'Y' },
+    { id: 'c', type: 'bug', topic: 'X' },
+  ];
+  const even = game.templateWeights(ts, {});
+  // No history: each FORMAT gets an equal share (mc's two templates split it; bug's one template gets it all).
+  assert.ok(Math.abs(even[0] + even[1] - even[2]) < 1e-9);
+  let stats = {};
+  for (let k = 0; k < 6; k++) stats = game.recordResult(stats, 'a', false);
+  for (let k = 0; k < 6; k++) stats = game.recordResult(stats, 'b', true);
+  const w = game.templateWeights(ts, stats);
+  assert.ok(w[0] > 3 * w[1], 'a template you keep missing outweighs a mastered one');
+  assert.ok(w[1] > 0, 'mastered templates never disappear');
+  assert.ok(game.missRate(stats.a) > 0.8 && game.missRate(stats.b) < 0.2);
+  // Recency: a run of right answers after misses brings the rate back down.
+  let s2 = stats;
+  for (let k = 0; k < 10; k++) s2 = game.recordResult(s2, 'a', true);
+  assert.ok(game.missRate(s2.a) < 0.4, 'recent results dominate');
+  assert.equal(game.weightedIndex([1, 0, 0], () => 0.99), 0);
+  assert.equal(game.weightedIndex([1, 1], () => 0.75), 1);
+  assert.deepEqual(game.weakTopics(ts, stats).map((x) => x.topic), ['X']);
 });
 
 test('daily streak', () => {

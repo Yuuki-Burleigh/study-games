@@ -58,7 +58,17 @@ Rules:
   `program(r, lines)` and flag the broken line `{ src, bad: true }` so filler lines can shift it.
 - Build mc distractors from the actual mistakes (all-text, all-added, wrong precedence) via `choices(r, answer, [...])`.
 - Stay inside the course scope file. Aim for 25+ templates covering every topic and all four types.
+- Template ids are permanent: the app keys each user's weak-spot stats by template id (below), so renaming one resets
+  its history. Add new templates rather than repurposing an id for a different concept.
 - Look at a few instances before trusting a template: `node tools/sample.mjs decks/<deck>.json 3`.
+
+### Weak-spot weighting (automatic, no per-deck work)
+The app keeps per-template hit/miss stats in localStorage (`tstats:<deck>`; each answer decays older ones by 10%, so
+recent results dominate). Endless and the generated half of every quiz pick templates by weight: each format gets an
+equal share, and within it a template weighs `0.2 + missRate`, so the ones you keep missing come up about 3x as often
+as mastered ones, which still appear now and then. The deck page lists your weakest topics. Logic: `templateWeights`,
+`recordResult`, `weakTopics` in game.js (tested in tests/game.test.js). For this to work, give every template an
+accurate `topic`, and split distinct traps into separate templates instead of one template with many unrelated variants.
 
 ## 4. Verify, then publish
 1. `python3 tools/check_java.py` runs every hand-written problem AND a sample from every template (`SAMPLES`, default 20

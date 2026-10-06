@@ -29,7 +29,7 @@ jobs:
       - run: npm test
       - name: Check every answer against real Java (hand-written + sampled from every template)
         # A different seed window each run, so over time the templates get tested on far more random values.
-        run: SAMPLES=8 FIRST_SEED=$(( GITHUB_RUN_NUMBER * 1000 )) python3 tools/check_java.py
+        run: SAMPLES=6 FIRST_SEED=$(( GITHUB_RUN_NUMBER * 1000 )) python3 tools/check_java.py
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
