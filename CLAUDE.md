@@ -1,28 +1,37 @@
-# Study Games: how to add a deck
+# Study Games: how to make a deck
 
-The user gives class materials (notes, slides, a topic) and asks for a study game. Output = one new deck.
+The user gives class notes and asks for a study game. **The notes are context, not a question bank.** They say what
+the user has been taught (and so what they should and shouldn't be expected to know). The job is to write *original*
+problems that test whether they understand it.
 
-1. Write `decks/<course>-<topic>.json` (lowercase, hyphens), shaped like `decks/cs209-java-basics.json`:
-   ```json
-   {
-     "id": "<same as filename>", "title": "CS 209: Loops", "course": "CS 209",
-     "description": "one line: what it covers",
-     "cards": [ { "id": "c-unique", "term": "...", "definition": "...", "topic": "Lecture 10-6" } ],
-     "questions": [ {
-       "id": "q-unique", "topic": "Lecture 10-6",
-       "prompt": "What does this print?",
-       "code": "optional code block",
-       "choices": ["right answer", "wrong 1", "wrong 2", "wrong 3"],
-       "answer": "right answer",
-       "explanation": "why, in 1-2 sentences"
-     } ]
-   }
-   ```
-   Rules: ids unique across cards+questions; `answer` must be exactly one of `choices`; choices unique;
-   aim for 20+ cards and 25+ questions; `topic` groups items into filter chips (use the lecture date or sub-topic).
-2. Add `{ "id": "...", "file": "decks/<id>.json" }` to `decks/index.json`.
-3. Facts must be correct even where the notes are wrong; fix them and say so in the explanation.
-   For code-output questions, run the code (Java: `~/.local/share/mise/installs/java/*/bin/java`) and use the real output.
-   Distractors should be the mistakes a student actually makes (e.g. `hi3` for `"hi" + 1 + 2`).
-4. `npm test` must pass, then commit and push to `main`. The GitHub Action re-runs the tests and only deploys
-   to Pages if they pass (about a minute). From any directory, `/study-deck <notes file or topic>` runs this whole flow.
+## 1. Update the course scope first
+`courses/<course>.md` (e.g. `courses/cs209.md`) lists **Taught** (by lecture date) and **Not taught yet**. Add the new
+lecture's concepts from the notes; move anything newly covered out of "Not taught yet". New problems may combine
+anything taught so far, across lectures, but must not require anything in "Not taught yet".
+
+## 2. Write original problems
+- Never reuse the notes' worked examples (same expression, different numbers is fine; the same line is not).
+  Aim at understanding: new combinations, edge cases, the traps students actually fall into, and "why" over "what".
+- Mix all four types (roughly 35% mc, 25% output, 20% trace, 20% bug; 40+ problems per deck):
+
+| type | the student... | fields |
+|---|---|---|
+| `mc` | picks one of 4 choices | `choices`, `answer` (one of choices); `run: true` if `answer` is the code's exact output |
+| `output` | types the exact output | `code`, `answer` (exact stdout; avoid `\t` since Tab leaves a textarea) |
+| `trace` | types a variable's final value | `code`, `var`, `answer` (as Java would print it, e.g. `85.0`) |
+| `bug` | taps the broken line | `code`, `answer` (1-based line); prompt says "won't compile" or "crashes when it runs" |
+
+- Every problem: unique `id`, `topic` (a concept, used as a filter chip), `prompt`, `explanation` (1-2 sentences:
+  why, naming the trap). Distractors = real mistakes (e.g. `hi3` for `"hi" + 1 + 2`).
+- Flashcards (`cards`: `id`, `term`, `definition`, `topic`) are fine as plain recall of key terms.
+- Deck file `decks/<course>-<topic>.json` with `id`, `title` ("CS 209: Loops"), `course`, `description`, `scope`
+  (path to the course file), `cards`, `questions`. Add `{ "id", "file" }` to `decks/index.json`.
+  A continuing topic can extend an existing deck instead.
+
+## 3. Verify, then publish
+1. `python3 tools/check_java.py` runs every output/trace/bug/run problem through real Java and must report 0 wrong
+   (Java: `PATH=~/.local/share/mise/installs/java/27.0.0/bin:$PATH`). For a non-Java course, verify answers another way and say how.
+2. `npm test` must pass.
+3. Commit and push to `main`. The GitHub Action re-runs both checks and only deploys to Pages if they pass (~1 min).
+
+From any directory, `/study-deck <notes file or topic>` runs this whole flow.

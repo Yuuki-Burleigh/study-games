@@ -1,4 +1,4 @@
-# Every push to main: run the deck tests, and only if they pass, publish the site to GitHub Pages.
+# Every push to main: validate the decks, run every Java answer for real, and only if both pass, publish to GitHub Pages.
 name: Test and deploy
 on:
   push:
@@ -22,7 +22,13 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
       - run: npm test
+      - name: Check every answer against real Java
+        run: python3 tools/check_java.py
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

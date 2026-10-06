@@ -1,8 +1,9 @@
-import { shuffle, checkAnswer, buildMatchRound, validateDeck } from './game.js';
+import { shuffle, pickMixed, checkAnswer, buildMatchRound, validateDeck, xpFor, nextStreak, normalizeOutput } from './game.js';
 
 const app = document.getElementById('app');
 const QUIZ_LENGTH = 10;
 const MATCH_PAIRS = 6;
+const XP_PER_LEVEL = 100;
 let cleanup = () => {};
 
 // ---------- tiny helpers ----------
@@ -22,18 +23,16 @@ function el(tag, attrs = {}, ...children) {
 function render(...nodes) {
   cleanup();
   cleanup = () => {};
-  app.replaceChildren(...nodes);
+  app.replaceChildren(...nodes.filter((n) => n != null && n !== false));
   app.focus({ preventScroll: true });
   window.scrollTo(0, 0);
 }
 
 function onKey(handler) {
-  const fn = (e) => {
-    if (e.altKey || e.ctrlKey || e.metaKey) return;
-    handler(e);
-  };
+  const fn = (e) => { if (!e.altKey && !e.metaKey && !(e.ctrlKey && e.key !== 'Enter')) handler(e); };
   window.addEventListener('keydown', fn);
-  cleanup = () => window.removeEventListener('keydown', fn);
+  const prev = cleanup;
+  cleanup = () => { prev(); window.removeEventListener('keydown', fn); };
 }
 
 // localStorage can be missing or throw (private mode); progress is a convenience.
@@ -45,6 +44,55 @@ const store = {
     try { localStorage.setItem('sg:' + key, JSON.stringify(value)); } catch { /* not saved */ }
   },
 };
+
+// Java syntax colouring, built as DOM nodes (never innerHTML).
+const TOKENS = /(\/\/.*$)|("(?:\\.|[^"\\\n])*"?)|('(?:\\.|[^'\\\n])*'?)|(\b\d+(?:\.\d+)?\b)|(\b(?:public|static|void|class|int|double|boolean|char|String|System|true|false|new|return)\b)/gm;
+function highlight(code) {
+  const frag = document.createDocumentFragment();
+  let last = 0;
+  for (const m of code.matchAll(TOKENS)) {
+    if (m.index > last) frag.append(code.slice(last, m.index));
+    const cls = m[1] ? 'tok-com' : m[2] || m[3] ? 'tok-str' : m[4] ? 'tok-num' : 'tok-kw';
+    frag.append(el('span', { class: cls }, m[0]));
+    last = m.index + m[0].length;
+  }
+  frag.append(code.slice(last));
+  return frag;
+}
+const codeBlock = (code) => el('pre', { class: 'code' }, el('code', {}, highlight(code)));
+
+// ---------- XP + streak (header) ----------
+const today = () => new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD, local time
+
+function renderStats(bump = false) {
+  const xp = store.get('xp', 0);
+  let streak = store.get('streak', null);
+  // A streak only counts if you studied today or yesterday.
+  if (streak && nextStreak(streak, today()).days === 1 && streak.last !== today()) streak = { ...streak, days: 0 };
+  const s = document.getElementById('streak');
+  const x = document.getElementById('xp');
+  s.querySelector('b').textContent = streak ? streak.days : 0;
+  x.querySelector('.lv b').textContent = Math.floor(xp / XP_PER_LEVEL) + 1;
+  x.querySelector('.xpnum b').textContent = xp;
+  x.querySelector('.xpbar i').style.width = `${xp % XP_PER_LEVEL}%`;
+  x.title = `${xp} XP · ${XP_PER_LEVEL - (xp % XP_PER_LEVEL)} to the next level`;
+  if (bump) for (const n of [s, x]) { n.classList.remove('bump'); void n.offsetWidth; n.classList.add('bump'); }
+}
+
+function awardXP(n) {
+  store.set('xp', store.get('xp', 0) + n);
+  store.set('streak', nextStreak(store.get('streak', null), today()));
+  renderStats(true);
+}
+
+function confetti() {
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const colors = ['#ff6b2c', '#35a63f', '#ffb020', '#2b2118', '#ff9a6b'];
+  const box = el('div', { class: 'confetti', 'aria-hidden': 'true' },
+    Array.from({ length: 60 }, (_, i) => el('i', { style: `left:${Math.random() * 100}%;background:${colors[i % colors.length]};animation-delay:${Math.random() * 0.5}s;animation-duration:${1.2 + Math.random()}s` })));
+  document.body.append(box);
+  setTimeout(() => box.remove(), 2600);
+}
 
 // ---------- data ----------
 const cache = new Map();
@@ -58,7 +106,7 @@ async function loadIndex() {
 async function loadDeck(id) {
   if (cache.has(id)) return cache.get(id);
   const entry = (await loadIndex()).find((d) => d.id === id);
-  if (!entry) throw new Error(`No deck called "${id}"`);
+  if (!entry) throw new Error(`There's no deck called "${id}".`);
   const res = await fetch('./' + entry.file, { cache: 'no-cache' });
   if (!res.ok) throw new Error(`Could not load ${entry.file}`);
   const deck = await res.json();
@@ -68,62 +116,261 @@ async function loadDeck(id) {
   return deck;
 }
 
+const typeOf = (q) => q.type || 'mc';
 const topicsOf = (items) => [...new Set(items.map((x) => x.topic).filter(Boolean))];
 const filterTopic = (items, topic) => (topic ? items.filter((x) => x.topic === topic) : items);
 const missedKey = (deck) => `missed:${deck.id}`;
+const TYPE_LABEL = { mc: '🎯 Pick one', output: '⌨️ Type the output', trace: '🔍 Trace it', bug: '🐞 Find the bug' };
 
 // ---------- screens ----------
 async function homeScreen() {
   const entries = await loadIndex();
   const decks = await Promise.all(entries.map((e) => loadDeck(e.id).catch((err) => ({ id: e.id, error: err.message }))));
+  const xp = store.get('xp', 0);
   render(
-    el('h1', {}, 'Your decks'),
-    el('p', { class: 'muted' }, 'Pick a class topic, then a game.'),
+    el('section', { class: 'hello' },
+      el('h1', {}, xp ? 'Back for more?' : 'Ready to study?'),
+      el('p', { class: 'muted' }, xp ? `Level ${Math.floor(xp / XP_PER_LEVEL) + 1}, ${XP_PER_LEVEL - (xp % XP_PER_LEVEL)} XP to the next one.` : 'Pick a class and start earning XP.')),
     el('div', { class: 'deck-list' }, decks.map((d) => d.error
-      ? el('div', { class: 'card' }, el('h2', {}, d.id), el('p', { class: 'muted' }, d.error))
-      : el('a', { class: 'deck-link', href: `#/deck/${d.id}` },
-          el('div', { class: 'card' },
-            el('h2', {}, d.title),
-            d.description && el('p', { class: 'muted' }, d.description),
-            el('div', { class: 'tags' },
-              el('span', { class: 'tag' }, `${d.cards.length} cards`),
-              el('span', { class: 'tag' }, `${d.questions.length} questions`),
-              bestTag(d))))))
-  );
-}
-
-function bestTag(deck) {
-  const best = store.get(`best:${deck.id}`, null);
-  return best ? el('span', { class: 'tag' }, `Best quiz: ${best}%`) : null;
+      ? el('div', { class: 'deck' }, el('h2', {}, d.id), el('p', { class: 'muted' }, d.error))
+      : el('a', { class: 'deck', href: `#/deck/${d.id}` },
+          d.course && el('span', { class: 'course' }, d.course),
+          el('h2', {}, d.title.replace(/^.*?:\s*/, '')),
+          d.description && el('p', { class: 'muted' }, d.description),
+          el('div', { class: 'meta' },
+            el('span', {}, `🧩 ${d.questions.length} problems`),
+            el('span', {}, `🃏 ${d.cards.length} cards`),
+            store.get(`best:${d.id}`, null) != null && el('span', {}, `🏆 best ${store.get(`best:${d.id}`)}%`)),
+          el('span', { class: 'go', 'aria-hidden': 'true' }, '→')))));
 }
 
 async function deckScreen(id, params) {
   const deck = await loadDeck(id);
   const topic = params.get('topic') || '';
   const topics = topicsOf([...deck.cards, ...deck.questions]);
+  const qs = filterTopic(deck.questions, topic);
   const missed = store.get(missedKey(deck), []).filter((qid) => deck.questions.some((q) => q.id === qid));
-  const q = topic ? `?topic=${encodeURIComponent(topic)}` : '';
-
-  const mode = (icon, name, blurb, hash) => el('button', { class: 'card mode', onclick: () => { location.hash = hash; } },
-    el('span', { class: 'icon', 'aria-hidden': 'true' }, icon), el('strong', {}, name), el('span', { class: 'muted' }, blurb));
+  const t = topic ? `topic=${encodeURIComponent(topic)}` : '';
+  const go = (mode, extra = '') => { location.hash = `#/deck/${id}/${mode}` + ([t, extra].filter(Boolean).length ? '?' + [t, extra].filter(Boolean).join('&') : ''); };
+  const count = (...types) => qs.filter((q) => types.includes(typeOf(q))).length;
+  const mode = (icon, name, blurb, onclick, cls = '') => el('button', { class: `mode ${cls}`, onclick },
+    el('span', { class: 'icon', 'aria-hidden': 'true' }, icon), el('strong', {}, name), el('span', {}, blurb));
+  const bestQuiz = store.get(`best:${deck.id}`, null);
+  const bestMatch = store.get(`match:${deck.id}`, null);
 
   render(
-    el('a', { class: 'back', href: '#/' }, '← All decks'),
-    el('h1', {}, deck.title),
-    deck.description && el('p', { class: 'muted' }, deck.description),
+    el('a', { class: 'link', href: '#/' }, '← All classes'),
+    el('section', { class: 'deck-head' },
+      deck.course && el('span', { class: 'qtype' }, deck.course),
+      el('h1', {}, deck.title.replace(/^.*?:\s*/, '')),
+      deck.description && el('p', { class: 'muted' }, deck.description)),
     topics.length > 1 && el('div', { class: 'chips', role: 'group', 'aria-label': 'Filter by topic' },
-      [['', 'Everything'], ...topics.map((t) => [t, t])].map(([value, label]) =>
+      [['', 'Everything'], ...topics.map((x) => [x, x])].map(([value, label]) =>
         el('button', {
           class: 'chip', 'aria-pressed': String(value === topic),
           onclick: () => { location.hash = `#/deck/${id}` + (value ? `?topic=${encodeURIComponent(value)}` : ''); },
         }, label))),
+    el('div', { style: 'height:18px' }),
+    el('button', { class: 'hero-play', onclick: () => go('quiz') },
+      el('div', {}, el('strong', {}, 'Quick play'), el('span', {}, `${Math.min(QUIZ_LENGTH, qs.length)} mixed problems${topic ? ` on ${topic}` : ''}`)),
+      el('span', { class: 'big-arrow', 'aria-hidden': 'true' }, '▶')),
+    el('div', { class: 'section-label' }, 'PICK A CHALLENGE'),
     el('div', { class: 'modes' },
-      mode('🃏', 'Flashcards', `Flip through ${filterTopic(deck.cards, topic).length} terms`, `#/deck/${id}/flash${q}`),
-      mode('❓', 'Quiz', `${Math.min(QUIZ_LENGTH, filterTopic(deck.questions, topic).length)} questions, incl. "what prints?"`, `#/deck/${id}/quiz${q}`),
-      mode('🔗', 'Match', `Pair ${MATCH_PAIRS} terms with definitions, against the clock`, `#/deck/${id}/match${q}`),
-      missed.length > 0 && mode('🔁', 'Review missed', `${missed.length} question${missed.length === 1 ? '' : 's'} you got wrong`, `#/deck/${id}/quiz?missed=1`)),
-    bestTag(deck) && el('div', { class: 'tags' }, bestTag(deck))
-  );
+      count('bug') > 0 && mode('🐞', 'Error hunt', `${count('bug')} programs with one broken line`, () => go('quiz', 'types=bug')),
+      count('output', 'trace') > 0 && mode('⌨️', 'Type it', `${count('output', 'trace')} problems, no choices to guess from`, () => go('quiz', 'types=output,trace')),
+      count('mc') > 0 && mode('🎯', 'Multiple choice', `${count('mc')} tricky picks`, () => go('quiz', 'types=mc')),
+      missed.length > 0 && mode('🔁', 'Fix mistakes', `${missed.length} you got wrong last time`, () => { location.hash = `#/deck/${id}/quiz?missed=1`; }, 'alert')),
+    el('div', { class: 'section-label' }, 'WARM UP'),
+    el('div', { class: 'modes' },
+      mode('🃏', 'Flashcards', `${filterTopic(deck.cards, topic).length} key terms`, () => go('flash')),
+      mode('🔗', 'Match', `Pair ${MATCH_PAIRS} terms against the clock`, () => go('match'))),
+    (bestQuiz != null || bestMatch != null) && el('div', { class: 'records' },
+      bestQuiz != null && el('span', { class: 'record' }, `🏆 Best quiz ${bestQuiz}%`),
+      bestMatch != null && el('span', { class: 'record' }, `⚡ Best match ${bestMatch.toFixed(1)}s`)));
+}
+
+function playbar(id, progress, right) {
+  const fill = el('i', { style: `width:${progress}%` });
+  return { bar: el('div', { class: 'playbar' }, el('a', { class: 'close', href: `#/deck/${id}`, 'aria-label': 'Quit to deck' }, '×'), el('div', { class: 'track', role: 'progressbar', 'aria-valuenow': Math.round(progress), 'aria-valuemin': 0, 'aria-valuemax': 100 }, fill), right), fill };
+}
+
+async function quizScreen(id, params) {
+  const deck = await loadDeck(id);
+  const reviewing = params.get('missed') === '1';
+  const types = (params.get('types') || '').split(',').filter(Boolean);
+  const missedIds = new Set(store.get(missedKey(deck), []));
+  let pool = reviewing ? deck.questions.filter((q) => missedIds.has(q.id)) : filterTopic(deck.questions, params.get('topic'));
+  if (types.length) pool = pool.filter((q) => types.includes(typeOf(q)));
+  const questions = (reviewing ? shuffle(pool) : pickMixed(pool, QUIZ_LENGTH))
+    .map((q) => (typeOf(q) === 'mc' ? { ...q, order: shuffle(q.choices) } : q));
+  if (!questions.length) {
+    return render(el('div', { class: 'empty' }, el('h1', {}, 'Nothing here yet'), el('p', { class: 'muted' }, 'No problems match this filter.'), el('a', { class: 'btn primary', href: `#/deck/${id}` }, 'Back to the deck')));
+  }
+
+  let i = 0, score = 0, combo = 0, bestCombo = 0, earned = 0;
+  const wrong = [];
+
+  const finish = () => {
+    const pct = Math.round((100 * score) / questions.length);
+    for (const q of questions) missedIds.delete(q.id);
+    for (const q of wrong) missedIds.add(q.id);
+    store.set(missedKey(deck), [...missedIds]);
+    if (!reviewing && !types.length && pct > store.get(`best:${deck.id}`, -1)) store.set(`best:${deck.id}`, pct);
+    if (pct === 100) confetti();
+    const again = () => quizScreen(id, params);
+
+    render(el('section', { class: 'results' },
+      el('h1', {}, pct === 100 ? 'Flawless.' : pct >= 80 ? 'Great run.' : pct >= 50 ? 'Getting there.' : 'Tough round.'),
+      el('div', { class: 'ring', style: `--p:${pct}` }, el('span', {}, `${pct}%`)),
+      el('div', { class: 'tally' },
+        el('div', {}, el('b', {}, `${score}/${questions.length}`), el('span', {}, 'correct')),
+        el('div', { class: 'gold' }, el('b', {}, `+${earned}`), el('span', {}, 'XP')),
+        el('div', {}, el('b', {}, bestCombo), el('span', {}, 'best combo'))),
+      wrong.length > 0 && el('div', { class: 'review' },
+        el('h2', {}, 'Worth another look'),
+        wrong.map((q) => el('article', {},
+          el('span', { class: 'qtype' }, TYPE_LABEL[typeOf(q)]),
+          el('p', {}, el('strong', {}, q.prompt)),
+          q.code && codeBlock(q.code),
+          el('p', {}, 'Answer: ', el('span', { class: 'ans' }, typeOf(q) === 'bug' ? `line ${q.answer}` : q.answer)),
+          el('p', { class: 'muted' }, q.explanation)))),
+      el('div', { class: 'actions' },
+        wrong.length > 0 && el('a', { class: 'btn primary', href: `#/deck/${id}/quiz?missed=1`, onclick: (e) => {
+          if (location.hash === `#/deck/${id}/quiz?missed=1`) { e.preventDefault(); again(); }
+        } }, `Fix my ${wrong.length} mistake${wrong.length === 1 ? '' : 's'}`),
+        el('button', { class: `btn ${wrong.length ? '' : 'primary'}`, onclick: again }, 'Play again'),
+        el('a', { class: 'link', href: `#/deck/${id}`, style: 'justify-content:center' }, 'Back to the deck'))));
+  };
+
+  const show = () => {
+    const q = questions[i];
+    const type = typeOf(q);
+    let response = null;
+    let checked = false;
+
+    const combLabel = el('span', { class: 'combo', 'aria-live': 'polite' }, combo >= 2 ? `🔥${combo}` : '');
+    const { bar, fill } = playbar(id, (100 * i) / questions.length, combLabel);
+    const action = el('button', { class: 'btn primary wide', disabled: true }, 'Check');
+    const verdict = el('div', { class: 'verdict', 'aria-live': 'polite' });
+    const dock = el('div', { class: 'dock' }, el('div', { class: 'dock-inner' }, verdict, action));
+    const setResponse = (v) => { response = v; action.disabled = v == null || String(v).trim() === ''; };
+
+    // --- answer UI per type ---
+    let body, lockUI, markUI, focusFirst, typeKey = () => {};
+    if (type === 'mc') {
+      const mono = q.code || q.order.some((c) => /[;"'\\(){}]/.test(c));
+      const buttons = q.order.map((c, n) => {
+        const b = el('button', { class: `choice${mono ? ' mono' : ''}`, 'data-value': c, 'aria-pressed': 'false' },
+          el('span', { class: 'key', 'aria-hidden': 'true' }, n + 1), el('span', { class: 'val' }, c));
+        b.addEventListener('click', () => select(n));
+        return b;
+      });
+      const select = (n) => {
+        if (checked) return;
+        buttons.forEach((b, k) => { b.classList.toggle('selected', k === n); b.setAttribute('aria-pressed', String(k === n)); });
+        setResponse(q.order[n]);
+      };
+      body = el('div', { class: 'choices' }, buttons);
+      lockUI = () => buttons.forEach((b) => { b.disabled = true; });
+      markUI = (ok) => buttons.forEach((b) => {
+        if (b.dataset.value === q.answer) b.classList.add('right');
+        else if (!ok && b.dataset.value === response) b.classList.add('wrong');
+        b.classList.remove('selected');
+      });
+      typeKey = (e) => { const n = Number(e.key); if (!checked && n >= 1 && n <= buttons.length) select(n - 1); };
+      focusFirst = () => {};
+    } else if (type === 'bug') {
+      const lines = q.code.split('\n').map((src, n) => {
+        const b = el('button', { class: 'line', 'aria-pressed': 'false', 'aria-label': `Line ${n + 1}: ${src}` },
+          el('span', { class: 'n', 'aria-hidden': 'true' }, n + 1), el('code', {}, highlight(src)));
+        b.addEventListener('click', () => select(n));
+        return b;
+      });
+      const select = (n) => {
+        if (checked) return;
+        lines.forEach((b, k) => { b.classList.toggle('selected', k === n); b.setAttribute('aria-pressed', String(k === n)); });
+        setResponse(n + 1);
+      };
+      body = el('div', { class: 'lines', role: 'group', 'aria-label': 'Program lines' }, lines);
+      lockUI = () => lines.forEach((b) => { b.disabled = true; });
+      markUI = (ok) => lines.forEach((b, k) => {
+        if (k + 1 === q.answer) b.classList.add('right');
+        else if (!ok && k + 1 === response) b.classList.add('wrong');
+        b.classList.remove('selected');
+      });
+      typeKey = (e) => { const n = Number(e.key); if (!checked && n >= 1 && n <= lines.length) select(n - 1); };
+      focusFirst = () => {};
+    } else {
+      const multi = type === 'output';
+      const input = multi
+        ? el('textarea', { class: 'typed', id: 'answer', rows: 3, spellcheck: 'false', autocapitalize: 'off', autocomplete: 'off', placeholder: 'Type the output…' })
+        : el('input', { class: 'typed', id: 'answer', type: 'text', spellcheck: 'false', autocapitalize: 'off', autocomplete: 'off', placeholder: 'Value…' });
+      input.addEventListener('input', () => setResponse(input.value));
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && (!multi || e.ctrlKey || e.metaKey)) { e.preventDefault(); e.stopPropagation(); if (!action.disabled) action.click(); }
+      });
+      body = el('div', { class: 'answer-box' },
+        el('label', { for: 'answer' }, multi ? 'Exact output (spaces and line breaks count)' : 'Your answer (exactly as Java would show it)'),
+        input,
+        el('span', { class: 'hint' }, multi ? el('span', {}, 'Enter makes a new line · ', el('kbd', {}, 'Ctrl'), ' + ', el('kbd', {}, 'Enter'), ' checks') : el('span', {}, el('kbd', {}, 'Enter'), ' checks')));
+      lockUI = () => { input.disabled = true; };
+      markUI = () => {};
+      focusFirst = () => input.focus({ preventScroll: true });
+    }
+
+    const check = () => {
+      checked = true;
+      const ok = checkAnswer(q, response);
+      lockUI();
+      markUI(ok);
+      let gain = 0;
+      if (ok) {
+        score++; combo++; bestCombo = Math.max(bestCombo, combo);
+        gain = xpFor(q) + (combo >= 3 ? 5 : 0);
+        earned += gain;
+        awardXP(gain);
+      } else { combo = 0; wrong.push(q); }
+      combLabel.textContent = combo >= 2 ? `🔥${combo}` : '';
+      fill.style.width = `${(100 * (i + 1)) / questions.length}%`;
+
+      const praise = ['Nice!', 'Nailed it.', 'Correct.', 'Sharp.', 'Exactly.'];
+      const showYours = !ok && (type === 'output' || type === 'trace');
+      verdict.replaceChildren(...[
+        el('strong', {}, ok ? praise[Math.floor(Math.random() * praise.length)] : 'Not quite.', ok && el('span', { class: 'gain' }, `+${gain} XP${combo >= 3 ? ' 🔥' : ''}`)),
+        showYours && el('div', { class: 'pair' },
+          el('div', { class: 'expected' }, el('small', {}, 'YOU TYPED'), normalizeOutput(response) || '(nothing)'),
+          el('div', { class: 'expected' }, el('small', {}, 'JAVA PRINTS'), q.answer)),
+        !ok && type === 'bug' && el('p', {}, el('strong', { style: 'font-size:1rem' }, `Line ${q.answer} is the broken one.`)),
+        el('p', {}, q.explanation)].filter(Boolean));
+      dock.classList.add(ok ? 'good' : 'bad');
+      action.className = `btn wide ${ok ? 'good' : 'bad'}`;
+      action.textContent = i + 1 < questions.length ? 'Continue' : 'See results';
+      action.disabled = false;
+      action.focus({ preventScroll: true });
+    };
+
+    action.addEventListener('click', () => {
+      if (!checked) return check();
+      i++;
+      i < questions.length ? show() : finish();
+    });
+
+    render(
+      bar,
+      el('div', {}, el('span', { class: 'qtype' }, TYPE_LABEL[type]), q.topic && el('span', { class: 'topic' }, ` · ${q.topic}`)),
+      el('h1', { class: 'prompt' }, q.prompt),
+      q.code && type !== 'bug' && codeBlock(q.code),
+      body,
+      dock);
+    onKey((e) => {
+      typeKey(e);
+      if (e.key === 'Enter' && !action.disabled && document.activeElement !== action && !['TEXTAREA', 'INPUT'].includes(document.activeElement?.tagName)) {
+        e.preventDefault(); action.click();
+      }
+    });
+    focusFirst();
+  };
+  show();
 }
 
 // Flashcards: "Again" puts the card back at the end of the pile.
@@ -132,37 +379,35 @@ async function flashScreen(id, params) {
   const pile = shuffle(filterTopic(deck.cards, params.get('topic')));
   const total = pile.length;
   let known = 0;
-  if (!total) return render(el('p', {}, 'No cards for this topic.'), el('a', { href: `#/deck/${id}` }, 'Back'));
+  if (!total) return render(el('div', { class: 'empty' }, el('h1', {}, 'No cards here'), el('a', { class: 'btn primary', href: `#/deck/${id}` }, 'Back to the deck')));
 
   const show = () => {
     if (!pile.length) {
-      return render(
-        el('h1', {}, 'Deck cleared 🎉'),
-        el('p', { class: 'muted' }, `You went through all ${total} cards.`),
-        el('div', { class: 'row' },
+      awardXP(10);
+      return render(el('section', { class: 'results' },
+        el('h1', {}, 'Deck cleared.'),
+        el('p', { class: 'muted' }, `All ${total} cards known. +10 XP`),
+        el('div', { class: 'actions' },
           el('button', { class: 'btn primary', onclick: () => flashScreen(id, params) }, 'Go again'),
-          el('a', { class: 'btn', href: `#/deck/${id}` }, 'Back to deck')));
+          el('a', { class: 'btn', href: `#/deck/${id}/quiz` }, 'Now try a quiz'),
+          el('a', { class: 'link', href: `#/deck/${id}`, style: 'justify-content:center' }, 'Back to the deck'))));
     }
     const card = pile[0];
     let flipped = false;
-    const flash = el('button', { class: 'flash', 'aria-label': 'Flip card' },
+    const flash = el('button', { class: 'flash', 'aria-label': `Flashcard: ${card.term}. Press to flip.` },
       el('div', { class: 'flash-inner' },
-        el('div', { class: 'face card' }, el('div', { class: 'term' }, card.term), el('span', { class: 'hint' }, 'Tap or press Space to flip')),
-        el('div', { class: 'face back card' }, el('div', { class: 'def' }, card.definition), card.topic && el('span', { class: 'hint' }, card.topic))));
+        el('div', { class: 'face' }, el('div', { class: 'term' }, card.term), el('span', { class: 'corner' }, 'Tap or press Space to flip')),
+        el('div', { class: 'face back' }, el('div', { class: 'def' }, card.definition), card.topic && el('span', { class: 'corner' }, card.topic))));
     const flip = () => { flipped = !flipped; flash.classList.toggle('flipped', flipped); };
     flash.addEventListener('click', flip);
     const again = () => { pile.push(pile.shift()); show(); };
     const gotIt = () => { pile.shift(); known++; show(); };
+    const { bar } = playbar(id, (100 * known) / total, el('span', { class: 'combo' }, `${known}/${total}`));
 
-    render(
-      el('a', { class: 'back', href: `#/deck/${id}` }, '← ' + deck.title),
-      el('div', { class: 'bar' }, el('span', {}, 'Flashcards'), el('span', {}, `${known} / ${total} known`)),
-      el('div', { class: 'progress' }, el('span', { style: `width:${(100 * known) / total}%` })),
-      flash,
-      el('div', { class: 'row' },
-        el('button', { class: 'btn', onclick: again }, 'Again (←)'),
-        el('span', { class: 'spacer' }),
-        el('button', { class: 'btn primary', onclick: gotIt }, 'Got it (→)')));
+    render(bar, flash,
+      el('div', { class: 'dock' }, el('div', { class: 'dock-inner pile' },
+        el('button', { class: 'btn', onclick: again }, '↺ Again'),
+        el('button', { class: 'btn primary', onclick: gotIt }, 'Got it ✓'))));
     onKey((e) => {
       if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); flip(); }
       else if (e.key === 'ArrowRight') gotIt();
@@ -172,112 +417,18 @@ async function flashScreen(id, params) {
   show();
 }
 
-async function quizScreen(id, params) {
-  const deck = await loadDeck(id);
-  const reviewing = params.get('missed') === '1';
-  const missedIds = new Set(store.get(missedKey(deck), []));
-  const pool = reviewing ? deck.questions.filter((q) => missedIds.has(q.id)) : filterTopic(deck.questions, params.get('topic'));
-  const questions = shuffle(pool).slice(0, reviewing ? pool.length : QUIZ_LENGTH)
-    .map((q) => ({ ...q, order: shuffle(q.choices) }));
-  if (!questions.length) return render(el('p', {}, 'Nothing to quiz here.'), el('a', { href: `#/deck/${id}` }, 'Back'));
-
-  let i = 0, score = 0, streak = 0, bestStreak = 0;
-  const wrong = [];
-
-  const finish = () => {
-    const pct = Math.round((100 * score) / questions.length);
-    // Update the missed list: right answers leave it, wrong ones join it.
-    for (const q of questions) missedIds.delete(q.id);
-    for (const q of wrong) missedIds.add(q.id);
-    store.set(missedKey(deck), [...missedIds]);
-    if (!reviewing && pct > store.get(`best:${deck.id}`, 0)) store.set(`best:${deck.id}`, pct);
-
-    render(
-      el('h1', {}, pct === 100 ? 'Perfect! 🏆' : pct >= 70 ? 'Nice work 👏' : 'Keep going 💪'),
-      el('div', { class: 'big' }, `${score} / ${questions.length}`),
-      el('p', { class: 'muted' }, `${pct}% · best streak ${bestStreak}`),
-      wrong.length > 0 && el('div', { class: 'card' },
-        el('strong', {}, 'Review these'),
-        el('ul', { class: 'missed' }, wrong.map((q) => el('li', {},
-          q.prompt, q.code && el('pre', {}, q.code),
-          el('div', {}, 'Answer: ', el('code', {}, q.answer)),
-          el('div', { class: 'muted' }, q.explanation))))),
-      el('div', { class: 'row' },
-        el('button', { class: 'btn primary', onclick: () => quizScreen(id, params) }, 'New quiz'),
-        wrong.length > 0 && el('a', { class: 'btn', href: `#/deck/${id}/quiz?missed=1`, onclick: (e) => {
-          // Same hash as now when already reviewing: hashchange will not fire, so re-render directly.
-          if (location.hash === `#/deck/${id}/quiz?missed=1`) { e.preventDefault(); quizScreen(id, params); }
-        } }, 'Retry missed'),
-        el('a', { class: 'btn', href: `#/deck/${id}` }, 'Back to deck')));
-  };
-
-  const show = () => {
-    const q = questions[i];
-    let answered = false;
-    // Short, non-code choices read better in the normal font.
-    const plain = !q.code && q.order.every((c) => !/[\n"'\\;(){}+]/.test(c));
-    const next = el('button', { class: 'btn primary', disabled: true, onclick: () => { i++; i < questions.length ? show() : finish(); } },
-      i + 1 < questions.length ? 'Next (Enter)' : 'See results');
-    const feedback = el('div', { 'aria-live': 'polite' });
-
-    const pick = (choice, btn) => {
-      if (answered) return;
-      answered = true;
-      const ok = checkAnswer(q, choice);
-      if (ok) { score++; streak++; bestStreak = Math.max(bestStreak, streak); } else { streak = 0; wrong.push(q); }
-      for (const b of buttons) {
-        b.disabled = true;
-        if (b.dataset.value === q.answer) b.classList.add('right');
-      }
-      if (!ok) btn.classList.add('wrong');
-      feedback.replaceChildren(el('div', { class: `feedback ${ok ? 'good' : 'bad'}` },
-        el('strong', {}, ok ? (streak >= 3 ? `Correct, ${streak} in a row 🔥` : 'Correct') : 'Not quite'),
-        q.explanation));
-      next.disabled = false;
-      next.focus();
-    };
-
-    const buttons = q.order.map((c, n) => {
-      const b = el('button', { class: `choice${plain ? ' plain' : ''}`, 'data-value': c },
-        el('span', { class: 'key', 'aria-hidden': 'true' }, n + 1), el('span', { class: 'val' }, c));
-      b.addEventListener('click', () => pick(c, b));
-      return b;
-    });
-
-    render(
-      el('a', { class: 'back', href: `#/deck/${id}` }, '← ' + deck.title),
-      el('div', { class: 'bar' },
-        el('span', {}, `${reviewing ? 'Review' : 'Quiz'} · ${i + 1} of ${questions.length}`),
-        el('span', {}, `Score ${score}${streak >= 2 ? ` · 🔥 ${streak}` : ''}`)),
-      el('div', { class: 'progress' }, el('span', { style: `width:${(100 * i) / questions.length}%` })),
-      el('div', { class: 'card' },
-        q.topic && el('div', { class: 'tag', style: 'display:inline-block;margin-bottom:8px' }, q.topic),
-        el('div', { style: 'white-space:pre-wrap;font-weight:600' }, q.prompt),
-        q.code && el('pre', {}, q.code),
-        el('div', { class: 'choices' }, buttons),
-        feedback),
-      el('div', { class: 'row' }, el('span', { class: 'spacer' }), next));
-
-    onKey((e) => {
-      const n = Number(e.key);
-      if (!answered && n >= 1 && n <= buttons.length) pick(q.order[n - 1], buttons[n - 1]);
-      else if (answered && e.key === 'Enter' && document.activeElement !== next) { e.preventDefault(); next.click(); }
-    });
-  };
-  show();
-}
-
 async function matchScreen(id, params) {
   const deck = await loadDeck(id);
   const cards = filterTopic(deck.cards, params.get('topic'));
-  if (cards.length < 2) return render(el('p', {}, 'Not enough cards for this topic.'), el('a', { href: `#/deck/${id}` }, 'Back'));
+  if (cards.length < 2) return render(el('div', { class: 'empty' }, el('h1', {}, 'Not enough cards'), el('a', { class: 'btn primary', href: `#/deck/${id}` }, 'Back to the deck')));
 
   const { terms, definitions } = buildMatchRound(cards, MATCH_PAIRS);
   const pairs = terms.length;
   const start = performance.now();
   let selected = null, matched = 0, misses = 0;
-  const clock = el('span', {}, '0.0s');
+  const clock = el('span', { class: 'timer' }, '0.0s');
   const timer = setInterval(() => { clock.textContent = ((performance.now() - start) / 1000).toFixed(1) + 's'; }, 100);
+  const { bar, fill } = playbar(id, 0, clock);
 
   const tile = (card, side) => {
     const b = el('button', { class: `tile ${side}`, 'data-id': card.id, 'data-side': side }, side === 'term' ? card.term : card.definition);
@@ -298,7 +449,8 @@ async function matchScreen(id, params) {
     a.classList.remove('selected');
     if (a.dataset.id === b.dataset.id) {
       for (const t of [a, b]) { t.classList.add('done'); t.disabled = true; }
-      if (++matched === pairs) done();
+      fill.style.width = `${(100 * ++matched) / pairs}%`;
+      if (matched === pairs) setTimeout(done, 350);
     } else {
       misses++;
       for (const t of [a, b]) t.classList.add('shake');
@@ -314,22 +466,28 @@ async function matchScreen(id, params) {
     const best = store.get(key, null);
     const record = best == null || final < best;
     if (record) store.set(key, final);
-    render(
-      el('h1', {}, record ? 'New best time! ⚡' : 'All matched ✅'),
-      el('div', { class: 'big' }, final.toFixed(1) + 's'),
-      el('p', { class: 'muted' }, `${secs.toFixed(1)}s + ${misses} miss${misses === 1 ? '' : 'es'} × 2s${best != null && !record ? ` · best ${best.toFixed(1)}s` : ''}`),
-      el('div', { class: 'row' },
+    awardXP(20);
+    if (record && misses === 0) confetti();
+    render(el('section', { class: 'results' },
+      el('h1', {}, record ? 'New best time.' : 'All matched.'),
+      el('div', { class: 'ring', style: `--p:${Math.round((100 * pairs) / (pairs + misses))}` }, el('span', {}, final.toFixed(1) + 's')),
+      el('div', { class: 'tally' },
+        el('div', {}, el('b', {}, secs.toFixed(1)), el('span', {}, 'seconds')),
+        el('div', {}, el('b', {}, misses), el('span', {}, `miss${misses === 1 ? '' : 'es'} (+2s)`)),
+        el('div', { class: 'gold' }, el('b', {}, '+20'), el('span', {}, 'XP'))),
+      best != null && !record && el('p', { class: 'muted' }, `Your best is ${best.toFixed(1)}s.`),
+      el('div', { class: 'actions' },
         el('button', { class: 'btn primary', onclick: () => matchScreen(id, params) }, 'Play again'),
-        el('a', { class: 'btn', href: `#/deck/${id}` }, 'Back to deck')));
+        el('a', { class: 'link', href: `#/deck/${id}`, style: 'justify-content:center' }, 'Back to the deck'))));
   };
 
-  render(
-    el('a', { class: 'back', href: `#/deck/${id}` }, '← ' + deck.title),
-    el('div', { class: 'bar' }, el('span', {}, 'Match: tap a term, then its definition'), clock),
+  render(bar,
+    el('p', { class: 'qtype', style: 'margin-bottom:12px' }, '🔗 Tap a term, then its definition'),
     el('div', { class: 'match' },
       el('div', { class: 'col' }, terms.map((c) => tile(c, 'term'))),
       el('div', { class: 'col' }, definitions.map((c) => tile(c, 'def')))));
-  cleanup = () => clearInterval(timer);
+  const prev = cleanup;
+  cleanup = () => { prev(); clearInterval(timer); };
 }
 
 // ---------- router ----------
@@ -337,6 +495,7 @@ async function route() {
   const [path, query = ''] = location.hash.replace(/^#/, '').split('?');
   const params = new URLSearchParams(query);
   const parts = path.split('/').filter(Boolean).map(decodeURIComponent);
+  if (!app.firstElementChild || app.querySelector('noscript')) render(el('div', { class: 'skeleton', 'aria-label': 'Loading' }));
   try {
     if (parts[0] === 'deck' && parts[1]) {
       const screen = { flash: flashScreen, quiz: quizScreen, match: matchScreen }[parts[2]] || deckScreen;
@@ -345,9 +504,10 @@ async function route() {
       await homeScreen();
     }
   } catch (err) {
-    render(el('h1', {}, 'Something went wrong'), el('p', {}, err.message), el('a', { href: '#/' }, 'Home'));
+    render(el('div', { class: 'empty' }, el('h1', {}, 'That didn’t load'), el('p', { class: 'muted' }, err.message), el('a', { class: 'btn primary', href: '#/' }, 'Go home')));
   }
 }
 
+renderStats();
 window.addEventListener('hashchange', route);
 route();

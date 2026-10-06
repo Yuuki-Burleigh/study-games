@@ -2,15 +2,33 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Study Games</title>
+  <meta name="description" content="Personal study games built from my class notes: quizzes, error hunts, flashcards and matching.">
   <meta name="robots" content="noindex">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎯</text></svg>">
+  <meta name="theme-color" content="#fff7ec" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#1b1612" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect x='4' y='8' width='56' height='52' rx='14' fill='%23d9531a'/><rect x='4' y='4' width='56' height='50' rx='14' fill='%23ff6b2c'/><path d='M22 22l-8 8 8 8M42 22l8 8-8 8' stroke='white' stroke-width='6' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap">
   <link rel="stylesheet" href="./style.css">
 </head>
 <body>
+  <a class="skip" href="#app">Skip to content</a>
   <header class="top">
-    <a class="brand" href="#/">Study Games</a>
+    <a class="brand" href="#/" aria-label="Study Games home">
+      <span class="logo" aria-hidden="true">&lt;/&gt;</span>
+      <span>Study Games</span>
+    </a>
+    <div class="stats" aria-label="Your progress">
+      <span class="stat streak" id="streak" title="Days in a row">🔥 <b>0</b></span>
+      <span class="stat xp" id="xp" title="Experience points">
+        <span class="lv">Lv <b>1</b></span>
+        <span class="xpbar"><i></i></span>
+        <span class="xpnum"><b>0</b> XP</span>
+      </span>
+    </div>
   </header>
   <main id="app" tabindex="-1">
     <noscript>This site needs JavaScript.</noscript>
