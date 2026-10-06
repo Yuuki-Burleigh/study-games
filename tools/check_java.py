@@ -2,10 +2,15 @@
 """Run every Java problem in the decks and fail if a stored answer disagrees with real Java.
 
 Checks: output (exact stdout), trace (prints `var` after the code), bug (the line javac or the JVM blames),
-and mc questions marked "run": true (stdout must equal the answer). Needs javac and java on PATH.
+mc marked "run": true (stdout must equal the answer) and mc marked "check": "compiles" (only the answer compiles).
+If a deck has "generators", every template is sampled (SAMPLES seeds each, default 20) and checked the same way,
+so a template whose answer formula disagrees with Java for some random values fails here.
+Needs javac, java and node on PATH.
 Usage: python3 tools/check_java.py [deck.json ...]   (default: every deck in decks/index.json)
+       SAMPLES=100 FIRST_SEED=5000 python3 tools/check_java.py   (sample more / different seeds)
 """
 import json, os, re, subprocess, sys, tempfile
+from concurrent.futures import ThreadPoolExecutor
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -23,28 +28,46 @@ def java(body):
         return "runtime", (int(m.group(1)) - 1 if m else None), r.stdout
     return "ok", None, r.stdout
 
+def verdict(q):
+    """None if q isn't machine-checkable, else (ok, what_java_said)."""
+    t = q.get("type", "mc")
+    if t == "mc" and q.get("check") == "compiles":
+        compiles = [c for c in q["choices"] if java(c)[0] == "ok"]
+        ok, got = compiles == [q["answer"]], f"compiling choices: {compiles}"
+    elif t == "output" or (t == "mc" and q.get("run")):
+        kind, _, out = java(q["code"])
+        ok, got = kind == "ok" and out.rstrip("\n") == q["answer"], out.rstrip("\n")
+    elif t == "trace":
+        kind, _, out = java(q["code"] + f"\nSystem.out.print({q['var']});")
+        ok, got = kind == "ok" and out == q["answer"], out
+    elif t == "bug":
+        kind, line, _ = java(q["code"])
+        runtime = "crash" in q["prompt"].lower() or "runs" in q["prompt"].lower()
+        ok, got = kind == ("runtime" if runtime else "compile") and line == q["answer"], f"{kind} at line {line}"
+    else:
+        return None
+    return ok, got
+
 def check(path):
     deck = json.load(open(path))
+    qs = list(deck["questions"])
+    generated = 0
+    if deck.get("generators"):
+        n, first = os.environ.get("SAMPLES", "20"), os.environ.get("FIRST_SEED", "1")
+        inst = json.loads(subprocess.run(["node", os.path.join(ROOT, "tools/sample.mjs"), path, n, first],
+                                         capture_output=True, text=True, check=True).stdout)
+        generated = len(inst)
+        qs += inst
     bad = checked = 0
-    for q in deck["questions"]:
-        t = q.get("type", "mc")
-        if t == "output" or (t == "mc" and q.get("run")):
-            kind, _, out = java(q["code"])
-            ok, got = kind == "ok" and out.rstrip("\n") == q["answer"], out.rstrip("\n")
-        elif t == "trace":
-            kind, _, out = java(q["code"] + f"\nSystem.out.print({q['var']});")
-            ok, got = kind == "ok" and out == q["answer"], out
-        elif t == "bug":
-            kind, line, _ = java(q["code"])
-            runtime = "crash" in q["prompt"].lower() or "runs" in q["prompt"].lower()
-            ok, got = kind == ("runtime" if runtime else "compile") and line == q["answer"], f"{kind} at line {line}"
-        else:
-            continue
-        checked += 1
-        if not ok:
-            bad += 1
-            print(f"  WRONG {q['id']}: deck says {q['answer']!r}, Java says {got!r}")
-    print(f"{os.path.relpath(path, ROOT)}: {checked} checked, {bad} wrong")
+    with ThreadPoolExecutor(max_workers=os.cpu_count() or 4) as pool:
+        for q, v in zip(qs, pool.map(verdict, qs)):
+            if v is None:
+                continue
+            checked += 1
+            if not v[0]:
+                bad += 1
+                print(f"  WRONG {q['id']}: deck says {q['answer']!r}, Java says {v[1]!r}")
+    print(f"{os.path.relpath(path, ROOT)}: {checked} checked ({generated} generated from templates), {bad} wrong")
     return bad
 
 if __name__ == "__main__":

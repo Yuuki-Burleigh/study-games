@@ -4,7 +4,9 @@ My personal study site. Each class topic is a deck of **original problems** writ
 (my notes set the scope; they aren't the questions).
 
 - **Quick play**: 10 problems mixing four formats: multiple choice, type the exact output, trace a variable,
-  and find the broken line.
+  and find the broken line. Half are hand-written, half freshly generated.
+- **Endless practice**: problems generated from templates with random values (numbers, names, words), so you can keep
+  going without repeats. Every template's answer logic is checked against real Java in CI.
 - **Error hunt / Type it / Multiple choice**: drill one format. **Fix mistakes** replays what I got wrong.
 - **Flashcards** and **Match** (pair 6 terms against the clock) to warm up.
 
@@ -20,7 +22,8 @@ problems, checks every answer against real Java, and publishes. Details in `CLAU
 ```
 python3 -m http.server 8000      # then open http://localhost:8000
 npm test                         # deck format + game logic
-python3 tools/check_java.py      # every answer vs real Java
+python3 tools/check_java.py      # every answer (incl. sampled template problems) vs real Java
+node tools/sample.mjs decks/cs209-java-basics.json 2   # peek at generated problems
 ```
 
 No build step and no dependencies. GitHub Pages serves the files as they are, after CI passes both checks.

@@ -1,3 +1,4 @@
+import { instantiate, newSeed } from './gen-kit.js';
 import { shuffle, pickMixed, checkAnswer, buildMatchRound, validateDeck, xpFor, nextStreak, normalizeOutput } from './game.js';
 
 const app = document.getElementById('app');
@@ -112,6 +113,7 @@ async function loadDeck(id) {
   const deck = await res.json();
   const errors = validateDeck(deck);
   if (errors.length) throw new Error(`${entry.file} is invalid: ${errors.join('; ')}`);
+  deck.templates = deck.generators ? (await import('./' + deck.generators)).default : [];
   cache.set(id, deck);
   return deck;
 }
@@ -120,6 +122,22 @@ const typeOf = (q) => q.type || 'mc';
 const topicsOf = (items) => [...new Set(items.map((x) => x.topic).filter(Boolean))];
 const filterTopic = (items, topic) => (topic ? items.filter((x) => x.topic === topic) : items);
 const missedKey = (deck) => `missed:${deck.id}`;
+
+// Generated problems: a random template (matching the filters) instantiated from a random seed.
+// Their ids are "<template>#<seed>", so a missed one can be rebuilt exactly later.
+const templatesFor = (deck, topic, types) => deck.templates.filter((t) => (!topic || t.topic === topic) && (!types.length || types.includes(t.type)));
+function generateBatch(deck, topic, types, n) {
+  // Pick a format first, then a template within it, so formats with more templates don't crowd out the rest.
+  const byType = Object.values(Object.groupBy(templatesFor(deck, topic, types), (t) => t.type));
+  const any = (arr) => arr[Math.floor(Math.random() * arr.length)];
+  return byType.length ? Array.from({ length: n }, () => instantiate(any(any(byType)), newSeed())) : [];
+}
+function questionById(deck, id) {
+  const [tid, seed] = id.split('#');
+  if (seed === undefined) return deck.questions.find((q) => q.id === id);
+  const t = deck.templates.find((x) => x.id === tid);
+  return t && instantiate(t, Number(seed));
+}
 const TYPE_LABEL = { mc: '🎯 Pick one', output: '⌨️ Type the output', trace: '🔍 Trace it', bug: '🐞 Find the bug' };
 
 // ---------- screens ----------
@@ -139,6 +157,7 @@ async function homeScreen() {
           d.description && el('p', { class: 'muted' }, d.description),
           el('div', { class: 'meta' },
             el('span', {}, `🧩 ${d.questions.length} problems`),
+            d.templates.length > 0 && el('span', {}, `♾️ endless practice`),
             el('span', {}, `🃏 ${d.cards.length} cards`),
             store.get(`best:${d.id}`, null) != null && el('span', {}, `🏆 best ${store.get(`best:${d.id}`)}%`)),
           el('span', { class: 'go', 'aria-hidden': 'true' }, '→')))));
@@ -149,10 +168,11 @@ async function deckScreen(id, params) {
   const topic = params.get('topic') || '';
   const topics = topicsOf([...deck.cards, ...deck.questions]);
   const qs = filterTopic(deck.questions, topic);
-  const missed = store.get(missedKey(deck), []).filter((qid) => deck.questions.some((q) => q.id === qid));
+  const missed = store.get(missedKey(deck), []).filter((qid) => questionById(deck, qid));
   const t = topic ? `topic=${encodeURIComponent(topic)}` : '';
   const go = (mode, extra = '') => { location.hash = `#/deck/${id}/${mode}` + ([t, extra].filter(Boolean).length ? '?' + [t, extra].filter(Boolean).join('&') : ''); };
   const count = (...types) => qs.filter((q) => types.includes(typeOf(q))).length;
+  const plus = (...types) => (templatesFor(deck, topic, types).length ? ' + fresh ones' : '');
   const mode = (icon, name, blurb, onclick, cls = '') => el('button', { class: `mode ${cls}`, onclick },
     el('span', { class: 'icon', 'aria-hidden': 'true' }, icon), el('strong', {}, name), el('span', {}, blurb));
   const bestQuiz = store.get(`best:${deck.id}`, null);
@@ -174,11 +194,14 @@ async function deckScreen(id, params) {
     el('button', { class: 'hero-play', onclick: () => go('quiz') },
       el('div', {}, el('strong', {}, 'Quick play'), el('span', {}, `${Math.min(QUIZ_LENGTH, qs.length)} mixed problems${topic ? ` on ${topic}` : ''}`)),
       el('span', { class: 'big-arrow', 'aria-hidden': 'true' }, '▶')),
+    templatesFor(deck, topic, []).length > 0 && el('button', { class: 'hero-play endless', onclick: () => go('quiz', 'endless=1') },
+      el('div', {}, el('strong', {}, 'Endless practice'), el('span', {}, `Fresh problems from ${templatesFor(deck, topic, []).length} templates with random values. Stop whenever.`)),
+      el('span', { class: 'big-arrow', 'aria-hidden': 'true' }, '∞')),
     el('div', { class: 'section-label' }, 'PICK A CHALLENGE'),
     el('div', { class: 'modes' },
-      count('bug') > 0 && mode('🐞', 'Error hunt', `${count('bug')} programs with one broken line`, () => go('quiz', 'types=bug')),
-      count('output', 'trace') > 0 && mode('⌨️', 'Type it', `${count('output', 'trace')} problems, no choices to guess from`, () => go('quiz', 'types=output,trace')),
-      count('mc') > 0 && mode('🎯', 'Multiple choice', `${count('mc')} tricky picks`, () => go('quiz', 'types=mc')),
+      count('bug') > 0 && mode('🐞', 'Error hunt', `${count('bug')} programs with one broken line${plus('bug')}`, () => go('quiz', 'types=bug')),
+      count('output', 'trace') > 0 && mode('⌨️', 'Type it', `${count('output', 'trace')} problems${plus('output', 'trace')}, no choices to guess from`, () => go('quiz', 'types=output,trace')),
+      count('mc') > 0 && mode('🎯', 'Multiple choice', `${count('mc')} tricky picks${plus('mc')}`, () => go('quiz', 'types=mc')),
       missed.length > 0 && mode('🔁', 'Fix mistakes', `${missed.length} you got wrong last time`, () => { location.hash = `#/deck/${id}/quiz?missed=1`; }, 'alert')),
     el('div', { class: 'section-label' }, 'WARM UP'),
     el('div', { class: 'modes' },
@@ -197,30 +220,45 @@ function playbar(id, progress, right) {
 async function quizScreen(id, params) {
   const deck = await loadDeck(id);
   const reviewing = params.get('missed') === '1';
+  const endless = params.get('endless') === '1';
+  const topic = params.get('topic') || '';
   const types = (params.get('types') || '').split(',').filter(Boolean);
   const missedIds = new Set(store.get(missedKey(deck), []));
-  let pool = reviewing ? deck.questions.filter((q) => missedIds.has(q.id)) : filterTopic(deck.questions, params.get('topic'));
-  if (types.length) pool = pool.filter((q) => types.includes(typeOf(q)));
-  const questions = (reviewing ? shuffle(pool) : pickMixed(pool, QUIZ_LENGTH))
-    .map((q) => (typeOf(q) === 'mc' ? { ...q, order: shuffle(q.choices) } : q));
+  let pool = reviewing ? [...missedIds].map((qid) => questionById(deck, qid)).filter(Boolean) : filterTopic(deck.questions, topic);
+  if (types.length && !reviewing) pool = pool.filter((q) => types.includes(typeOf(q)));
+  const prep = (q) => (typeOf(q) === 'mc' ? { ...q, order: shuffle(q.choices) } : q);
+  // Endless: mostly generated, with a hand-written problem mixed in now and then.
+  const nextEndless = () => (Math.random() < 0.75 || !pool.length ? generateBatch(deck, topic, types, 1)[0] : shuffle(pool)[0]);
+  let questions;
+  if (reviewing) questions = shuffle(pool);
+  else if (endless) questions = [nextEndless()].filter(Boolean);
+  else {
+    // Half hand-written, half freshly generated (when the deck has templates), spread across formats.
+    const gen = pickMixed(generateBatch(deck, topic, types, 40), QUIZ_LENGTH / 2);
+    questions = shuffle([...pickMixed(pool, QUIZ_LENGTH - gen.length), ...gen]);
+  }
+  questions = questions.map(prep);
   if (!questions.length) {
     return render(el('div', { class: 'empty' }, el('h1', {}, 'Nothing here yet'), el('p', { class: 'muted' }, 'No problems match this filter.'), el('a', { class: 'btn primary', href: `#/deck/${id}` }, 'Back to the deck')));
   }
 
-  let i = 0, score = 0, combo = 0, bestCombo = 0, earned = 0;
+  let i = 0, score = 0, combo = 0, bestCombo = 0, earned = 0, answered = 0;
   const wrong = [];
 
   const finish = () => {
+    if (!answered) { location.hash = `#/deck/${id}`; return; }
+    questions = questions.slice(0, answered);
     const pct = Math.round((100 * score) / questions.length);
     for (const q of questions) missedIds.delete(q.id);
     for (const q of wrong) missedIds.add(q.id);
     store.set(missedKey(deck), [...missedIds]);
-    if (!reviewing && !types.length && pct > store.get(`best:${deck.id}`, -1)) store.set(`best:${deck.id}`, pct);
+    if (!reviewing && !endless && !types.length && pct > store.get(`best:${deck.id}`, -1)) store.set(`best:${deck.id}`, pct);
     if (pct === 100) confetti();
     const again = () => quizScreen(id, params);
 
     render(el('section', { class: 'results' },
       el('h1', {}, pct === 100 ? 'Flawless.' : pct >= 80 ? 'Great run.' : pct >= 50 ? 'Getting there.' : 'Tough round.'),
+      endless && el('p', { class: 'muted' }, `Endless session: ${questions.length} problems`),
       el('div', { class: 'ring', style: `--p:${pct}` }, el('span', {}, `${pct}%`)),
       el('div', { class: 'tally' },
         el('div', {}, el('b', {}, `${score}/${questions.length}`), el('span', {}, 'correct')),
@@ -238,7 +276,7 @@ async function quizScreen(id, params) {
         wrong.length > 0 && el('a', { class: 'btn primary', href: `#/deck/${id}/quiz?missed=1`, onclick: (e) => {
           if (location.hash === `#/deck/${id}/quiz?missed=1`) { e.preventDefault(); again(); }
         } }, `Fix my ${wrong.length} mistake${wrong.length === 1 ? '' : 's'}`),
-        el('button', { class: `btn ${wrong.length ? '' : 'primary'}`, onclick: again }, 'Play again'),
+        el('button', { class: `btn ${wrong.length ? '' : 'primary'}`, onclick: again }, endless ? 'Keep practicing' : 'Play again'),
         el('a', { class: 'link', href: `#/deck/${id}`, style: 'justify-content:center' }, 'Back to the deck'))));
   };
 
@@ -249,7 +287,10 @@ async function quizScreen(id, params) {
     let checked = false;
 
     const combLabel = el('span', { class: 'combo', 'aria-live': 'polite' }, combo >= 2 ? `🔥${combo}` : '');
-    const { bar, fill } = playbar(id, (100 * i) / questions.length, combLabel);
+    // Endless has no end, so the bar fills toward the next 10 answered.
+    const progressAt = (n) => (endless ? (100 * (n % 10 || (n ? 10 : 0))) / 10 : (100 * n) / questions.length);
+    const { bar, fill } = playbar(id, progressAt(i), combLabel);
+    if (endless) bar.append(el('button', { class: 'btn end', onclick: finish }, `Done (${score}/${answered})`));
     const action = el('button', { class: 'btn primary wide', disabled: true }, 'Check');
     const verdict = el('div', { class: 'verdict', 'aria-live': 'polite' });
     const dock = el('div', { class: 'dock' }, el('div', { class: 'dock-inner' }, verdict, action));
@@ -323,6 +364,7 @@ async function quizScreen(id, params) {
       const ok = checkAnswer(q, response);
       lockUI();
       markUI(ok);
+      answered++;
       let gain = 0;
       if (ok) {
         score++; combo++; bestCombo = Math.max(bestCombo, combo);
@@ -331,7 +373,8 @@ async function quizScreen(id, params) {
         awardXP(gain);
       } else { combo = 0; wrong.push(q); }
       combLabel.textContent = combo >= 2 ? `🔥${combo}` : '';
-      fill.style.width = `${(100 * (i + 1)) / questions.length}%`;
+      fill.style.width = `${progressAt(i + 1)}%`;
+      if (endless) { bar.querySelector('.end').textContent = `Done (${score}/${answered})`; questions.push(prep(nextEndless())); }
 
       const praise = ['Nice!', 'Nailed it.', 'Correct.', 'Sharp.', 'Exactly.'];
       const showYours = !ok && (type === 'output' || type === 'trace');
@@ -345,6 +388,7 @@ async function quizScreen(id, params) {
       dock.classList.add(ok ? 'good' : 'bad');
       action.className = `btn wide ${ok ? 'good' : 'bad'}`;
       action.textContent = i + 1 < questions.length ? 'Continue' : 'See results';
+      if (endless && answered % 10 === 0) verdict.append(el('p', { class: 'milestone' }, `${answered} done, ${score} right. Keep going or tap Done.`));
       action.disabled = false;
       action.focus({ preventScroll: true });
     };
@@ -357,7 +401,8 @@ async function quizScreen(id, params) {
 
     render(
       bar,
-      el('div', {}, el('span', { class: 'qtype' }, TYPE_LABEL[type]), q.topic && el('span', { class: 'topic' }, ` · ${q.topic}`)),
+      el('div', {}, el('span', { class: 'qtype' }, TYPE_LABEL[type]), q.topic && el('span', { class: 'topic' }, ` · ${q.topic}`),
+        q.generated && el('span', { class: 'fresh', title: 'Generated from a template with random values' }, 'fresh')),
       el('h1', { class: 'prompt' }, q.prompt),
       q.code && type !== 'bug' && codeBlock(q.code),
       body,

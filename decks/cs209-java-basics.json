@@ -4,6 +4,7 @@
  "course": "CS 209",
  "description": "How Java runs, printing and concatenation, escape sequences, variables, types and division. Covers lectures 9-24 through 10-1.",
  "scope": "courses/cs209.md",
+ "generators": "generators/cs209-java-basics.js",
  "cards": [
   {
    "id": "jvm",
@@ -340,7 +341,8 @@
     "boolean b = 0;"
    ],
    "answer": "double d = 4;",
-   "explanation": "A whole number fits in a double (it becomes 4.0). 4.0 can't go into an int, \"x\" is a String, not a char, and a boolean is only true or false."
+   "explanation": "A whole number fits in a double (it becomes 4.0). 4.0 can't go into an int, \"x\" is a String, not a char, and a boolean is only true or false.",
+   "check": "compiles"
   },
   {
    "type": "mc",
@@ -729,6 +731,397 @@
    "code": "int x = 3;\nint y = x * 2;\nSystem.out.println(X + y);",
    "answer": 3,
    "explanation": "X and x are different names in Java. X was never declared, so the compiler says \"cannot find symbol\"."
+  },
+  {
+   "type": "mc",
+   "id": "m-javac",
+   "topic": "How Java runs",
+   "prompt": "Which tool turns Welcome.java into Welcome.class?",
+   "choices": [
+    "javac, the compiler (part of the JDK)",
+    "The JVM",
+    "The JRE",
+    "The operating system"
+   ],
+   "answer": "javac, the compiler (part of the JDK)",
+   "explanation": "javac does stage 1 (source → bytecode). The JVM only does stage 2: running the bytecode."
+  },
+  {
+   "type": "mc",
+   "id": "m-which-runtime",
+   "topic": "Finding errors",
+   "prompt": "Which of these is a RUNTIME error rather than a compile-time error?",
+   "choices": [
+    "Dividing an int by a variable that holds 0",
+    "A missing semicolon",
+    "int x = 2.5;",
+    "Using a variable that was never declared"
+   ],
+   "answer": "Dividing an int by a variable that holds 0",
+   "explanation": "The compiler can't know what value a variable will hold, so int division by a zero variable only fails while running. The other three are caught before the program runs."
+  },
+  {
+   "type": "mc",
+   "id": "m-static",
+   "topic": "How Java runs",
+   "prompt": "Why is main declared static?",
+   "choices": [
+    "So the JVM can call it without creating an object first",
+    "So it runs faster",
+    "So it can't be changed",
+    "So it returns nothing"
+   ],
+   "answer": "So the JVM can call it without creating an object first",
+   "explanation": "static means the method belongs to the class itself. Returning nothing is what void means."
+  },
+  {
+   "type": "mc",
+   "id": "m-args",
+   "topic": "How Java runs",
+   "prompt": "In main(String[] args), what is args?",
+   "choices": [
+    "The command-line arguments, as an array of Strings",
+    "The program's return value",
+    "The name of the class",
+    "A list of the variables in main"
+   ],
+   "answer": "The command-line arguments, as an array of Strings",
+   "explanation": "The parameters go inside the ( ). String[] means an array of Strings, which holds whatever was typed after the program name."
+  },
+  {
+   "type": "mc",
+   "id": "m-char7",
+   "topic": "Variables & types",
+   "prompt": "What does this print?",
+   "choices": [
+    "56",
+    "71",
+    "8",
+    "7 1"
+   ],
+   "answer": "56",
+   "explanation": "'7' is a char whose code is 55, not the number 7. char + int is math on the code: 55 + 1 = 56.",
+   "code": "System.out.println('7' + 1);",
+   "run": true
+  },
+  {
+   "type": "mc",
+   "id": "m-1073",
+   "topic": "Printing & concatenation",
+   "prompt": "What does this print?",
+   "choices": [
+    "1073",
+    "2010",
+    "73",
+    "10 7 3"
+   ],
+   "answer": "1073",
+   "explanation": "7 + 3 = 10 first (both numbers). The \"\" then turns everything after it into text: \"10\" + 7 + 3 gives 1073.",
+   "code": "System.out.println(7 + 3 + \"\" + 7 + 3);",
+   "run": true
+  },
+  {
+   "type": "mc",
+   "id": "m-1044",
+   "topic": "Arithmetic & division",
+   "prompt": "What does this print?",
+   "choices": [
+    "8",
+    "10",
+    "10.0",
+    "8.0"
+   ],
+   "answer": "8",
+   "explanation": "Left to right: 10 / 4 = 2 (integer division), then 2 * 4 = 8. Doing the * first would give 10, but / and * are evaluated left to right.",
+   "code": "System.out.println(10 / 4 * 4);",
+   "run": true
+  },
+  {
+   "type": "mc",
+   "id": "m-3mod7",
+   "topic": "Arithmetic & division",
+   "prompt": "What does this print?",
+   "choices": [
+    "3",
+    "0",
+    "7",
+    "0.42"
+   ],
+   "answer": "3",
+   "explanation": "When the left number is smaller, it goes in 0 times, so the remainder is the whole left number: 3 % 7 = 3.",
+   "code": "System.out.println(3 % 7);",
+   "run": true
+  },
+  {
+   "type": "mc",
+   "id": "m-price4",
+   "topic": "Variables & types",
+   "prompt": "What does this print?",
+   "choices": [
+    "4.0",
+    "4",
+    "Compile error",
+    "4.00"
+   ],
+   "answer": "4.0",
+   "explanation": "A whole number can go into a double; it's stored (and printed) as 4.0.",
+   "code": "double price = 4;\nSystem.out.println(price);",
+   "run": true
+  },
+  {
+   "type": "mc",
+   "id": "m-path",
+   "topic": "Escape sequences",
+   "prompt": "Which line prints exactly:  C:\\Users",
+   "choices": [
+    "System.out.println(\"C:\\\\Users\");",
+    "System.out.println(\"C:\\Users\");",
+    "System.out.println('C:\\Users');",
+    "System.out.println(\"C:/Users\");"
+   ],
+   "answer": "System.out.println(\"C:\\\\Users\");",
+   "explanation": "\\U isn't a valid escape, so the single-backslash version won't compile. Writing \\\\ inside a String gives one backslash."
+  },
+  {
+   "type": "mc",
+   "id": "m-comment-out",
+   "topic": "How Java runs",
+   "prompt": "What does this print?",
+   "choices": [
+    "a",
+    "a\nb",
+    "b",
+    "Nothing; it won't compile"
+   ],
+   "answer": "a",
+   "explanation": "Everything after // on a line is a comment, so the second println never runs.",
+   "code": "System.out.println(\"a\"); // System.out.println(\"b\");",
+   "run": true
+  },
+  {
+   "type": "mc",
+   "id": "m-howmany",
+   "topic": "Printing & concatenation",
+   "prompt": "How many lines of output does this produce?",
+   "choices": [
+    "2",
+    "4",
+    "3",
+    "1"
+   ],
+   "answer": "2",
+   "explanation": "abc ends the first line (println), then d starts the second line and nothing ends it: \"abc\" and \"d\".",
+   "code": "System.out.print(\"a\");\nSystem.out.print(\"b\");\nSystem.out.println(\"c\");\nSystem.out.print(\"d\");"
+  },
+  {
+   "type": "mc",
+   "id": "m-bool",
+   "topic": "Variables & types",
+   "prompt": "Which line compiles?",
+   "choices": [
+    "boolean done = false;",
+    "boolean done = \"false\";",
+    "boolean done = 0;",
+    "boolean done = False;"
+   ],
+   "answer": "boolean done = false;",
+   "explanation": "A boolean is exactly true or false, lowercase, no quotes. \"false\" is a String, 0 is an int, and False doesn't exist (Java is case-sensitive).",
+   "check": "compiles"
+  },
+  {
+   "type": "output",
+   "id": "o-mod-sum",
+   "topic": "Arithmetic & division",
+   "prompt": "Type exactly what this prints.",
+   "code": "System.out.println(3 % 7 + 7 % 3);",
+   "answer": "4",
+   "explanation": "3 % 7 = 3 (7 doesn't fit into 3) and 7 % 3 = 1, so 3 + 1 = 4."
+  },
+  {
+   "type": "output",
+   "id": "o-a64",
+   "topic": "Printing & concatenation",
+   "prompt": "Type exactly what this prints.",
+   "code": "System.out.println(\"A\" + 2 * 3 + 4);",
+   "answer": "A64",
+   "explanation": "2 * 3 = 6 first. Then left to right: \"A\" + 6 is \"A6\", and + 4 appends 4."
+  },
+  {
+   "type": "output",
+   "id": "o-131",
+   "topic": "Variables & types",
+   "prompt": "Type exactly what this prints.",
+   "code": "System.out.println('A' + 'B');",
+   "answer": "131",
+   "explanation": "Two chars added are numbers: 65 + 66 = 131. No String anywhere, so it stays a number."
+  },
+  {
+   "type": "output",
+   "id": "o-temp",
+   "topic": "Escape sequences",
+   "prompt": "Type exactly what this prints.",
+   "code": "System.out.println(\"Path: C:\\\\temp\");",
+   "answer": "Path: C:\\temp",
+   "explanation": "\\\\ inside a String is one backslash. (\\t would have been a tab: that's why the backslash has to be escaped.)"
+  },
+  {
+   "type": "output",
+   "id": "o-said5",
+   "topic": "Escape sequences",
+   "prompt": "Type exactly what this prints.",
+   "code": "System.out.println(\"He said \\\"\" + 5 + \"\\\"\");",
+   "answer": "He said \"5\"",
+   "explanation": "Each \\\" is a quote character inside its String, so the 5 ends up between two quotes."
+  },
+  {
+   "type": "output",
+   "id": "o-6.5",
+   "topic": "Arithmetic & division",
+   "prompt": "Type exactly what this prints.",
+   "code": "System.out.println(7 / 2 + 7 / 2.0);",
+   "answer": "6.5",
+   "explanation": "7 / 2 = 3 (int) and 7 / 2.0 = 3.5 (double). 3 + 3.5 = 6.5."
+  },
+  {
+   "type": "output",
+   "id": "o-37",
+   "topic": "Printing & concatenation",
+   "prompt": "Type exactly what this prints.",
+   "code": "System.out.println((1 + 2) + \"\" + (3 + 4));",
+   "answer": "37",
+   "explanation": "Both parentheses are worked out first (3 and 7), then joined as text by the \"\"."
+  },
+  {
+   "type": "trace",
+   "id": "t-swap",
+   "topic": "Variables & types",
+   "prompt": "After this runs, what is the value of b?",
+   "code": "int a = 1;\nint b = 2;\na = b;\nb = a;",
+   "var": "b",
+   "answer": "2",
+   "explanation": "After a = b, a is 2 and the old 1 is gone. So b = a puts 2 back into b. This is why swapping two variables needs a third, temporary one."
+  },
+  {
+   "type": "trace",
+   "id": "t-4.5",
+   "topic": "Arithmetic & division",
+   "prompt": "After this runs, what is the value of d?",
+   "code": "double d = 9 / 2 + 0.5;",
+   "var": "d",
+   "answer": "4.5",
+   "explanation": "9 / 2 = 4 (integer division), then 4 + 0.5 = 4.5."
+  },
+  {
+   "type": "trace",
+   "id": "t-3x12",
+   "topic": "Printing & concatenation",
+   "prompt": "After this runs, what is the value of s?",
+   "code": "String s = 1 + 2 + \"x\";\ns = s + 1 + 2;",
+   "var": "s",
+   "answer": "3x12",
+   "explanation": "Line 1: 1 + 2 = 3 first, giving \"3x\". Line 2: s is a String, so 1 and 2 are appended as text."
+  },
+  {
+   "type": "trace",
+   "id": "t-offset",
+   "topic": "Variables & types",
+   "prompt": "After this runs, what is the value of n?",
+   "code": "char c = 'd';\nint n = c - 'a';",
+   "var": "n",
+   "answer": "3",
+   "explanation": "Chars are numbers underneath: 'd' (100) - 'a' (97) = 3. This trick gives a letter's position in the alphabet, counting from 0."
+  },
+  {
+   "type": "trace",
+   "id": "t-mins",
+   "topic": "Arithmetic & division",
+   "prompt": "After this runs, what is the value of mins?",
+   "code": "int total = 1000;\nint hours = total / 60;\nint mins = total % 60;",
+   "var": "mins",
+   "answer": "40",
+   "explanation": "1000 / 60 = 16 full groups of 60 (960), so 1000 % 60 = 40 left over."
+  },
+  {
+   "type": "trace",
+   "id": "t-half",
+   "topic": "Arithmetic & division",
+   "prompt": "After this runs, what is the value of x?",
+   "code": "int x = 5;\nx = x / 2 * 2;",
+   "var": "x",
+   "answer": "4",
+   "explanation": "5 / 2 = 2 (the .5 is dropped), then 2 * 2 = 4. Dividing then multiplying back doesn't undo integer division."
+  },
+  {
+   "type": "bug",
+   "id": "b-boolstr",
+   "topic": "Finding errors",
+   "prompt": "Which line won't compile?",
+   "code": "boolean done = \"true\";\nSystem.out.println(done);",
+   "answer": 1,
+   "explanation": "\"true\" in quotes is a String, not a boolean. It must be the bare word true."
+  },
+  {
+   "type": "bug",
+   "id": "b-charstr",
+   "topic": "Finding errors",
+   "prompt": "Which line won't compile?",
+   "code": "int n = 3;\nchar c = \"A\";\nSystem.out.println(c + n);",
+   "answer": 2,
+   "explanation": "Double quotes make a String. A char needs single quotes: 'A'."
+  },
+  {
+   "type": "bug",
+   "id": "b-dup",
+   "topic": "Finding errors",
+   "prompt": "Which line won't compile?",
+   "code": "int x = 1;\nSystem.out.println(x);\nint x = 2;\nSystem.out.println(x);",
+   "answer": 3,
+   "explanation": "x is already declared on line 1. To change it, write x = 2; without the type."
+  },
+  {
+   "type": "bug",
+   "id": "b-undecl",
+   "topic": "Finding errors",
+   "prompt": "Which line won't compile?",
+   "code": "int price = 4;\ntotal = price * 2;\nSystem.out.println(total);",
+   "answer": 2,
+   "explanation": "total is used without ever being declared. It needs a type: int total = price * 2;"
+  },
+  {
+   "type": "bug",
+   "id": "b-strint",
+   "topic": "Finding errors",
+   "prompt": "Which line won't compile?",
+   "code": "String label = \"Level \";\nString level = 5;\nSystem.out.println(label + level);",
+   "answer": 2,
+   "explanation": "5 is an int and can't be stored in a String variable. \"5\" (in quotes) would work."
+  },
+  {
+   "type": "bug",
+   "id": "b-zero2",
+   "topic": "Finding errors",
+   "prompt": "This compiles. Which line crashes when it runs?",
+   "code": "int a = 12;\nint b = a / 4;\nint c = b - 3;\nSystem.out.println(a / c);",
+   "answer": 4,
+   "explanation": "b is 3, so c is 3 - 3 = 0. a / c divides by zero, which only fails when the program runs."
+  },
+  {
+   "type": "bug",
+   "id": "b-quote-open",
+   "topic": "Finding errors",
+   "prompt": "Which line won't compile?",
+   "code": "int n = 2;\nSystem.out.println(\"n is \" + n);\nSystem.out.println(\"done);",
+   "answer": 3,
+   "explanation": "The String on line 3 never closes, so the compiler reports an unclosed string literal."
+  },
+  {
+   "type": "bug",
+   "id": "b-lower-string",
+   "topic": "Finding errors",
+   "prompt": "Which line won't compile?",
+   "code": "int age = 20;\nstring name = \"Al\";\nSystem.out.println(name + age);",
+   "answer": 2,
+   "explanation": "The type is String with a capital S. Java is case-sensitive, so string isn't a type it knows."
   }
  ]
 }
