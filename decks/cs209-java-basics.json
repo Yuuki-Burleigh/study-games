@@ -1,0 +1,854 @@
+{
+ "id": "cs209-java-basics",
+ "title": "CS 209: Java Basics",
+ "course": "CS 209",
+ "description": "How Java runs, printing and concatenation, escape characters, variables and data types, division, IPO. Lectures 9-24, 9-29 and 10-1.",
+ "cards": [
+  {
+   "id": "jvm",
+   "term": "JVM",
+   "definition": "Java Virtual Machine: runs bytecode and produces the output.",
+   "topic": "Lecture 9-24"
+  },
+  {
+   "id": "jre",
+   "term": "JRE",
+   "definition": "Java Runtime Environment: the JVM plus Java's built-in libraries. Everything needed to RUN Java.",
+   "topic": "Lecture 9-24"
+  },
+  {
+   "id": "jdk",
+   "term": "JDK",
+   "definition": "Java Development Kit: the JRE plus the compiler (javac) and dev tools. Needed to WRITE and compile Java.",
+   "topic": "Lecture 9-24"
+  },
+  {
+   "id": "bytecode",
+   "term": "Bytecode",
+   "definition": "What javac turns your .java source into (.class files). Platform-independent; the JVM runs it.",
+   "topic": "Lecture 9-24"
+  },
+  {
+   "id": "compiled",
+   "term": "Compiled language",
+   "definition": "Runs in 2 stages: source → bytecode (compile time), then bytecode → JVM (runtime). Java is one.",
+   "topic": "Lecture 9-24"
+  },
+  {
+   "id": "interpreted",
+   "term": "Interpreted language",
+   "definition": "Runs in 1 stage, line by line. Python is one.",
+   "topic": "Lecture 9-24"
+  },
+  {
+   "id": "compile-err",
+   "term": "Compile-time error",
+   "definition": "Caught going from source to bytecode: syntax errors (missing ;), type mismatch, undeclared variable. The program never runs.",
+   "topic": "Lecture 9-24"
+  },
+  {
+   "id": "runtime-err",
+   "term": "Runtime error",
+   "definition": "Happens while the bytecode runs on the JVM: file does not exist, no permission, divide by zero.",
+   "topic": "Lecture 9-24"
+  },
+  {
+   "id": "scope",
+   "term": "Scope { }",
+   "definition": "Everything between a pair of curly braces. Every { needs a matching }.",
+   "topic": "Lecture 9-24"
+  },
+  {
+   "id": "main",
+   "term": "public static void main(String[] args)",
+   "definition": "The program's entry point. public = visible anywhere, static = no object needed, void = returns nothing, args = command-line arguments.",
+   "topic": "Lecture 9-24"
+  },
+  {
+   "id": "void",
+   "term": "void",
+   "definition": "Return type meaning the method returns nothing; it only executes.",
+   "topic": "Lecture 9-24"
+  },
+  {
+   "id": "println",
+   "term": "println vs print",
+   "definition": "println prints then moves to a new line (ln = line). print stays on the same line.",
+   "topic": "Lecture 9-24"
+  },
+  {
+   "id": "concat",
+   "term": "Concatenation (+)",
+   "definition": "If either side of + is a String, + joins text instead of adding. Evaluated left to right.",
+   "topic": "Lecture 9-29"
+  },
+  {
+   "id": "escape",
+   "term": "Escape character \\",
+   "definition": "A backslash makes the next character mean something special (or normal): \\\" quote, \\\\ backslash, \\n new line, \\t tab.",
+   "topic": "Lecture 9-24"
+  },
+  {
+   "id": "comment",
+   "term": "// comment",
+   "definition": "A note in the code that Java ignores, like # in Python.",
+   "topic": "Lecture 9-24"
+  },
+  {
+   "id": "variable",
+   "term": "Variable",
+   "definition": "A named memory location that stores a value of a specific data type.",
+   "topic": "Lecture 9-29"
+  },
+  {
+   "id": "declare",
+   "term": "Declaring vs initializing",
+   "definition": "Declare: int price;  Initialize: price = 2;  Both at once: int price = 2;",
+   "topic": "Lecture 9-29"
+  },
+  {
+   "id": "int",
+   "term": "int",
+   "definition": "Primitive whole number, 4 bytes. e.g. 1, 2, 3, 5",
+   "topic": "Lecture 9-29"
+  },
+  {
+   "id": "double",
+   "term": "double",
+   "definition": "Primitive number with a fraction, 8 bytes. e.g. 2.3. Storing 2 gives 2.0",
+   "topic": "Lecture 9-29"
+  },
+  {
+   "id": "boolean",
+   "term": "boolean",
+   "definition": "Primitive true/false. Default false for fields (local variables have no default).",
+   "topic": "Lecture 9-29"
+  },
+  {
+   "id": "char",
+   "term": "char",
+   "definition": "Primitive single character in single quotes, 2 bytes. e.g. 'a'. Each char has a number code ('A' = 65).",
+   "topic": "Lecture 9-29"
+  },
+  {
+   "id": "string",
+   "term": "String",
+   "definition": "An object type (not primitive): a sequence of characters in double quotes.",
+   "topic": "Lecture 9-29"
+  },
+  {
+   "id": "modulus",
+   "term": "% (modulus)",
+   "definition": "Returns the remainder of a division. 15 % 2 is 1.",
+   "topic": "Lecture 9-29"
+  },
+  {
+   "id": "intdiv",
+   "term": "Integer division",
+   "definition": "int / int gives an int: the fraction is dropped. 5 / 2 is 2.",
+   "topic": "Lecture 9-29"
+  },
+  {
+   "id": "promotion",
+   "term": "Mixed int and double",
+   "definition": "If either side is a double, the result is a double (Java picks the bigger type). 5.0 / 2 is 2.5",
+   "topic": "Lecture 9-29"
+  },
+  {
+   "id": "ipo",
+   "term": "IPO cycle",
+   "definition": "Input → Process → Output. The way to plan a program before writing it.",
+   "topic": "Lecture 10-1"
+  },
+  {
+   "id": "naming",
+   "term": "Variable naming rules",
+   "definition": "Can contain digits but cannot START with one. Convention: start lowercase (camelCase).",
+   "topic": "Lecture 10-1"
+  }
+ ],
+ "questions": [
+  {
+   "id": "q-jdk",
+   "topic": "Lecture 9-24",
+   "prompt": "Which one do you need to WRITE and compile Java (not just run it)?",
+   "choices": [
+    "JDK",
+    "JRE",
+    "JVM",
+    "Bytecode"
+   ],
+   "answer": "JDK",
+   "explanation": "The JDK = JRE + the javac compiler and dev tools. The JRE only runs Java."
+  },
+  {
+   "id": "q-jvm",
+   "topic": "Lecture 9-24",
+   "prompt": "What actually executes Java bytecode?",
+   "choices": [
+    "JVM",
+    "JDK",
+    "javac",
+    "The OS directly"
+   ],
+   "answer": "JVM",
+   "explanation": "The Java Virtual Machine runs bytecode, which is why the same .class file runs on any OS with a JVM."
+  },
+  {
+   "id": "q-stages",
+   "topic": "Lecture 9-24",
+   "prompt": "How many stages does a compiled language like Java run in?",
+   "choices": [
+    "2",
+    "1",
+    "3",
+    "It depends on the OS"
+   ],
+   "answer": "2",
+   "explanation": "Stage 1: source → bytecode (compile). Stage 2: bytecode → JVM (run). Interpreted languages like Python use 1."
+  },
+  {
+   "id": "q-missing-semi",
+   "topic": "Lecture 9-24",
+   "prompt": "Forgetting a ; at the end of a line is what kind of error?",
+   "choices": [
+    "Compile-time error",
+    "Runtime error",
+    "Logic error",
+    "Not an error"
+   ],
+   "answer": "Compile-time error",
+   "explanation": "Syntax errors are caught by the compiler while turning source into bytecode, so the program never runs."
+  },
+  {
+   "id": "q-file-missing",
+   "topic": "Lecture 9-24",
+   "prompt": "Your program tries to open a file that does not exist. What kind of error?",
+   "choices": [
+    "Runtime error",
+    "Compile-time error",
+    "Syntax error",
+    "Type mismatch"
+   ],
+   "answer": "Runtime error",
+   "explanation": "The code compiles fine; it only fails while running on the JVM."
+  },
+  {
+   "id": "q-void",
+   "topic": "Lecture 9-24",
+   "prompt": "In public static void main, what does void mean?",
+   "choices": [
+    "The method returns nothing",
+    "The method is empty",
+    "The method is private",
+    "The method takes no parameters"
+   ],
+   "answer": "The method returns nothing",
+   "explanation": "void is the return type: nothing comes back, the method only executes."
+  },
+  {
+   "id": "q-classname",
+   "topic": "Lecture 9-24",
+   "prompt": "Your class is public class Welcome. What must the file be named?",
+   "choices": [
+    "Welcome.java",
+    "welcome.java",
+    "Main.java",
+    "Any name ending in .java"
+   ],
+   "answer": "Welcome.java",
+   "explanation": "A public class must match its file name exactly, and Java is case-sensitive."
+  },
+  {
+   "id": "q-quotes",
+   "topic": "Lecture 9-24",
+   "prompt": "Which line is a compile error?",
+   "choices": [
+    "System.out.println('hello');",
+    "System.out.println(\"hello\");",
+    "System.out.println('h');",
+    "System.out.println(1 + 2);"
+   ],
+   "answer": "System.out.println('hello');",
+   "explanation": "Single quotes are for ONE char only. 'hello' is not a valid char literal; Strings need double quotes."
+  },
+  {
+   "id": "q-expr",
+   "topic": "Lecture 9-24",
+   "prompt": "What does this print?",
+   "code": "System.out.print(1 + 2);",
+   "choices": [
+    "3",
+    "1 + 2",
+    "12",
+    "1+2"
+   ],
+   "answer": "3",
+   "explanation": "No String is involved, so + adds the numbers."
+  },
+  {
+   "id": "q-hi12",
+   "topic": "Lecture 9-24",
+   "prompt": "What does this print?",
+   "code": "System.out.println(\"hi\" + 1 + 2);",
+   "choices": [
+    "hi12",
+    "hi3",
+    "hi1+2",
+    "3hi"
+   ],
+   "answer": "hi12",
+   "explanation": "The String comes first, so 1 and 2 are each appended as text, left to right."
+  },
+  {
+   "id": "q-welcome12",
+   "topic": "Lecture 9-24",
+   "prompt": "What does this print?",
+   "code": "System.out.println(\"Welcome\" + \" \" + 1 + 2);",
+   "choices": [
+    "Welcome 12",
+    "Welcome 3",
+    "Welcome12",
+    "Welcome 1 2"
+   ],
+   "answer": "Welcome 12",
+   "explanation": "Once a String is involved, everything after it is concatenated as text."
+  },
+  {
+   "id": "q-3welcome",
+   "topic": "Lecture 9-24",
+   "prompt": "What does this print?",
+   "code": "System.out.println(1 + 2 + \"Welcome\");",
+   "choices": [
+    "3Welcome",
+    "12Welcome",
+    "3 Welcome",
+    "Welcome3"
+   ],
+   "answer": "3Welcome",
+   "explanation": "Left to right: 1 + 2 is added first (3), THEN joined to the String."
+  },
+  {
+   "id": "q-3welcomea",
+   "topic": "Lecture 9-24",
+   "prompt": "What does this print?",
+   "code": "System.out.println(1 + 2 + \" \" + \"Welcome\" + \" \" + 'a');",
+   "choices": [
+    "3 Welcome a",
+    "12 Welcome a",
+    "3 Welcome 97",
+    "3Welcomea"
+   ],
+   "answer": "3 Welcome a",
+   "explanation": "1+2 adds to 3, then everything is concatenated. A char joined to a String prints as the character."
+  },
+  {
+   "id": "q-print-ln",
+   "topic": "Lecture 9-24",
+   "prompt": "What does this print?",
+   "code": "System.out.print(\"welcome\");\nSystem.out.print(\"hi\");",
+   "choices": [
+    "welcomehi",
+    "welcome\nhi",
+    "welcome hi",
+    "hi"
+   ],
+   "answer": "welcomehi",
+   "explanation": "print does not end the line, so the second print continues on the same line."
+  },
+  {
+   "id": "q-println-ln",
+   "topic": "Lecture 9-24",
+   "prompt": "What does this print?",
+   "code": "System.out.println(\"welcome\");\nSystem.out.println(\"hi\");",
+   "choices": [
+    "welcome\nhi",
+    "welcomehi",
+    "welcome hi",
+    "hi\nwelcome"
+   ],
+   "answer": "welcome\nhi",
+   "explanation": "println ends the line after printing, so hi starts on a new line."
+  },
+  {
+   "id": "q-esc-quote",
+   "topic": "Lecture 9-24",
+   "prompt": "What does this print?",
+   "code": "System.out.print(\"Welcome\" + \"\\\"CS209\\\"\");",
+   "choices": [
+    "Welcome\"CS209\"",
+    "Welcome\\\"CS209\\\"",
+    "WelcomeCS209",
+    "Welcome \"CS209\""
+   ],
+   "answer": "Welcome\"CS209\"",
+   "explanation": "Each \\\" is an escaped quote, so the quotes print as normal characters."
+  },
+  {
+   "id": "q-esc-backslash",
+   "topic": "Lecture 9-24",
+   "prompt": "What does this print?",
+   "code": "System.out.print(\"Welcome\\\\\\\\\\\\\" + \"\\\"CS209\\\"\");",
+   "choices": [
+    "Welcome\\\\\\\"CS209\"",
+    "Welcome\\\\\\\\\\\\\"CS209\"",
+    "Welcome\\\"CS209\"",
+    "Compile error"
+   ],
+   "answer": "Welcome\\\\\\\"CS209\"",
+   "explanation": "Escape sequences are read in pairs: \\\\\\\\\\\\ is three \\\\ pairs = three backslashes. Then \\\"CS209\\\" prints the quotes."
+  },
+  {
+   "id": "q-esc-mix",
+   "topic": "Lecture 9-24",
+   "prompt": "What does this print?",
+   "code": "System.out.print(\"\\\\hello \\n how \\t are \\\"you\\\"? \\\\\\\\\");",
+   "choices": [
+    "\\hello \n how \t are \"you\"? \\\\",
+    "\\\\hello \\n how \\t are \"you\"? \\\\\\\\",
+    "\\hello how are you? \\",
+    "hello \n how \t are you? \\"
+   ],
+   "answer": "\\hello \n how \t are \"you\"? \\\\",
+   "explanation": "\\\\ = one backslash, \\n = new line, \\t = tab, \\\" = quote. The last \\\\\\\\ is two backslashes."
+  },
+  {
+   "id": "q-comment",
+   "topic": "Lecture 9-24",
+   "prompt": "What does // do in Java?",
+   "choices": [
+    "Starts a comment Java ignores",
+    "Divides twice",
+    "Starts a String",
+    "Ends a statement"
+   ],
+   "answer": "Starts a comment Java ignores",
+   "explanation": "// works like # in Python: the rest of the line is a note for humans."
+  },
+  {
+   "id": "q-1020",
+   "topic": "Lecture 9-29",
+   "prompt": "What does this print?",
+   "code": "System.out.println(\"10\" + \"20\");",
+   "choices": [
+    "1020",
+    "30",
+    "10 20",
+    "Compile error"
+   ],
+   "answer": "1020",
+   "explanation": "Both are Strings, so + concatenates. Pure concatenation."
+  },
+  {
+   "id": "q-30java",
+   "topic": "Lecture 9-29",
+   "prompt": "What does this print?",
+   "code": "System.out.println(10 + 20 + \" Java\");",
+   "choices": [
+    "30 Java",
+    "1020 Java",
+    "Java 30",
+    "10 20 Java"
+   ],
+   "answer": "30 Java",
+   "explanation": "10 + 20 is pure addition (30) before the String shows up."
+  },
+  {
+   "id": "q-java1020",
+   "topic": "Lecture 9-29",
+   "prompt": "What does this print?",
+   "code": "System.out.println(\"Java \" + 10 + 20);",
+   "choices": [
+    "Java 1020",
+    "Java 30",
+    "Java 10 20",
+    "30 Java"
+   ],
+   "answer": "Java 1020",
+   "explanation": "The String is first, so 10 and 20 are concatenated as text."
+  },
+  {
+   "id": "q-total",
+   "topic": "Lecture 9-29",
+   "prompt": "What does this print?",
+   "code": "System.out.println(\"Total: \" + (10 + 20));",
+   "choices": [
+    "Total: 30",
+    "Total: 1020",
+    "Total: (10 + 20)",
+    "Compile error"
+   ],
+   "answer": "Total: 30",
+   "explanation": "Parentheses are evaluated first, so 10 + 20 adds to 30 before joining the String."
+  },
+  {
+   "id": "q-cost-mult",
+   "topic": "Lecture 9-29",
+   "prompt": "What does this print?",
+   "code": "System.out.println(\"Cost: $\" + 5 * 2);",
+   "choices": [
+    "Cost: $10",
+    "Cost: $52",
+    "Cost: $5 * 2",
+    "Cost: $55"
+   ],
+   "answer": "Cost: $10",
+   "explanation": "* has higher precedence than +, so 5 * 2 = 10 happens first."
+  },
+  {
+   "id": "q-cost-plus",
+   "topic": "Lecture 9-29",
+   "prompt": "What does this print?",
+   "code": "System.out.println(\"Cost: $\" + 5 + 2);",
+   "choices": [
+    "Cost: $52",
+    "Cost: $7",
+    "Cost: $5 2",
+    "Compile error"
+   ],
+   "answer": "Cost: $52",
+   "explanation": "+ is evaluated left to right: \"Cost: $\" + 5 is a String, then + 2 appends text."
+  },
+  {
+   "id": "q-cost-paren",
+   "topic": "Lecture 9-29",
+   "prompt": "What does this print?",
+   "code": "System.out.println(\"Cost: $\" + (5 + 2));",
+   "choices": [
+    "Cost: $7",
+    "Cost: $52",
+    "Cost: $(5 + 2)",
+    "Cost: $5 + 2"
+   ],
+   "answer": "Cost: $7",
+   "explanation": "Parentheses force the addition first."
+  },
+  {
+   "id": "q-count41",
+   "topic": "Lecture 9-29",
+   "prompt": "Given int count = 4; what does this print?",
+   "code": "System.out.println(\"Count is: \" + count + 1);",
+   "choices": [
+    "Count is: 41",
+    "Count is: 5",
+    "Count is: count1",
+    "Count is: 4 1"
+   ],
+   "answer": "Count is: 41",
+   "explanation": "count is 4. String first, so 4 then 1 are appended as text."
+  },
+  {
+   "id": "q-count5",
+   "topic": "Lecture 9-29",
+   "prompt": "Given int count = 4; what does this print?",
+   "code": "System.out.println(\"Count is: \" + (count + 1));",
+   "choices": [
+    "Count is: 5",
+    "Count is: 41",
+    "Count is: 4",
+    "Count is: count + 1"
+   ],
+   "answer": "Count is: 5",
+   "explanation": "The parentheses add count + 1 = 5 first."
+  },
+  {
+   "id": "q-sum",
+   "topic": "Lecture 9-29",
+   "prompt": "Given int count = 4; double price = 2.5; what does this print?",
+   "code": "System.out.println(count + price + \" is the sum\");",
+   "choices": [
+    "6.5 is the sum",
+    "42.5 is the sum",
+    "6 is the sum",
+    "4 + 2.5 is the sum"
+   ],
+   "answer": "6.5 is the sum",
+   "explanation": "Numbers come first, so 4 + 2.5 adds to 6.5 (a double, since one side is a double) before the String."
+  },
+  {
+   "id": "q-result-minus",
+   "topic": "Lecture 9-29",
+   "prompt": "What happens with this line?",
+   "code": "System.out.println(\"Result: \" + 10 - 5);",
+   "choices": [
+    "Compile-time error",
+    "Result: 5",
+    "Result: 105",
+    "Runtime error"
+   ],
+   "answer": "Compile-time error",
+   "explanation": "+ and - have equal precedence, left to right. \"Result: \" + 10 is a String, and you cannot subtract 5 from a String, so it does not compile."
+  },
+  {
+   "id": "q-mod",
+   "topic": "Lecture 9-29",
+   "prompt": "What does this print?",
+   "code": "System.out.println(15 % 2);",
+   "choices": [
+    "1",
+    "7",
+    "7.5",
+    "0"
+   ],
+   "answer": "1",
+   "explanation": "% (modulus) gives the remainder: 15 / 2 is 7 remainder 1."
+  },
+  {
+   "id": "q-intdiv",
+   "topic": "Lecture 9-29",
+   "prompt": "What does this print?",
+   "code": "System.out.println(5 / 2);",
+   "choices": [
+    "2",
+    "2.5",
+    "3",
+    "2.0"
+   ],
+   "answer": "2",
+   "explanation": "Integer division: int / int gives an int, and the .5 is dropped (not rounded)."
+  },
+  {
+   "id": "q-dbldiv",
+   "topic": "Lecture 9-29",
+   "prompt": "What does this print?",
+   "code": "System.out.println(5.0 / 2.0);",
+   "choices": [
+    "2.5",
+    "2",
+    "2.0",
+    "3"
+   ],
+   "answer": "2.5",
+   "explanation": "double / double gives a double."
+  },
+  {
+   "id": "q-mixdiv",
+   "topic": "Lecture 9-29",
+   "prompt": "What does this print?",
+   "code": "System.out.println(5.0 / 2);",
+   "choices": [
+    "2.5",
+    "2",
+    "2.0",
+    "Compile error"
+   ],
+   "answer": "2.5",
+   "explanation": "double / int gives a double: Java uses the bigger type (8 bytes over 4)."
+  },
+  {
+   "id": "q-store",
+   "topic": "Lecture 9-29",
+   "prompt": "What does this print?",
+   "code": "double x = 5 / 2;\nSystem.out.println(x);",
+   "choices": [
+    "2.0",
+    "2.5",
+    "2",
+    "Compile error"
+   ],
+   "answer": "2.0",
+   "explanation": "5 / 2 is integer division (2) BEFORE it is stored. Storing 2 in a double makes it 2.0."
+  },
+  {
+   "id": "q-store-half",
+   "topic": "Lecture 9-29",
+   "prompt": "What does this print?",
+   "code": "double x = 5 / 2;\nSystem.out.println(x / 2);",
+   "choices": [
+    "1.0",
+    "1.25",
+    "1",
+    "1.5"
+   ],
+   "answer": "1.0",
+   "explanation": "x is 2.0, and 2.0 / 2 is 1.0 (double / int gives a double)."
+  },
+  {
+   "id": "q-mismatch",
+   "topic": "Lecture 9-29",
+   "prompt": "Which line is a compile-time error?",
+   "choices": [
+    "int price = 2.5;",
+    "double price = 2;",
+    "int price = 2;",
+    "double price = 2.5;"
+   ],
+   "answer": "int price = 2.5;",
+   "explanation": "You cannot put a fraction into an int (it would lose data). Putting 2 in a double is fine: it becomes 2.0."
+  },
+  {
+   "id": "q-uninit",
+   "topic": "Lecture 9-29",
+   "prompt": "int price;\nSystem.out.print(price);  — what happens?",
+   "choices": [
+    "Compile error: not initialized",
+    "Prints 0",
+    "Prints null",
+    "Runtime error"
+   ],
+   "answer": "Compile error: not initialized",
+   "explanation": "A local variable must be given a value before it is used, or the compiler refuses."
+  },
+  {
+   "id": "q-undeclared",
+   "topic": "Lecture 9-29",
+   "prompt": "price = 2; (with no int price anywhere) — what happens?",
+   "choices": [
+    "Compile error: cannot find symbol",
+    "Java makes it an int",
+    "Runtime error",
+    "Prints 2"
+   ],
+   "answer": "Compile error: cannot find symbol",
+   "explanation": "Every variable must be declared with a type first."
+  },
+  {
+   "id": "q-int-size",
+   "topic": "Lecture 9-29",
+   "prompt": "How many bytes is an int?",
+   "choices": [
+    "4",
+    "2",
+    "8",
+    "1"
+   ],
+   "answer": "4",
+   "explanation": "int = 4 bytes, double = 8, char = 2."
+  },
+  {
+   "id": "q-double-size",
+   "topic": "Lecture 9-29",
+   "prompt": "How many bytes is a double?",
+   "choices": [
+    "8",
+    "4",
+    "2",
+    "16"
+   ],
+   "answer": "8",
+   "explanation": "double = 8 bytes, which is why it wins when mixed with an int."
+  },
+  {
+   "id": "q-string-type",
+   "topic": "Lecture 9-29",
+   "prompt": "Which of these is NOT a primitive type?",
+   "choices": [
+    "String",
+    "int",
+    "boolean",
+    "char"
+   ],
+   "answer": "String",
+   "explanation": "String is an object type. The primitives here are int, double, boolean and char."
+  },
+  {
+   "id": "q-bool",
+   "topic": "Lecture 9-29",
+   "prompt": "What values can a boolean hold?",
+   "choices": [
+    "true or false",
+    "0 to 255",
+    "Any number",
+    "Any text"
+   ],
+   "answer": "true or false",
+   "explanation": "boolean is true/false only. Its default (for fields) is false."
+  },
+  {
+   "id": "q-char",
+   "topic": "Lecture 10-1",
+   "prompt": "What does this print?",
+   "code": "char firstLetter = 'j';\nSystem.out.print(firstLetter);",
+   "choices": [
+    "j",
+    "J",
+    "106",
+    "'j'"
+   ],
+   "answer": "j",
+   "explanation": "A char prints as the character itself, exactly as stored (lowercase stays lowercase)."
+  },
+  {
+   "id": "q-char-int",
+   "topic": "Lecture 10-1",
+   "prompt": "What does this print?",
+   "code": "int firstLetter = 'A';\nSystem.out.print(firstLetter);",
+   "choices": [
+    "65",
+    "A",
+    "'A'",
+    "Compile error"
+   ],
+   "answer": "65",
+   "explanation": "Storing a char in an int keeps its number code. 'A' is 65."
+  },
+  {
+   "id": "q-char-plus",
+   "topic": "Lecture 10-1",
+   "prompt": "What does this print?",
+   "code": "int firstLetter = 'A' + 10;\nSystem.out.print(firstLetter);",
+   "choices": [
+    "75",
+    "K",
+    "A10",
+    "65"
+   ],
+   "answer": "75",
+   "explanation": "It is stored as an int, so it prints the number 75. You only get K if it is a char: char c = (char) ('A' + 10);"
+  },
+  {
+   "id": "q-char-cast",
+   "topic": "Lecture 10-1",
+   "prompt": "What does this print?",
+   "code": "char c = (char) ('A' + 10);\nSystem.out.print(c);",
+   "choices": [
+    "K",
+    "75",
+    "A10",
+    "Compile error"
+   ],
+   "answer": "K",
+   "explanation": "75 is the code for K, and casting to char prints the letter."
+  },
+  {
+   "id": "q-varname",
+   "topic": "Lecture 10-1",
+   "prompt": "Which variable name is NOT allowed?",
+   "choices": [
+    "2ndPlace",
+    "place2",
+    "secondPlace",
+    "place_2"
+   ],
+   "answer": "2ndPlace",
+   "explanation": "A name can contain digits but cannot start with one."
+  },
+  {
+   "id": "q-ipo",
+   "topic": "Lecture 10-1",
+   "prompt": "For an average calculator, which step is 'calculate and store the average'?",
+   "choices": [
+    "Process",
+    "Input",
+    "Output",
+    "Compile"
+   ],
+   "answer": "Process",
+   "explanation": "IPO: Input (3 numbers) → Process (compute the average) → Output (print it)."
+  },
+  {
+   "id": "q-seconds",
+   "topic": "Lecture 10-1",
+   "prompt": "What does this print?",
+   "code": "int total = 125;\nint minutes = total / 60;\nint seconds = total % 60;\nSystem.out.println(minutes + \" min \" + seconds + \" sec\");",
+   "choices": [
+    "2 min 5 sec",
+    "2.08 min 0 sec",
+    "2 min 25 sec",
+    "125 min 0 sec"
+   ],
+   "answer": "2 min 5 sec",
+   "explanation": "125 / 60 = 2 (integer division) and 125 % 60 = 5 (the remainder). This is the seconds-converter IPO from class."
+  }
+ ]
+}
