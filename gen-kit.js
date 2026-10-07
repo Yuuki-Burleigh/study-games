@@ -90,5 +90,5 @@ export function program(r, lines, fillers = r.int(0, 2)) {
 // Turn a template instance into a full question object with a stable, replayable id.
 export function instantiate(template, seed) {
   const q = template.make(rng(seed));
-  return { type: template.type, topic: template.topic, ...q, id: `${template.id}#${seed}`, generated: true };
+  return { type: template.type, topic: template.topic, ...(template.unit && { unit: template.unit }), ...q, id: `${template.id}#${seed}`, generated: true };
 }

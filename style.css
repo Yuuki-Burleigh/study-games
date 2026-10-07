@@ -188,6 +188,9 @@ code, pre, kbd { font-family: var(--mono); }
 }
 .chip:hover { border-color: var(--accent); }
 .chip[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.chips.units { margin-bottom: 10px; }
+.chip.unit { font-size: 0.95rem; padding: 8px 16px; }
+.chip.unit[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
 .records { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
 .record { padding: 8px 12px; border-radius: 12px; background: var(--surface-2); font-weight: 700; font-size: 0.9rem; }
 

@@ -1,7 +1,7 @@
 // Problem templates for CS 209 Java basics. Each make(r) builds one problem from random values and computes
 // the answer with Java's rules (see ../gen-kit.js). Scope: courses/cs209.md (no casts, ++, if, loops).
 // CI samples every template and runs the Java for real, so a wrong formula here fails the build.
-import { idiv, imod, jdouble, code, jstr, choices, uneven, program, NAMES, WORDS, LETTERS } from '../gen-kit.js';
+import { idiv, imod, jdouble, code, jstr, choices, uneven, program, NAMES, WORDS, LETTERS } from '../../gen-kit.js';
 
 const RUN = 'How Java runs', PRINT = 'Printing & concatenation', ESC = 'Escape sequences',
   VARS = 'Variables & types', ARITH = 'Arithmetic & division', ERR = 'Finding errors';

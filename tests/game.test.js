@@ -104,7 +104,7 @@ test('every listed deck is valid', () => {
 });
 
 test('CS 209 deck: original problems in every format', () => {
-  const deck = readJSON('../decks/cs209-java-basics.json');
+  const deck = readJSON('../decks/cs209.json');
   assert.ok(deck.cards.length >= 20, 'cards');
   const count = (t) => deck.questions.filter((q) => (q.type || 'mc') === t).length;
   assert.ok(count('mc') >= 12 && count('output') >= 8 && count('trace') >= 6 && count('bug') >= 6, 'type mix');
@@ -113,8 +113,19 @@ test('CS 209 deck: original problems in every format', () => {
   for (const ex of fromNotes) assert.ok(!deck.questions.some((q) => (q.code || '').includes(ex)), 'copied from notes: ' + ex);
 });
 
+test('one deck per class: every item and template belongs to a declared unit', async () => {
+  const index = readJSON('../decks/index.json');
+  assert.equal(new Set(index.decks.map((d) => d.id.replace(/-.*/, ''))).size, index.decks.length, 'one deck per course');
+  const deck = readJSON('../decks/cs209.json');
+  assert.deepEqual(deck.units, ['Java Basics', 'For Loops']);
+  for (const x of [...deck.cards, ...deck.questions]) assert.ok(deck.units.includes(x.unit), `${x.id}: unit "${x.unit}"`);
+  const templates = (await import('../' + deck.generators)).default;
+  for (const t of templates) assert.ok(deck.units.includes(t.unit), `${t.id}: unit "${t.unit}"`);
+  for (const u of deck.units) assert.ok(templates.some((t) => t.unit === u), `templates for ${u}`);
+});
+
 test('CS 209 facts are correct Java', () => {
-  const deck = readJSON('../decks/cs209-java-basics.json');
+  const deck = readJSON('../decks/cs209.json');
   const byId = Object.fromEntries(deck.questions.map((q) => [q.id, q]));
   assert.equal(byId['m-3345'].answer, '3345');
   assert.equal(byId['t-avg'].answer, '85.0');

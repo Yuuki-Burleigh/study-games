@@ -101,12 +101,29 @@ const cache = new Map();
 async function loadIndex() {
   const res = await fetch('./decks/index.json', { cache: 'no-cache' });
   if (!res.ok) throw new Error('Could not load decks/index.json');
-  return (await res.json()).decks;
+  const decks = (await res.json()).decks;
+  migrateProgress(decks);
+  return decks;
+}
+
+// Decks that were merged into one keep working: old links redirect, and saved progress folds into the new id.
+function migrateProgress(decks) {
+  for (const d of decks) for (const old of d.aliases || []) {
+    const take = (k) => { const v = store.get(`${k}:${old}`, null); try { localStorage.removeItem(`sg:${k}:${old}`); } catch { /* ignore */ } return v; };
+    const best = take('best'), match = take('match'), missed = take('missed'), stats = take('tstats');
+    if (best != null) store.set(`best:${d.id}`, Math.max(best, store.get(`best:${d.id}`, -1)));
+    if (match != null) store.set(`match:${d.id}`, Math.min(match, store.get(`match:${d.id}`, Infinity)));
+    if (missed) store.set(`missed:${d.id}`, [...new Set([...store.get(`missed:${d.id}`, []), ...missed])]);
+    if (stats) store.set(`tstats:${d.id}`, { ...stats, ...store.get(`tstats:${d.id}`, {}) });
+  }
 }
 
 async function loadDeck(id) {
   if (cache.has(id)) return cache.get(id);
-  const entry = (await loadIndex()).find((d) => d.id === id);
+  const index = await loadIndex();
+  const alias = index.find((d) => (d.aliases || []).includes(id));
+  if (alias) { location.replace(location.hash.replace(`/deck/${id}`, `/deck/${alias.id}`)); return loadDeck(alias.id); }
+  const entry = index.find((d) => d.id === id);
   if (!entry) throw new Error(`There's no deck called "${id}".`);
   const res = await fetch('./' + entry.file, { cache: 'no-cache' });
   if (!res.ok) throw new Error(`Could not load ${entry.file}`);
@@ -120,16 +137,21 @@ async function loadDeck(id) {
 
 const typeOf = (q) => q.type || 'mc';
 const topicsOf = (items) => [...new Set(items.map((x) => x.topic).filter(Boolean))];
-const filterTopic = (items, topic) => (topic ? items.filter((x) => x.topic === topic) : items);
+// A scope narrows a class to one unit (lecture) and/or one topic; empty means the whole class.
+const scopeOf = (params) => ({ unit: params.get('unit') || '', topic: params.get('topic') || '' });
+const matches = (x, sc) => (!sc.unit || x.unit === sc.unit) && (!sc.topic || x.topic === sc.topic);
+const inScope = (items, sc) => items.filter((x) => matches(x, sc));
+const scopeQuery = (sc) => [sc.unit && `unit=${encodeURIComponent(sc.unit)}`, sc.topic && `topic=${encodeURIComponent(sc.topic)}`].filter(Boolean);
+const scopeLabel = (sc) => [sc.unit, sc.topic].filter(Boolean).join(' · ');
 const missedKey = (deck) => `missed:${deck.id}`;
 
 // Generated problems: a random template (matching the filters) instantiated from a random seed.
 // Their ids are "<template>#<seed>", so a missed one can be rebuilt exactly later.
-const templatesFor = (deck, topic, types) => deck.templates.filter((t) => (!topic || t.topic === topic) && (!types.length || types.includes(t.type)));
+const templatesFor = (deck, sc, types) => deck.templates.filter((t) => matches(t, sc) && (!types.length || types.includes(t.type)));
 const statsKey = (deck) => `tstats:${deck.id}`;
 // Weighted toward the templates you miss (see templateWeights), formats balanced.
-function generateBatch(deck, topic, types, n) {
-  const ts = templatesFor(deck, topic, types);
+function generateBatch(deck, sc, types, n) {
+  const ts = templatesFor(deck, sc, types);
   if (!ts.length) return [];
   const weights = templateWeights(ts, store.get(statsKey(deck), {}));
   return Array.from({ length: n }, () => instantiate(ts[weightedIndex(weights)], newSeed()));
@@ -154,7 +176,7 @@ async function homeScreen() {
     el('div', { class: 'deck-list' }, decks.map((d) => d.error
       ? el('div', { class: 'deck' }, el('h2', {}, d.id), el('p', { class: 'muted' }, d.error))
       : el('a', { class: 'deck', href: `#/deck/${d.id}` },
-          d.course && el('span', { class: 'course' }, d.course),
+          d.course && d.course !== d.title && el('span', { class: 'course' }, d.course),
           el('h2', {}, d.title.replace(/^.*?:\s*/, '')),
           d.description && el('p', { class: 'muted' }, d.description),
           el('div', { class: 'meta' },
@@ -167,14 +189,15 @@ async function homeScreen() {
 
 async function deckScreen(id, params) {
   const deck = await loadDeck(id);
-  const topic = params.get('topic') || '';
-  const topics = topicsOf([...deck.cards, ...deck.questions]);
-  const qs = filterTopic(deck.questions, topic);
+  const sc = scopeOf(params);
+  const units = deck.units || [];
+  const topics = topicsOf(inScope([...deck.cards, ...deck.questions], { unit: sc.unit, topic: '' }));
+  const qs = inScope(deck.questions, sc);
   const missed = store.get(missedKey(deck), []).filter((qid) => questionById(deck, qid));
-  const t = topic ? `topic=${encodeURIComponent(topic)}` : '';
-  const go = (mode, extra = '') => { location.hash = `#/deck/${id}/${mode}` + ([t, extra].filter(Boolean).length ? '?' + [t, extra].filter(Boolean).join('&') : ''); };
+  const go = (mode, extra = '') => { const q = [...scopeQuery(sc), extra].filter(Boolean); location.hash = `#/deck/${id}/${mode}` + (q.length ? '?' + q.join('&') : ''); };
+  const pickScope = (next) => { const q = scopeQuery(next); location.hash = `#/deck/${id}` + (q.length ? '?' + q.join('&') : ''); };
   const count = (...types) => qs.filter((q) => types.includes(typeOf(q))).length;
-  const plus = (...types) => (templatesFor(deck, topic, types).length ? ' + fresh ones' : '');
+  const plus = (...types) => (templatesFor(deck, sc, types).length ? ' + fresh ones' : '');
   const mode = (icon, name, blurb, onclick, cls = '') => el('button', { class: `mode ${cls}`, onclick },
     el('span', { class: 'icon', 'aria-hidden': 'true' }, icon), el('strong', {}, name), el('span', {}, blurb));
   const bestQuiz = store.get(`best:${deck.id}`, null);
@@ -184,21 +207,21 @@ async function deckScreen(id, params) {
   render(
     el('a', { class: 'link', href: '#/' }, '← All classes'),
     el('section', { class: 'deck-head' },
-      deck.course && el('span', { class: 'qtype' }, deck.course),
+      deck.course && deck.course !== deck.title && el('span', { class: 'qtype' }, deck.course),
       el('h1', {}, deck.title.replace(/^.*?:\s*/, '')),
       deck.description && el('p', { class: 'muted' }, deck.description)),
-    topics.length > 1 && el('div', { class: 'chips', role: 'group', 'aria-label': 'Filter by topic' },
-      [['', 'Everything'], ...topics.map((x) => [x, x])].map(([value, label]) =>
-        el('button', {
-          class: 'chip', 'aria-pressed': String(value === topic),
-          onclick: () => { location.hash = `#/deck/${id}` + (value ? `?topic=${encodeURIComponent(value)}` : ''); },
-        }, label))),
+    units.length > 1 && el('div', { class: 'chips units', role: 'group', 'aria-label': 'Filter by unit' },
+      [['', 'Whole class'], ...units.map((u) => [u, u])].map(([value, label]) =>
+        el('button', { class: 'chip unit', 'aria-pressed': String(value === sc.unit), onclick: () => pickScope({ unit: value, topic: '' }) }, label))),
+    topics.length > 1 && (sc.unit || units.length < 2) && el('div', { class: 'chips', role: 'group', 'aria-label': 'Filter by topic' },
+      [['', sc.unit ? `All of ${sc.unit}` : 'All topics'], ...topics.map((x) => [x, x])].map(([value, label]) =>
+        el('button', { class: 'chip', 'aria-pressed': String(value === sc.topic), onclick: () => pickScope({ unit: sc.unit, topic: value }) }, label))),
     el('div', { style: 'height:18px' }),
     el('button', { class: 'hero-play', onclick: () => go('quiz') },
-      el('div', {}, el('strong', {}, 'Quick play'), el('span', {}, `${Math.min(QUIZ_LENGTH, qs.length)} mixed problems${topic ? ` on ${topic}` : ''}`)),
+      el('div', {}, el('strong', {}, 'Quick play'), el('span', {}, `${Math.min(QUIZ_LENGTH, qs.length)} mixed problems${scopeLabel(sc) ? ` on ${scopeLabel(sc)}` : ' from the whole class'}`)),
       el('span', { class: 'big-arrow', 'aria-hidden': 'true' }, '▶')),
-    templatesFor(deck, topic, []).length > 0 && el('button', { class: 'hero-play endless', onclick: () => go('quiz', 'endless=1') },
-      el('div', {}, el('strong', {}, 'Endless practice'), el('span', {}, `Fresh problems from ${templatesFor(deck, topic, []).length} templates with random values. Stop whenever.`)),
+    templatesFor(deck, sc, []).length > 0 && el('button', { class: 'hero-play endless', onclick: () => go('quiz', 'endless=1') },
+      el('div', {}, el('strong', {}, 'Endless practice'), el('span', {}, `Fresh problems from ${templatesFor(deck, sc, []).length} templates with random values. Stop whenever.`)),
       el('span', { class: 'big-arrow', 'aria-hidden': 'true' }, '∞')),
     weak.length > 0 && el('div', { class: 'weak' },
       el('span', {}, '🎯 Your weak spots:'),
@@ -212,7 +235,7 @@ async function deckScreen(id, params) {
       missed.length > 0 && mode('🔁', 'Fix mistakes', `${missed.length} you got wrong last time`, () => { location.hash = `#/deck/${id}/quiz?missed=1`; }, 'alert')),
     el('div', { class: 'section-label' }, 'WARM UP'),
     el('div', { class: 'modes' },
-      mode('🃏', 'Flashcards', `${filterTopic(deck.cards, topic).length} key terms`, () => go('flash')),
+      mode('🃏', 'Flashcards', `${inScope(deck.cards, sc).length} key terms`, () => go('flash')),
       mode('🔗', 'Match', `Pair ${MATCH_PAIRS} terms against the clock`, () => go('match'))),
     (bestQuiz != null || bestMatch != null) && el('div', { class: 'records' },
       bestQuiz != null && el('span', { class: 'record' }, `🏆 Best quiz ${bestQuiz}%`),
@@ -228,16 +251,16 @@ async function quizScreen(id, params) {
   const deck = await loadDeck(id);
   const reviewing = params.get('missed') === '1';
   const endless = params.get('endless') === '1';
-  const topic = params.get('topic') || '';
+  const sc = scopeOf(params);
   const types = (params.get('types') || '').split(',').filter(Boolean);
   const missedIds = new Set(store.get(missedKey(deck), []));
-  let pool = reviewing ? [...missedIds].map((qid) => questionById(deck, qid)).filter(Boolean) : filterTopic(deck.questions, topic);
+  let pool = reviewing ? [...missedIds].map((qid) => questionById(deck, qid)).filter(Boolean) : inScope(deck.questions, sc);
   if (types.length && !reviewing) pool = pool.filter((q) => types.includes(typeOf(q)));
   const prep = (q) => (typeOf(q) === 'mc' ? { ...q, order: shuffle(q.choices) } : q);
   // Endless: mostly generated, with a hand-written problem mixed in now and then.
   const missedPool = pool.filter((q) => missedIds.has(q.id));
   const nextEndless = () => {
-    if (Math.random() < 0.75 || !pool.length) return generateBatch(deck, topic, types, 1)[0];
+    if (Math.random() < 0.75 || !pool.length) return generateBatch(deck, sc, types, 1)[0];
     return shuffle(missedPool.length && Math.random() < 0.5 ? missedPool : pool)[0];
   };
   let questions;
@@ -245,7 +268,7 @@ async function quizScreen(id, params) {
   else if (endless) questions = [nextEndless()].filter(Boolean);
   else {
     // Half hand-written, half freshly generated (when the deck has templates), spread across formats.
-    const gen = pickMixed(generateBatch(deck, topic, types, 40), QUIZ_LENGTH / 2);
+    const gen = pickMixed(generateBatch(deck, sc, types, 40), QUIZ_LENGTH / 2);
     questions = shuffle([...pickMixed(pool, QUIZ_LENGTH - gen.length), ...gen]);
   }
   questions = questions.map(prep);
@@ -433,7 +456,7 @@ async function quizScreen(id, params) {
 // Flashcards: "Again" puts the card back at the end of the pile.
 async function flashScreen(id, params) {
   const deck = await loadDeck(id);
-  const pile = shuffle(filterTopic(deck.cards, params.get('topic')));
+  const pile = shuffle(inScope(deck.cards, scopeOf(params)));
   const total = pile.length;
   let known = 0;
   if (!total) return render(el('div', { class: 'empty' }, el('h1', {}, 'No cards here'), el('a', { class: 'btn primary', href: `#/deck/${id}` }, 'Back to the deck')));
@@ -476,7 +499,7 @@ async function flashScreen(id, params) {
 
 async function matchScreen(id, params) {
   const deck = await loadDeck(id);
-  const cards = filterTopic(deck.cards, params.get('topic'));
+  const cards = inScope(deck.cards, scopeOf(params));
   if (cards.length < 2) return render(el('div', { class: 'empty' }, el('h1', {}, 'Not enough cards'), el('a', { class: 'btn primary', href: `#/deck/${id}` }, 'Back to the deck')));
 
   const { terms, definitions } = buildMatchRound(cards, MATCH_PAIRS);

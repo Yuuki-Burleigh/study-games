@@ -1,6 +1,6 @@
 # Study Games
 
-My personal study site. Each class topic is a deck of **original problems** written from what I've been taught
+My personal study site. Each class is one deck, split into units (one per lecture), of **original problems** written from what I've been taught
 (my notes set the scope; they aren't the questions).
 
 - **Quick play**: 10 problems mixing four formats: multiple choice, type the exact output, trace a variable,
@@ -24,7 +24,7 @@ problems, checks every answer against real Java, and publishes. Details in `CLAU
 python3 -m http.server 8000      # then open http://localhost:8000
 npm test                         # deck format + game logic
 python3 tools/check_java.py      # every answer (incl. sampled template problems) vs real Java
-node tools/sample.mjs decks/cs209-java-basics.json 2   # peek at generated problems
+node tools/sample.mjs decks/cs209.json 2   # peek at generated problems
 ```
 
 No build step and no dependencies. GitHub Pages serves the files as they are, after CI passes both checks.

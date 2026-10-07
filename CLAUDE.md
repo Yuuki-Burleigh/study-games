@@ -24,15 +24,20 @@ anything taught so far, across lectures, but must not require anything in "Not t
 - Every problem: unique `id`, `topic` (a concept, used as a filter chip), `prompt`, `explanation` (1-2 sentences:
   why, naming the trap). Distractors = real mistakes (e.g. `hi3` for `"hi" + 1 + 2`).
 - Flashcards (`cards`: `id`, `term`, `definition`, `topic`) are fine as plain recall of key terms.
-- Deck file `decks/<course>-<topic>.json` with `id`, `title` ("CS 209: Loops"), `course`, `description`, `scope`
-  (path to the course file), `cards`, `questions`. Add `{ "id", "file" }` to `decks/index.json`.
-  A continuing topic can extend an existing deck instead.
+- **One deck per class.** `decks/<course>.json` (e.g. `decks/cs209.json`) holds the whole class: `id`, `title`
+  ("CS 209"), `course`, `description`, `scope` (the course file), `generators`, `units`, `cards`, `questions`.
+  Each lecture is a **unit**: append its name to `units` (in lecture order) and put `"unit": "<name>"` on every card and
+  problem from it. The site filters by unit (and by topic within a unit), and "Whole class" mixes everything.
+  A new lecture never gets a new deck; a new class gets one entry in `decks/index.json`. If decks are ever merged,
+  list the old ids under that entry's `"aliases"`: old links redirect and saved progress moves over.
 
 - `mc` can also use `check: "compiles"` when the choices are single declarations: exactly the answer must compile.
 
 ## 3. Write templates (endless practice)
-Hand-written problems run out; templates don't. `generators/<deck id>.js` exports an array of templates, and the deck
-points at it with `"generators": "generators/<deck id>.js"`. Each template is one problem *shape* whose values
+Hand-written problems run out; templates don't. Each unit's templates live in `generators/<course>/<unit>.js`
+(e.g. `generators/cs209/loops.js`), and `generators/<course>.js` (the deck's `"generators"`) imports every unit file
+and tags it: `...unit('For Loops', loops)` — a new lecture is a new file plus one line there. Template ids must be unique
+across the whole class. Each template is one problem *shape* whose values
 (numbers, names, words, letters) come from random pools, with the answer **computed by Java's rules**:
 
 ```js
@@ -60,7 +65,7 @@ Rules:
 - Stay inside the course scope file. Aim for 25+ templates covering every topic and all four types.
 - Template ids are permanent: the app keys each user's weak-spot stats by template id (below), so renaming one resets
   its history. Add new templates rather than repurposing an id for a different concept.
-- Look at a few instances before trusting a template: `node tools/sample.mjs decks/<deck>.json 3`.
+- Look at a few instances before trusting a template: `node tools/sample.mjs decks/<course>.json 3`.
 
 ### Weak-spot weighting (automatic, no per-deck work)
 The app keeps per-template hit/miss stats in localStorage (`tstats:<deck>`; each answer decays older ones by 10%, so

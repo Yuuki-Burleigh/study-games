@@ -1,7 +1,7 @@
 // Problem templates for CS 209 for loops (lecture 10-6), mixed with earlier topics. Answers are computed by
 // running the same loop in JS with Java's rules (gen-kit.js). Scope: courses/cs209.md (no while syntax, no if,
 // no nested loops, no ==). CI samples every template and runs the Java for real.
-import { idiv, imod, jdouble, code, jstr, choices, program, NAMES, WORDS, LETTERS } from '../gen-kit.js';
+import { idiv, imod, jdouble, code, jstr, choices, program, NAMES, WORDS, LETTERS } from '../../gen-kit.js';
 
 const F = 'For loop basics', ACC = 'Counting & accumulating', SCOPE = 'Scope & braces', MIX = 'Loops + earlier topics', ERR = 'Finding errors';
 const OUT = 'Type exactly what this prints.';

@@ -1,12 +1,12 @@
 {
   "decks": [
     {
-      "id": "cs209-java-basics",
-      "file": "decks/cs209-java-basics.json"
-    },
-    {
-      "id": "cs209-loops",
-      "file": "decks/cs209-loops.json"
+      "id": "cs209",
+      "file": "decks/cs209.json",
+      "aliases": [
+        "cs209-java-basics",
+        "cs209-loops"
+      ]
     }
   ]
 }
