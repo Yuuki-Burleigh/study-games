@@ -2,12 +2,13 @@
  "id": "cs209",
  "title": "CS 209",
  "course": "CS 209",
- "description": "Intro Java, lectures 9-24 through 10-6: how Java runs, printing and concatenation, escape sequences, variables, types, division, and for loops.",
+ "description": "Intro Java, lectures 9-24 through 10-8: how Java runs, printing and concatenation, escape sequences, variables, types, division, for loops, loop scope and nested loops.",
  "scope": "courses/cs209.md",
  "generators": "generators/cs209.js",
  "units": [
   "Java Basics",
-  "For Loops"
+  "For Loops",
+  "Nested Loops"
  ],
  "cards": [
   {
@@ -310,6 +311,55 @@
    "definition": "A counter declared in the for (int i = ...) only exists inside the loop. Using i after it won't compile.",
    "topic": "Scope & braces",
    "unit": "For Loops"
+  },
+  {
+   "id": "n-nested",
+   "term": "Nested loop",
+   "definition": "A loop inside another loop's body. The inner loop runs all the way through on every pass of the outer loop.",
+   "topic": "Nested loops",
+   "unit": "Nested Loops"
+  },
+  {
+   "id": "n-outer-inner",
+   "term": "Outer / inner loop",
+   "definition": "The outer loop contains the inner loop. They need different counter names (e.g. i and j).",
+   "topic": "Nested loops",
+   "unit": "Nested Loops"
+  },
+  {
+   "id": "n-indep",
+   "term": "Independent nested loops",
+   "definition": "The inner bound doesn't use the outer counter. If the outer runs m times and the inner n times, the inner body runs m × n times.",
+   "topic": "Nested loops",
+   "unit": "Nested Loops"
+  },
+  {
+   "id": "n-dep",
+   "term": "Dependent (triangle / staircase) loop",
+   "definition": "The inner bound uses the outer counter (x <= i), so each row has a different length.",
+   "topic": "Triangle (dependent) loops",
+   "unit": "Nested Loops"
+  },
+  {
+   "id": "n-row",
+   "term": "Ending a row",
+   "definition": "A println() after the inner loop (but inside the outer one) ends one row per outer pass.",
+   "topic": "Nested loops",
+   "unit": "Nested Loops"
+  },
+  {
+   "id": "n-redeclare",
+   "term": "Re-declaring the counter",
+   "definition": "int i = 3; inside the loop that declared i won't compile. After the loop, i is gone: i = 5; fails, but int i = 5; is fine.",
+   "topic": "Loop variable scope",
+   "unit": "Nested Loops"
+  },
+  {
+   "id": "n-mixdiv",
+   "term": "int with double",
+   "definition": "If either side is a double, the result is a double and keeps its fraction: 7 / 2.0 is 3.5.",
+   "topic": "Nested + earlier topics",
+   "unit": "Nested Loops"
   }
  ],
  "questions": [
@@ -1909,6 +1959,498 @@
    "answer": 2,
    "explanation": "The for header's ( ) is never closed.",
    "unit": "For Loops"
+  },
+  {
+   "type": "mc",
+   "id": "nm-total",
+   "topic": "Nested loops",
+   "prompt": "How many stars does this print in total?",
+   "choices": [
+    "12",
+    "7",
+    "4",
+    "3"
+   ],
+   "answer": "12",
+   "explanation": "The inner loop runs all 3 passes on each of the 4 outer passes: 4 × 3 = 12, not 4 + 3.",
+   "code": "for (int i = 0; i < 4; i++) {\n    for (int j = 0; j < 3; j++) {\n        System.out.print(\"*\");\n    }\n}",
+   "unit": "Nested Loops"
+  },
+  {
+   "type": "mc",
+   "id": "nm-rows",
+   "topic": "Nested loops",
+   "prompt": "How many lines does this print?",
+   "choices": [
+    "2",
+    "5",
+    "10",
+    "1"
+   ],
+   "answer": "2",
+   "explanation": "println() is after the inner loop but inside the outer one, so it ends one row per outer pass: 2 rows of 5.",
+   "code": "for (int i = 0; i < 2; i++) {\n    for (int j = 0; j < 5; j++) {\n        System.out.print(\"o\");\n    }\n    System.out.println();\n}",
+   "unit": "Nested Loops"
+  },
+  {
+   "type": "mc",
+   "id": "nm-inner-runs",
+   "topic": "Nested loops",
+   "prompt": "In a nested for loop, what does the inner loop do?",
+   "choices": [
+    "Runs all of its passes on every pass of the outer loop",
+    "Runs once, after the outer loop finishes",
+    "Takes turns with the outer loop, one pass each",
+    "Runs only on the outer loop's first pass"
+   ],
+   "answer": "Runs all of its passes on every pass of the outer loop",
+   "explanation": "The inner loop is part of the outer loop's body, so each outer pass starts it from scratch and runs it to the end.",
+   "unit": "Nested Loops"
+  },
+  {
+   "type": "mc",
+   "id": "nm-same-name",
+   "topic": "Loop variable scope",
+   "prompt": "Why won't this compile?",
+   "choices": [
+    "The inner loop declares i again while the outer i still exists",
+    "Java doesn't allow a loop inside a loop",
+    "The inner loop has to count down",
+    "i must be declared before both loops"
+   ],
+   "answer": "The inner loop declares i again while the outer i still exists",
+   "explanation": "The inner loop sits inside the outer loop's scope, where i is already declared. Give the inner counter its own name (j, x...).",
+   "code": "for (int i = 0; i < 3; i++) {\n    for (int i = 0; i < 2; i++) {\n        System.out.print(\"*\");\n    }\n}",
+   "unit": "Nested Loops"
+  },
+  {
+   "type": "mc",
+   "id": "nm-after-decl",
+   "topic": "Loop variable scope",
+   "prompt": "Code right after the loop `for (int i = 0; i < 4; i++) { ... }` ends wants to use i. Which line compiles there?",
+   "choices": [
+    "int i = 10;",
+    "i = 10;",
+    "i++;",
+    "i += 10;"
+   ],
+   "answer": "int i = 10;",
+   "explanation": "The loop's i is gone after its closing brace, so only a fresh declaration works. The others all use an i that no longer exists.",
+   "check": "compiles",
+   "unit": "Nested Loops"
+  },
+  {
+   "type": "mc",
+   "id": "nm-after-value",
+   "topic": "Loop variable scope",
+   "prompt": "After `for (int i = 0; i < 3; i++) { }` finishes, what is true about i?",
+   "choices": [
+    "It no longer exists",
+    "It holds 3",
+    "It holds 2",
+    "It is reset to 0"
+   ],
+   "answer": "It no longer exists",
+   "explanation": "i was declared in the for header, so it lives only inside the loop. (It did reach 3 to end the loop, but you can't read it afterwards.)",
+   "unit": "Nested Loops"
+  },
+  {
+   "type": "mc",
+   "id": "nm-tri-total",
+   "topic": "Triangle (dependent) loops",
+   "prompt": "How many # does this print in total?",
+   "choices": [
+    "10",
+    "16",
+    "4",
+    "8"
+   ],
+   "answer": "10",
+   "explanation": "The inner loop runs i times: 1 + 2 + 3 + 4 = 10. It is not 4 × 4, because the inner bound changes with i.",
+   "code": "for (int i = 1; i <= 4; i++) {\n    for (int x = 1; x <= i; x++) {\n        System.out.print(\"#\");\n    }\n}",
+   "unit": "Nested Loops"
+  },
+  {
+   "type": "mc",
+   "id": "nm-dependent",
+   "topic": "Triangle (dependent) loops",
+   "prompt": "The outer loop is for (int i = 1; i <= 5; i++). Which inner header makes it a dependent (triangle) loop?",
+   "choices": [
+    "for (int x = 1; x <= i; x++)",
+    "for (int x = 1; x <= 5; x++)",
+    "for (int i = 1; i <= 5; i++)",
+    "for (int x = 5; x >= 1; x--)"
+   ],
+   "answer": "for (int x = 1; x <= i; x++)",
+   "explanation": "A dependent loop's inner bound uses the OUTER counter, so the row length changes each pass. Re-using i wouldn't even compile.",
+   "unit": "Nested Loops"
+  },
+  {
+   "type": "mc",
+   "id": "nm-shape-x",
+   "topic": "Nested loops",
+   "prompt": "What does this print?",
+   "choices": [
+    "123\n123",
+    "11\n22",
+    "112233",
+    "1\n2\n3"
+   ],
+   "answer": "123\n123",
+   "explanation": "Each row prints x (the inner counter) from 1 to 3, and there are 2 rows because the outer loop runs twice.",
+   "run": true,
+   "code": "for (int i = 1; i <= 2; i++) {\n    for (int x = 1; x <= 3; x++) {\n        System.out.print(x);\n    }\n    System.out.println();\n}",
+   "unit": "Nested Loops"
+  },
+  {
+   "type": "mc",
+   "id": "nm-shape-i",
+   "topic": "Nested loops",
+   "prompt": "What does this print?",
+   "choices": [
+    "111\n222",
+    "123\n123",
+    "12\n12\n12",
+    "111222"
+   ],
+   "answer": "111\n222",
+   "explanation": "It prints i, the OUTER counter, which stays the same for a whole row. 2 rows (i = 1, 2) of 3 (x = 1, 2, 3).",
+   "run": true,
+   "code": "for (int i = 1; i < 3; i++) {\n    for (int x = 1; x < 4; x++) {\n        System.out.print(i);\n    }\n    System.out.println();\n}",
+   "unit": "Nested Loops"
+  },
+  {
+   "type": "mc",
+   "id": "nm-println-inner",
+   "topic": "Nested loops",
+   "prompt": "How many lines does this print?",
+   "choices": [
+    "6",
+    "2",
+    "3",
+    "5"
+   ],
+   "answer": "6",
+   "explanation": "Here println is INSIDE the inner loop, so every one of the 2 × 3 = 6 inner passes prints its own line.",
+   "code": "for (int i = 0; i < 2; i++) {\n    for (int j = 0; j < 3; j++) {\n        System.out.println(\"go\");\n    }\n}",
+   "unit": "Nested Loops"
+  },
+  {
+   "type": "mc",
+   "id": "nm-mn",
+   "topic": "Nested loops",
+   "prompt": "An outer loop runs 6 times and its inner loop runs 4 times on each pass (they don't depend on each other). How many times does the inner body run?",
+   "choices": [
+    "24",
+    "10",
+    "6",
+    "4"
+   ],
+   "answer": "24",
+   "explanation": "Independent nested loops: m × n = 6 × 4 = 24.",
+   "unit": "Nested Loops"
+  },
+  {
+   "type": "mc",
+   "id": "nm-mixed-div",
+   "topic": "Nested + earlier topics",
+   "prompt": "What does this print?",
+   "choices": [
+    "3 3.5",
+    "3.5 3.5",
+    "3 3.0",
+    "3.5 3"
+   ],
+   "answer": "3 3.5",
+   "explanation": "7 / 2 is int / int, so the fraction is dropped (3). 7 / 2.0 has a double in it, so the result keeps its decimal: 3.5.",
+   "run": true,
+   "code": "System.out.println(7 / 2 + \" \" + 7 / 2.0);",
+   "unit": "Nested Loops"
+  },
+  {
+   "type": "mc",
+   "id": "nm-shrink",
+   "topic": "Triangle (dependent) loops",
+   "prompt": "What does this print?",
+   "choices": [
+    "***\n**\n*",
+    "*\n**\n***",
+    "***\n***\n***",
+    "******"
+   ],
+   "answer": "***\n**\n*",
+   "explanation": "i counts down 3, 2, 1, and the inner loop prints i stars, so the rows shrink.",
+   "run": true,
+   "code": "for (int i = 3; i >= 1; i--) {\n    for (int x = 1; x <= i; x++) {\n        System.out.print(\"*\");\n    }\n    System.out.println();\n}",
+   "unit": "Nested Loops"
+  },
+  {
+   "type": "output",
+   "id": "no-grid",
+   "topic": "Nested loops",
+   "prompt": "Type exactly what this prints.",
+   "code": "for (int r = 1; r <= 2; r++) {\n    for (int c = 1; c <= 3; c++) {\n        System.out.print(r * c);\n    }\n    System.out.println();\n}",
+   "answer": "123\n246",
+   "explanation": "Row r = 1 prints 1×1, 1×2, 1×3; row r = 2 prints 2, 4, 6. The println() ends each row.",
+   "unit": "Nested Loops"
+  },
+  {
+   "type": "output",
+   "id": "no-tri-num",
+   "topic": "Triangle (dependent) loops",
+   "prompt": "Type exactly what this prints.",
+   "code": "for (int i = 1; i <= 4; i++) {\n    for (int x = 1; x <= i; x++) {\n        System.out.print(x);\n    }\n    System.out.println();\n}",
+   "answer": "1\n12\n123\n1234",
+   "explanation": "The inner loop goes up to i, so each row prints 1..i and is one longer than the last.",
+   "unit": "Nested Loops"
+  },
+  {
+   "type": "output",
+   "id": "no-tri-i",
+   "topic": "Triangle (dependent) loops",
+   "prompt": "Type exactly what this prints.",
+   "code": "for (int i = 1; i <= 3; i++) {\n    for (int x = 1; x <= i; x++) {\n        System.out.print(i);\n    }\n    System.out.println();\n}",
+   "answer": "1\n22\n333",
+   "explanation": "Row i has i passes, and each pass prints i itself (not x).",
+   "unit": "Nested Loops"
+  },
+  {
+   "type": "output",
+   "id": "no-add",
+   "topic": "Nested + earlier topics",
+   "prompt": "Type exactly what this prints.",
+   "code": "for (int i = 1; i <= 3; i++) {\n    for (int j = 1; j <= 2; j++) {\n        System.out.print(i + j + \",\");\n    }\n    System.out.println();\n}",
+   "answer": "2,3,\n3,4,\n4,5,",
+   "explanation": "i + j comes first and both are ints, so they ADD before \",\" turns the result into text.",
+   "unit": "Nested Loops"
+  },
+  {
+   "type": "output",
+   "id": "no-text",
+   "topic": "Nested + earlier topics",
+   "prompt": "Type exactly what this prints.",
+   "code": "for (int i = 1; i <= 2; i++) {\n    for (int j = 1; j <= 2; j++) {\n        System.out.print(i + \"\" + j + \" \");\n    }\n    System.out.println();\n}",
+   "answer": "11 12 \n21 22 ",
+   "explanation": "Once \"\" joins, j is glued on as text: 1 and 2 make \"12\", not 3.",
+   "unit": "Nested Loops"
+  },
+  {
+   "type": "output",
+   "id": "no-no-println",
+   "topic": "Nested loops",
+   "prompt": "Type exactly what this prints.",
+   "code": "for (int i = 0; i < 3; i++) {\n    for (int j = 0; j < 2; j++) {\n        System.out.print(i);\n    }\n}",
+   "answer": "001122",
+   "explanation": "There is no println, so nothing ever starts a new line: each i is printed twice, all on one line.",
+   "unit": "Nested Loops"
+  },
+  {
+   "type": "output",
+   "id": "no-reuse",
+   "topic": "Loop variable scope",
+   "prompt": "Type exactly what this prints.",
+   "code": "for (int i = 1; i <= 3; i++) {\n    System.out.print(i);\n}\nSystem.out.println();\nfor (int i = 3; i >= 1; i--) {\n    System.out.print(i);\n}",
+   "answer": "123\n321",
+   "explanation": "The first loop's i is gone after its brace, so the second loop can declare its own int i. Same name, different variable.",
+   "unit": "Nested Loops"
+  },
+  {
+   "type": "output",
+   "id": "no-step",
+   "topic": "Nested loops",
+   "prompt": "Type exactly what this prints.",
+   "code": "for (int i = 4; i >= 2; i--) {\n    for (int x = 1; x <= i; x += 2) {\n        System.out.print(\"#\");\n    }\n    System.out.println();\n}",
+   "answer": "##\n##\n#",
+   "explanation": "x goes up by 2: for i = 4 it is 1, 3 (two #); i = 3 also 1, 3; i = 2 only 1.",
+   "unit": "Nested Loops"
+  },
+  {
+   "type": "output",
+   "id": "no-backslash",
+   "topic": "Nested + earlier topics",
+   "prompt": "Type exactly what this prints.",
+   "code": "for (int i = 0; i < 2; i++) {\n    for (int j = 0; j < 2; j++) {\n        System.out.print(\"\\\\\");\n    }\n    System.out.println(\"/\");\n}",
+   "answer": "\\\\/\n\\\\/",
+   "explanation": "\\ is special, so \"\\\\\" prints ONE backslash. Two inner passes give two, then println adds / and ends the row.",
+   "unit": "Nested Loops"
+  },
+  {
+   "type": "output",
+   "id": "no-label",
+   "topic": "Nested loops",
+   "prompt": "Type exactly what this prints.",
+   "code": "for (int i = 1; i <= 2; i++) {\n    System.out.print(\"R\" + i + \":\");\n    for (int j = 1; j <= 3; j++) {\n        System.out.print(j);\n    }\n    System.out.println();\n}",
+   "answer": "R1:123\nR2:123",
+   "explanation": "The label prints once per outer pass, BEFORE the inner loop runs, then the inner loop fills the rest of the row.",
+   "unit": "Nested Loops"
+  },
+  {
+   "type": "trace",
+   "id": "nt-count",
+   "topic": "Nested loops",
+   "prompt": "After this runs, what is the value of count?",
+   "code": "int count = 0;\nfor (int i = 0; i < 5; i++) {\n    for (int j = 0; j < 4; j++) {\n        count++;\n    }\n}",
+   "var": "count",
+   "answer": "20",
+   "explanation": "Independent loops: 5 outer passes × 4 inner passes = 20.",
+   "unit": "Nested Loops"
+  },
+  {
+   "type": "trace",
+   "id": "nt-tri-count",
+   "topic": "Triangle (dependent) loops",
+   "prompt": "After this runs, what is the value of count?",
+   "code": "int count = 0;\nfor (int i = 1; i <= 5; i++) {\n    for (int x = 1; x <= i; x++) {\n        count++;\n    }\n}",
+   "var": "count",
+   "answer": "15",
+   "explanation": "The inner loop runs i times: 1 + 2 + 3 + 4 + 5 = 15 (not 25).",
+   "unit": "Nested Loops"
+  },
+  {
+   "type": "trace",
+   "id": "nt-sum-i",
+   "topic": "Nested loops",
+   "prompt": "After this runs, what is the value of sum?",
+   "code": "int sum = 0;\nfor (int i = 1; i <= 3; i++) {\n    for (int j = 1; j <= 2; j++) {\n        sum += i;\n    }\n}",
+   "var": "sum",
+   "answer": "12",
+   "explanation": "Each i is added twice (once per inner pass): 2 × (1 + 2 + 3) = 12.",
+   "unit": "Nested Loops"
+  },
+  {
+   "type": "trace",
+   "id": "nt-sum-j",
+   "topic": "Triangle (dependent) loops",
+   "prompt": "After this runs, what is the value of sum?",
+   "code": "int sum = 0;\nfor (int i = 1; i <= 3; i++) {\n    for (int j = 1; j <= i; j++) {\n        sum += j;\n    }\n}",
+   "var": "sum",
+   "answer": "10",
+   "explanation": "Row 1 adds 1, row 2 adds 1 + 2, row 3 adds 1 + 2 + 3: 1 + 3 + 6 = 10.",
+   "unit": "Nested Loops"
+  },
+  {
+   "type": "trace",
+   "id": "nt-prod",
+   "topic": "Nested loops",
+   "prompt": "After this runs, what is the value of sum?",
+   "code": "int sum = 0;\nfor (int i = 1; i <= 3; i++) {\n    for (int j = 1; j <= 3; j++) {\n        sum += i * j;\n    }\n}",
+   "var": "sum",
+   "answer": "36",
+   "explanation": "Row i adds i×1 + i×2 + i×3 = 6i, so 6 + 12 + 18 = 36.",
+   "unit": "Nested Loops"
+  },
+  {
+   "type": "trace",
+   "id": "nt-avg",
+   "topic": "Nested + earlier topics",
+   "prompt": "After this runs, what is the value of avg?",
+   "code": "int sum = 0;\nfor (int i = 0; i < 3; i++) {\n    for (int j = 1; j <= 2; j++) {\n        sum += j;\n    }\n}\ndouble avg = sum / 2.0;",
+   "var": "avg",
+   "answer": "4.5",
+   "explanation": "sum = 3 × (1 + 2) = 9. Dividing by 2.0 (a double) keeps the fraction: 4.5, not 4.0.",
+   "unit": "Nested Loops"
+  },
+  {
+   "type": "trace",
+   "id": "nt-str",
+   "topic": "Nested + earlier topics",
+   "prompt": "After this runs, what is the value of s?",
+   "code": "String s = \"\";\nfor (int i = 1; i <= 2; i++) {\n    for (int j = 1; j <= 2; j++) {\n        s = s + i + j;\n    }\n}",
+   "var": "s",
+   "answer": "11122122",
+   "explanation": "s is a String, so i and j are appended as text each pass: 11, 12, 21, 22.",
+   "unit": "Nested Loops"
+  },
+  {
+   "type": "trace",
+   "id": "nt-last",
+   "topic": "Nested loops",
+   "prompt": "After this runs, what is the value of last?",
+   "code": "int last = 0;\nfor (int i = 1; i <= 3; i++) {\n    for (int j = i; j <= 4; j++) {\n        last = i * 10 + j;\n    }\n}",
+   "var": "last",
+   "answer": "34",
+   "explanation": "The very last inner pass is i = 3, j = 4, so last = 30 + 4 = 34.",
+   "unit": "Nested Loops"
+  },
+  {
+   "type": "bug",
+   "id": "nb-same-name",
+   "topic": "Loop variable scope",
+   "prompt": "Which line won't compile?",
+   "code": "int count = 0;\nfor (int i = 0; i < 3; i++) {\n    for (int i = 0; i < 3; i++) {\n        count++;\n    }\n}",
+   "answer": 3,
+   "explanation": "The inner header declares i while the outer i is still in scope. Inner and outer loops need different counter names.",
+   "unit": "Nested Loops"
+  },
+  {
+   "type": "bug",
+   "id": "nb-body-decl",
+   "topic": "Loop variable scope",
+   "prompt": "Which line won't compile?",
+   "code": "int total = 0;\nfor (int k = 1; k <= 4; k++) {\n    total += k;\n    int k = 2;\n}",
+   "answer": 4,
+   "explanation": "k was declared by the for header and the body is inside its scope, so int k = 2; is a duplicate declaration.",
+   "unit": "Nested Loops"
+  },
+  {
+   "type": "bug",
+   "id": "nb-after",
+   "topic": "Loop variable scope",
+   "prompt": "Which line won't compile?",
+   "code": "for (int i = 0; i < 3; i++) {\n    System.out.print(i);\n}\nSystem.out.println();\ni = 5;",
+   "answer": 5,
+   "explanation": "i disappears when the loop ends, so i = 5; refers to nothing. You would need int i = 5; to make a new one.",
+   "unit": "Nested Loops"
+  },
+  {
+   "type": "bug",
+   "id": "nb-inner-after",
+   "topic": "Loop variable scope",
+   "prompt": "Which line won't compile?",
+   "code": "for (int i = 1; i <= 2; i++) {\n    for (int j = 1; j <= 3; j++) {\n        System.out.print(i);\n    }\n    System.out.print(j);\n}",
+   "answer": 5,
+   "explanation": "j only lives inside the inner loop. After its closing brace it's gone, even though we're still inside the outer loop.",
+   "unit": "Nested Loops"
+  },
+  {
+   "type": "bug",
+   "id": "nb-zero",
+   "topic": "Nested + earlier topics",
+   "prompt": "This compiles. Which line crashes when it runs?",
+   "code": "int total = 60;\nfor (int i = 1; i <= 3; i++) {\n    for (int j = 3; j >= 1; j--) {\n        System.out.println(total / (i - j));\n    }\n}",
+   "answer": 4,
+   "explanation": "The first passes are fine (i - j is -2, -1), but at i = 1, j = 1 it is 0, and int division by 0 crashes at runtime.",
+   "unit": "Nested Loops"
+  },
+  {
+   "type": "bug",
+   "id": "nb-uninit",
+   "topic": "Finding errors",
+   "prompt": "Which line won't compile?",
+   "code": "int total;\nfor (int i = 0; i < 2; i++) {\n    for (int j = 0; j < 2; j++) {\n        total += j;\n    }\n}",
+   "answer": 4,
+   "explanation": "total += j reads total first, but total never got a starting value. Start accumulators at 0.",
+   "unit": "Nested Loops"
+  },
+  {
+   "type": "bug",
+   "id": "nb-commas",
+   "topic": "Finding errors",
+   "prompt": "Which line won't compile?",
+   "code": "int count = 0;\nfor (int i = 0; i < 2; i++) {\n    for (int j = 0, j < 2, j++) {\n        count++;\n    }\n}",
+   "answer": 3,
+   "explanation": "The inner header uses commas. The three parts of every for header are separated by semicolons.",
+   "unit": "Nested Loops"
+  },
+  {
+   "type": "bug",
+   "id": "nb-lossy",
+   "topic": "Nested + earlier topics",
+   "prompt": "Which line won't compile?",
+   "code": "int sum = 0;\nfor (int i = 1; i <= 3; i++) {\n    for (int j = 1; j <= 3; j++) {\n        sum += j;\n    }\n}\nint avg = sum / 2.0;",
+   "answer": 7,
+   "explanation": "sum / 2.0 is a double (int with double), which can't be stored in an int. Use double avg.",
+   "unit": "Nested Loops"
   }
  ]
 }
