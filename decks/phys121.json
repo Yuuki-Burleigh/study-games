@@ -1,0 +1,917 @@
+{
+ "id": "phys121",
+ "title": "Physics 121",
+ "course": "Physics 121",
+ "description": "Measurement (sig figs, scientific notation, unit conversion and dimensional analysis), 1D motion with signs, and adding vectors.",
+ "scope": "courses/phys121.md",
+ "generators": "generators/phys121.js",
+ "formats": [
+  "mc",
+  "num"
+ ],
+ "prose": true,
+ "units": [
+  "Measurement & Units",
+  "1D Motion",
+  "Vectors"
+ ],
+ "cards": [
+  {
+   "id": "c-sf",
+   "term": "Significant figures",
+   "definition": "The digits in a measurement that were actually measured (plus one estimated digit).",
+   "topic": "Significant figures",
+   "unit": "Measurement & Units"
+  },
+  {
+   "id": "c-lead",
+   "term": "Leading zeros",
+   "definition": "Zeros before the first nonzero digit (0.004). Never significant: they only place the decimal point.",
+   "topic": "Significant figures",
+   "unit": "Measurement & Units"
+  },
+  {
+   "id": "c-captive",
+   "term": "Captive zeros",
+   "definition": "Zeros between nonzero digits (1005). Always significant.",
+   "topic": "Significant figures",
+   "unit": "Measurement & Units"
+  },
+  {
+   "id": "c-trail",
+   "term": "Trailing zeros",
+   "definition": "Zeros at the end. Significant only if the number has a decimal point: 190 has 2, 190. has 3, 190.0 has 4.",
+   "topic": "Significant figures",
+   "unit": "Measurement & Units"
+  },
+  {
+   "id": "c-sci",
+   "term": "Scientific notation",
+   "definition": "A number as (1 to 10) × 10ⁿ. The mantissa shows exactly the sig figs: 0.0500 = 5.00 × 10⁻².",
+   "topic": "Scientific notation",
+   "unit": "Measurement & Units"
+  },
+  {
+   "id": "c-neg-exp",
+   "term": "Negative power of ten",
+   "definition": "Means the number is smaller than 1: 10⁻³ moves the decimal point 3 places left.",
+   "topic": "Scientific notation",
+   "unit": "Measurement & Units"
+  },
+  {
+   "id": "c-factor",
+   "term": "Conversion factor",
+   "definition": "A fraction equal to 1, like (1000 m / 1 km). The unit you want to cancel goes on the bottom.",
+   "topic": "Unit conversion",
+   "unit": "Measurement & Units"
+  },
+  {
+   "id": "c-dim",
+   "term": "Dimensional analysis",
+   "definition": "Multiply by conversion factors and cross out units until only the unit you want is left. No units, no points!",
+   "topic": "Unit conversion",
+   "unit": "Measurement & Units"
+  },
+  {
+   "id": "c-profit",
+   "term": "Profit",
+   "definition": "Revenue − costs. Negative profit is a loss. A rate cost ($/day) must be multiplied by the time first.",
+   "topic": "Rates & profit",
+   "unit": "Measurement & Units"
+  },
+  {
+   "id": "c-disp",
+   "term": "Displacement (Δx)",
+   "definition": "Change in position, x_final − x_initial. Has a direction (sign).",
+   "topic": "Displacement vs distance",
+   "unit": "1D Motion"
+  },
+  {
+   "id": "c-dist",
+   "term": "Distance",
+   "definition": "Total path length traveled. Never negative; ≥ |displacement|.",
+   "topic": "Displacement vs distance",
+   "unit": "1D Motion"
+  },
+  {
+   "id": "c-vel",
+   "term": "Velocity",
+   "definition": "Rate of change of position (m/s), with a sign for direction.",
+   "topic": "Acceleration",
+   "unit": "1D Motion"
+  },
+  {
+   "id": "c-acc",
+   "term": "Acceleration",
+   "definition": "Rate of change of velocity: a = Δv / Δt (m/s²). Its sign is a direction, not \"speeding up\".",
+   "topic": "Acceleration",
+   "unit": "1D Motion"
+  },
+  {
+   "id": "c-speedup",
+   "term": "Speeding up vs slowing down",
+   "definition": "v and a with the same sign: speeding up. Opposite signs: slowing down.",
+   "topic": "Speeding up vs slowing down",
+   "unit": "1D Motion"
+  },
+  {
+   "id": "c-avgv",
+   "term": "Average velocity",
+   "definition": "Total displacement ÷ total time. With constant acceleration it also equals (v₀ + v)/2.",
+   "topic": "Average velocity vs speed",
+   "unit": "1D Motion"
+  },
+  {
+   "id": "c-avgs",
+   "term": "Average speed",
+   "definition": "Total distance ÷ total time. Differs from |average velocity| when the object turns around.",
+   "topic": "Average velocity vs speed",
+   "unit": "1D Motion"
+  },
+  {
+   "id": "c-k1",
+   "term": "v = v₀ + at",
+   "definition": "Final velocity after accelerating for time t (constant a).",
+   "topic": "Constant acceleration",
+   "unit": "1D Motion"
+  },
+  {
+   "id": "c-k2",
+   "term": "Δx = v₀t + ½at²",
+   "definition": "Displacement after time t with constant a (no final velocity needed).",
+   "topic": "Constant acceleration",
+   "unit": "1D Motion"
+  },
+  {
+   "id": "c-k3",
+   "term": "v² = v₀² + 2aΔx",
+   "definition": "Links speeds and displacement with no time needed.",
+   "topic": "Constant acceleration",
+   "unit": "1D Motion"
+  },
+  {
+   "id": "c-k4",
+   "term": "Δx = ½(v₀ + v)t",
+   "definition": "Displacement = average velocity × time, for constant acceleration.",
+   "topic": "Constant acceleration",
+   "unit": "1D Motion"
+  },
+  {
+   "id": "c-xt",
+   "term": "Slope of x-vs-t",
+   "definition": "Velocity. Straight line = constant velocity; curve = accelerating.",
+   "topic": "Motion graphs",
+   "unit": "1D Motion"
+  },
+  {
+   "id": "c-vt",
+   "term": "v-vs-t graph",
+   "definition": "Slope = acceleration; area under the line = displacement (negative below the axis).",
+   "topic": "Motion graphs",
+   "unit": "1D Motion"
+  },
+  {
+   "id": "c-vector",
+   "term": "Vector vs scalar",
+   "definition": "A vector has magnitude AND direction (displacement, velocity). A scalar has only size (distance, speed, time).",
+   "topic": "Components",
+   "unit": "Vectors"
+  },
+  {
+   "id": "c-comp",
+   "term": "Components",
+   "definition": "Ax = A cos θ, Ay = A sin θ when θ is measured from the +x axis. Signs come from the quadrant.",
+   "topic": "Components",
+   "unit": "Vectors"
+  },
+  {
+   "id": "c-mag",
+   "term": "Magnitude of R",
+   "definition": "|R| = √(Rx² + Ry²), after adding all the x-components and all the y-components.",
+   "topic": "Adding vectors",
+   "unit": "Vectors"
+  },
+  {
+   "id": "c-polar",
+   "term": "Polar angle",
+   "definition": "Direction measured counterclockwise from +x (East), 0° to 360°.",
+   "topic": "Direction (polar angle)",
+   "unit": "Vectors"
+  },
+  {
+   "id": "c-compass",
+   "term": "\"θ North of West\"",
+   "definition": "Start pointing West, rotate θ toward North. Polar angle 180° − θ.",
+   "topic": "Direction (compass)",
+   "unit": "Vectors"
+  },
+  {
+   "id": "c-quad",
+   "term": "Quadrant check",
+   "definition": "tan⁻¹(Ry/Rx) only returns −90° to 90°. If Rx < 0, add 180°. Always sketch the triangle.",
+   "topic": "Direction (polar angle)",
+   "unit": "Vectors"
+  },
+  {
+   "id": "c-resultant",
+   "term": "Resultant",
+   "definition": "The single vector equal to the sum of the others: tip-to-tail, or add the components.",
+   "topic": "Adding vectors",
+   "unit": "Vectors"
+  }
+ ],
+ "questions": [
+  {
+   "id": "m-sf-zeros",
+   "type": "mc",
+   "unit": "Measurement & Units",
+   "topic": "Significant figures",
+   "prompt": "Which zeros in 0.04080 are significant?",
+   "choices": [
+    "The zero between the 4 and 8, and the final zero",
+    "All four zeros",
+    "Only the zero between the 4 and 8",
+    "None of them"
+   ],
+   "answer": "The zero between the 4 and 8, and the final zero",
+   "explanation": "Leading zeros (0.0…) only place the decimal point. The captive zero counts, and the trailing zero counts because there is a decimal point: 4 sig figs."
+  },
+  {
+   "id": "m-sf-point",
+   "type": "mc",
+   "unit": "Measurement & Units",
+   "topic": "Significant figures",
+   "prompt": "One lab notebook says 2300 m and another says 2300. m. How many sig figs does each have?",
+   "choices": [
+    "2 and 4",
+    "4 and 4",
+    "2 and 2",
+    "4 and 2"
+   ],
+   "answer": "2 and 4",
+   "explanation": "Without a decimal point the trailing zeros are placeholders (2 sig figs). The written decimal point says they were measured (4)."
+  },
+  {
+   "id": "m-sf-why-point",
+   "type": "mc",
+   "unit": "Measurement & Units",
+   "topic": "Significant figures",
+   "prompt": "Why would someone write 600. g with a decimal point at the end?",
+   "choices": [
+    "To show all three digits were measured: 3 sig figs",
+    "It is a typo for 600.0 g",
+    "It means the mass was rounded to the nearest 100 g",
+    "It turns 600 into a 1-sig-fig number"
+   ],
+   "answer": "To show all three digits were measured: 3 sig figs",
+   "explanation": "600 alone has 1 sig fig. The trailing point makes the zeros count, so 600. has 3 (and 600.0 would have 4)."
+  },
+  {
+   "id": "n-sf-1",
+   "type": "num",
+   "unit": "Measurement & Units",
+   "topic": "Significant figures",
+   "prompt": "How many significant figures does 0.00905 have?",
+   "answer": 3,
+   "explanation": "The three leading zeros never count; 9, the captive 0 and 5 do: 3.",
+   "tol": 0
+  },
+  {
+   "id": "n-sf-2",
+   "type": "num",
+   "unit": "Measurement & Units",
+   "topic": "Significant figures",
+   "prompt": "How many significant figures does 7020. have?",
+   "answer": 4,
+   "explanation": "Captive zero counts, and the trailing zero counts because of the decimal point: 4.",
+   "tol": 0
+  },
+  {
+   "id": "n-sf-3",
+   "type": "num",
+   "unit": "Measurement & Units",
+   "topic": "Significant figures",
+   "prompt": "How many significant figures does 50,000 have (no decimal point)?",
+   "answer": 1,
+   "explanation": "With no decimal point, trailing zeros are placeholders: only the 5 counts. Write 5.0000 × 10⁴ if all five were measured.",
+   "tol": 0
+  },
+  {
+   "id": "n-sf-4",
+   "type": "num",
+   "unit": "Measurement & Units",
+   "topic": "Significant figures",
+   "prompt": "How many significant figures does 0.300 have?",
+   "answer": 3,
+   "explanation": "The leading 0 doesn't count; the 3 and both trailing zeros after the decimal point do: 3.",
+   "tol": 0
+  },
+  {
+   "id": "m-sci-same",
+   "type": "mc",
+   "unit": "Measurement & Units",
+   "topic": "Scientific notation",
+   "prompt": "Which pair shows the same value AND the same number of sig figs?",
+   "choices": [
+    "0.00720 and 7.20 × 10⁻³",
+    "0.00720 and 7.2 × 10⁻³",
+    "0.00720 and 7.20 × 10³",
+    "720 and 7.20 × 10²"
+   ],
+   "answer": "0.00720 and 7.20 × 10⁻³",
+   "explanation": "0.00720 has 3 sig figs (the trailing 0 counts) and is smaller than 1, so the power is negative: 7.20 × 10⁻³. 720 has only 2."
+  },
+  {
+   "id": "m-sci-4000",
+   "type": "mc",
+   "unit": "Measurement & Units",
+   "topic": "Scientific notation",
+   "prompt": "A length is about four thousand meters, measured to the nearest 10 m (3 sig figs). How should you write it?",
+   "choices": [
+    "4.00 × 10³ m",
+    "4000 m",
+    "4.000 × 10³ m",
+    "4.0 × 10³ m"
+   ],
+   "answer": "4.00 × 10³ m",
+   "explanation": "4000 shows only 1 sig fig. Scientific notation lets the mantissa carry exactly the 3 measured digits: 4.00."
+  },
+  {
+   "id": "m-sci-biggest",
+   "type": "mc",
+   "unit": "Measurement & Units",
+   "topic": "Scientific notation",
+   "prompt": "Which number is the largest?",
+   "choices": [
+    "3.1 × 10⁻²",
+    "9.8 × 10⁻³",
+    "0.0029",
+    "2.95 × 10⁻³"
+   ],
+   "answer": "3.1 × 10⁻²",
+   "explanation": "Compare powers first: 10⁻² beats 10⁻³, so 3.1 × 10⁻² = 0.031 wins even though 9.8 has a bigger mantissa."
+  },
+  {
+   "id": "n-sci-exp",
+   "type": "num",
+   "unit": "Measurement & Units",
+   "topic": "Scientific notation",
+   "prompt": "When 0.000607 is written in scientific notation, what is the power of ten?",
+   "answer": -4,
+   "explanation": "0.000607 = 6.07 × 10⁻⁴: the decimal point moves 4 places right to get past the 6, so the power is −4.",
+   "tol": 0
+  },
+  {
+   "id": "m-round-1",
+   "type": "mc",
+   "unit": "Measurement & Units",
+   "topic": "Rounding to sig figs",
+   "prompt": "Round 0.0046350 to 2 significant figures.",
+   "choices": [
+    "0.0046",
+    "0.00",
+    "0.0047",
+    "0.005"
+   ],
+   "answer": "0.0046",
+   "explanation": "Start counting at the 4 (leading zeros don't count): 4, 6, and the next digit is 3, so round down to 0.0046. \"0.00\" is 2 decimal places."
+  },
+  {
+   "id": "m-conv-flip",
+   "type": "mc",
+   "unit": "Measurement & Units",
+   "topic": "Unit conversion",
+   "prompt": "Converting 90 km/h to m/s, a student gets 324 m/s. What went wrong?",
+   "choices": [
+    "They multiplied by 3.6 instead of dividing",
+    "They forgot to convert hours to minutes",
+    "Nothing: 90 km/h is 324 m/s",
+    "They should have multiplied by 1000 only"
+   ],
+   "answer": "They multiplied by 3.6 instead of dividing",
+   "explanation": "90 × (1000 m / 1 km) × (1 h / 3600 s) = 25 m/s. 1 m/s = 3.6 km/h, so km/h → m/s divides by 3.6."
+  },
+  {
+   "id": "m-dim-years",
+   "type": "mc",
+   "unit": "Measurement & Units",
+   "topic": "Unit conversion",
+   "prompt": "Which product comes out in years?",
+   "choices": [
+    "(30 gems) × (6 months / 1 gem) × (1 year / 12 months)",
+    "(30 gems) × (1 gem / 6 months) × (12 months / 1 year)",
+    "(30 gems) ÷ (6 months / 1 gem)",
+    "(6 months / 1 gem) × (12 months / 1 year)"
+   ],
+   "answer": "(30 gems) × (6 months / 1 gem) × (1 year / 12 months)",
+   "explanation": "Cross out units: gems cancel gem, months cancel months, leaving years (15 years). The others leave gems²/year, gems²/month and months²/(gem·year)."
+  },
+  {
+   "id": "n-conv-snail",
+   "type": "num",
+   "unit": "Measurement & Units",
+   "topic": "Unit conversion",
+   "prompt": "A snail crawls at 1.5 mm/s. How many meters does it cover in one hour?",
+   "answer": 5.4,
+   "explanation": "1.5 mm/s × (1 m / 1000 mm) × (3600 s / 1 h) × 1 h = 5.4 m. Forgetting mm → m gives 5400.",
+   "units": "m"
+  },
+  {
+   "id": "n-conv-heart",
+   "type": "num",
+   "unit": "Measurement & Units",
+   "topic": "Unit conversion",
+   "prompt": "A resting heart beats 72 times per minute. How many beats is that in one day?",
+   "answer": 103680,
+   "explanation": "72 beats/min × 60 min/h × 24 h/day = 103,680 beats. Stopping at 4,320 gives beats per hour.",
+   "units": "beats"
+  },
+  {
+   "id": "n-conv-kmh",
+   "type": "num",
+   "unit": "Measurement & Units",
+   "topic": "Unit conversion",
+   "prompt": "A hummingbird flies at 13 m/s. What is that in km/h?",
+   "answer": 46.8,
+   "explanation": "13 m/s × (3600 s / 1 h) × (1 km / 1000 m) = 46.8 km/h.",
+   "units": "km/h"
+  },
+  {
+   "id": "n-money-hours",
+   "type": "num",
+   "unit": "Measurement & Units",
+   "topic": "Dimensional analysis (money)",
+   "prompt": "A laptop costs $1,360. You earn $12 per hour of work, but $3 of every hour goes to bus fare. How many whole hours must you work to afford it?",
+   "answer": 152,
+   "explanation": "You keep $12 − $3 = $9/h. $1,360 × (1 h / $9) = 151.1 h; 151 hours leaves you short, so 152.",
+   "units": "hours",
+   "tol": 0
+  },
+  {
+   "id": "n-money-sapphire",
+   "type": "num",
+   "unit": "Measurement & Units",
+   "topic": "Rates & profit",
+   "prompt": "A lab grows one sapphire every 4 months (use 30 days per month). The machine's electricity costs $6 per day, and each sapphire sells for $2,500. What is the profit per sapphire?",
+   "answer": 1780,
+   "explanation": "Electricity: $6/day × 120 days = $720. Profit = $2,500 − $720 = $1,780. Leaving out the cost answers a different question (revenue).",
+   "units": "dollars",
+   "abs": 0.5
+  },
+  {
+   "id": "n-money-boat",
+   "type": "num",
+   "unit": "Measurement & Units",
+   "topic": "Dimensional analysis (money)",
+   "prompt": "Each lab-grown sapphire earns you $1,780 profit and takes 4 months to make, one at a time; you can only sell whole ones. How many years until you can afford a $27,000 boat?",
+   "answer": 5.33333,
+   "explanation": "$27,000 ÷ $1,780 = 15.2 → 16 sapphires (15 is not enough). 16 × 4 months × (1 year / 12 months) = 5.33 years. Using the $2,500 sale price instead of the profit is the trap.",
+   "units": "years"
+  },
+  {
+   "id": "n-rate-year",
+   "type": "num",
+   "unit": "Measurement & Units",
+   "topic": "Rates & profit",
+   "prompt": "A fish tank heater costs $0.35 per day to run. What does it cost over a 365-day year?",
+   "answer": 127.75,
+   "explanation": "$0.35/day × 365 days = $127.75.",
+   "units": "dollars",
+   "abs": 0.01
+  },
+  {
+   "id": "m-profit-sign",
+   "type": "mc",
+   "unit": "Measurement & Units",
+   "topic": "Rates & profit",
+   "prompt": "Making one item costs $9/day for 200 days, and it sells for $1,500. What happens?",
+   "choices": [
+    "You lose $300 on each one",
+    "You make $300 on each one",
+    "You make $1,500 on each one",
+    "You break even"
+   ],
+   "answer": "You lose $300 on each one",
+   "explanation": "Cost per item: $9/day × 200 days = $1,800. Profit = $1,500 − $1,800 = −$300, a loss."
+  },
+  {
+   "id": "m-dd-laps",
+   "type": "mc",
+   "unit": "1D Motion",
+   "topic": "Displacement vs distance",
+   "prompt": "A runner does 3 full laps of a 400 m track and stops exactly at the starting line. What are the distance and the displacement?",
+   "choices": [
+    "1200 m and 0 m",
+    "1200 m and 1200 m",
+    "0 m and 1200 m",
+    "400 m and 0 m"
+   ],
+   "answer": "1200 m and 0 m",
+   "explanation": "Distance counts every meter run (3 × 400). Displacement only compares start and finish, which are the same spot."
+  },
+  {
+   "id": "m-neg-accel",
+   "type": "mc",
+   "unit": "1D Motion",
+   "topic": "Speeding up vs slowing down",
+   "prompt": "An object has a negative acceleration. Which MUST be true?",
+   "choices": [
+    "Its velocity is changing toward the negative direction",
+    "It is slowing down",
+    "It is moving in the negative direction",
+    "It is about to stop"
+   ],
+   "answer": "Its velocity is changing toward the negative direction",
+   "explanation": "A negative a only says v is getting more negative. If v is negative too, the object is actually speeding up."
+  },
+  {
+   "id": "m-west-slow",
+   "type": "mc",
+   "unit": "1D Motion",
+   "topic": "Speeding up vs slowing down",
+   "prompt": "Take West as negative. A truck is moving West and slowing down. What are the signs?",
+   "choices": [
+    "v negative, a positive",
+    "v negative, a negative",
+    "v positive, a negative",
+    "v positive, a positive"
+   ],
+   "answer": "v negative, a positive",
+   "explanation": "Moving West: v < 0. Slowing down means a points opposite to v, so a > 0 even though it's \"decelerating\"."
+  },
+  {
+   "id": "m-zero-v",
+   "type": "mc",
+   "unit": "1D Motion",
+   "topic": "Speeding up vs slowing down",
+   "prompt": "A ball rolled up a ramp stops for an instant at its highest point before rolling back. At that instant…",
+   "choices": [
+    "v = 0 but a is not 0",
+    "v = 0 and a = 0",
+    "v is not 0 but a = 0",
+    "both v and a are at their maximum"
+   ],
+   "answer": "v = 0 but a is not 0",
+   "explanation": "The velocity is passing through zero (changing from + to −), so it is still changing: a ≠ 0. a = 0 would leave it stuck at rest."
+  },
+  {
+   "id": "m-vt-slope",
+   "type": "mc",
+   "unit": "1D Motion",
+   "topic": "Motion graphs",
+   "prompt": "On a velocity-vs-time graph, what do the slope and the area under the line tell you?",
+   "choices": [
+    "Slope = acceleration, area = displacement",
+    "Slope = displacement, area = acceleration",
+    "Slope = speed, area = distance traveled",
+    "Slope = position, area = velocity"
+   ],
+   "answer": "Slope = acceleration, area = displacement",
+   "explanation": "Slope = Δv/Δt (acceleration). Area = v × t (displacement; area below the axis counts negative)."
+  },
+  {
+   "id": "m-xt-line",
+   "type": "mc",
+   "unit": "1D Motion",
+   "topic": "Motion graphs",
+   "prompt": "A position-vs-time graph is a straight line sloping downward. The object is…",
+   "choices": [
+    "moving in the − direction at constant speed",
+    "slowing down",
+    "speeding up in the − direction",
+    "at rest below the origin"
+   ],
+   "answer": "moving in the − direction at constant speed",
+   "explanation": "Slope of x-vs-t is velocity. A straight line has one constant slope; sloping down means that velocity is negative."
+  },
+  {
+   "id": "m-at-cruise",
+   "type": "mc",
+   "unit": "1D Motion",
+   "topic": "Motion graphs",
+   "prompt": "During a stretch where a car holds a steady −20 m/s, what does the acceleration-vs-time graph show?",
+   "choices": [
+    "A flat line at a = 0",
+    "A flat line at −20 m/s²",
+    "A line sloping downward",
+    "A flat line at some negative value"
+   ],
+   "answer": "A flat line at a = 0",
+   "explanation": "Constant velocity, even a negative one, means no change in v: a = 0. The −20 shows on the v-vs-t graph, not the a-vs-t graph."
+  },
+  {
+   "id": "m-avg-speed-legs",
+   "type": "mc",
+   "unit": "1D Motion",
+   "topic": "Average velocity vs speed",
+   "prompt": "You drive 60 km at 30 km/h, then another 60 km at 60 km/h. What is your average speed?",
+   "choices": [
+    "40 km/h",
+    "45 km/h",
+    "50 km/h",
+    "35 km/h"
+   ],
+   "answer": "40 km/h",
+   "explanation": "Times: 2 h + 1 h = 3 h for 120 km, so 40 km/h. Averaging the speeds (45) ignores that you spent longer at the slow speed."
+  },
+  {
+   "id": "n-acc-east",
+   "type": "num",
+   "unit": "1D Motion",
+   "topic": "Acceleration",
+   "prompt": "Take East as positive. A train moving East at 25 m/s slows to 10 m/s in 6 s. What is its acceleration?",
+   "answer": -2.5,
+   "explanation": "a = (v − v₀)/t = (10 − 25)/6 = −2.5 m/s². Slowing down while moving + gives a negative a.",
+   "units": "m/s²"
+  },
+  {
+   "id": "n-acc-turn",
+   "type": "num",
+   "unit": "1D Motion",
+   "topic": "Acceleration",
+   "prompt": "Take East as positive. A puck sliding West at 12 m/s is hit and 0.5 s later slides East at 8 m/s. What was its average acceleration?",
+   "answer": 40,
+   "explanation": "a = (v − v₀)/t = (+8 − (−12))/0.5 = 40 m/s². Using 8 − 12 forgets that the velocity changed direction.",
+   "units": "m/s²"
+  },
+  {
+   "id": "n-trip-time",
+   "type": "num",
+   "unit": "1D Motion",
+   "topic": "Multi-part trips",
+   "prompt": "Take North as positive. A bus moving North goes from +8 m/s to +20 m/s in 4 s, holds +20 m/s for 240 m, then brakes to a stop in 6 s. How long does the whole trip take?",
+   "answer": 22,
+   "explanation": "The middle part needs t = Δx / v = 240/20 = 12 s. Total: 4 + 12 + 6 = 22 s.",
+   "units": "s"
+  },
+  {
+   "id": "n-trip-disp",
+   "type": "num",
+   "unit": "1D Motion",
+   "topic": "Multi-part trips",
+   "prompt": "Take North as positive. A bus moving North goes from +8 m/s to +20 m/s in 4 s, holds +20 m/s for 240 m, then brakes to a stop in 6 s. What is its total displacement?",
+   "answer": 356,
+   "explanation": "Speeding up: average 14 m/s × 4 s = 56 m. Cruising: 240 m. Braking: average 10 m/s × 6 s = 60 m. Total 356 m. Using the final speeds (80 + 120) overcounts.",
+   "units": "m"
+  },
+  {
+   "id": "n-trip-avg",
+   "type": "num",
+   "unit": "1D Motion",
+   "topic": "Average velocity vs speed",
+   "prompt": "Take North as positive. A bus moving North goes from +8 m/s to +20 m/s in 4 s, holds +20 m/s for 240 m, then brakes to a stop in 6 s. What is its average velocity for the whole trip?",
+   "answer": 16.1818,
+   "explanation": "Total displacement / total time = 356 m / 22 s = 16.2 m/s. Averaging 8, 20 and 0 gives a meaningless number.",
+   "units": "m/s"
+  },
+  {
+   "id": "n-rest-time",
+   "type": "num",
+   "unit": "1D Motion",
+   "topic": "Constant acceleration",
+   "prompt": "Take West as negative. A car starts from rest and reaches −30 m/s while moving −90 m. How long does that take?",
+   "answer": 6,
+   "explanation": "Average velocity = (0 + (−30))/2 = −15 m/s, so t = −90 / −15 = 6 s. Dividing by the final −30 m/s gives 3 s, as if it had been at full speed the whole time.",
+   "units": "s"
+  },
+  {
+   "id": "n-rest-acc",
+   "type": "num",
+   "unit": "1D Motion",
+   "topic": "Constant acceleration",
+   "prompt": "Take West as negative. A car speeds up steadily from rest to −30 m/s over a displacement of −90 m. What is its acceleration?",
+   "answer": -5,
+   "explanation": "v² = v₀² + 2aΔx → a = 900 / (2 × −90) = −5 m/s². It speeds up while moving −, so a is negative.",
+   "units": "m/s²"
+  },
+  {
+   "id": "n-ramp-disp",
+   "type": "num",
+   "unit": "1D Motion",
+   "topic": "Displacement vs distance",
+   "prompt": "A cart is pushed up a ramp at +6 m/s and has a constant acceleration of −2 m/s² (it slows, stops, and rolls back). What is its displacement after 5 s?",
+   "answer": 5,
+   "explanation": "Δx = v₀t + ½at² = 30 − 25 = 5 m. The formula handles the turnaround automatically.",
+   "units": "m"
+  },
+  {
+   "id": "n-ramp-dist",
+   "type": "num",
+   "unit": "1D Motion",
+   "topic": "Displacement vs distance",
+   "prompt": "A cart is pushed up a ramp at +6 m/s and has a constant acceleration of −2 m/s², so it slows, stops, and rolls back down. What total DISTANCE does it travel in the first 5 s?",
+   "answer": 13,
+   "explanation": "It stops at t = 3 s after going up 6²/(2·2) = 9 m, then rolls back ½·2·2² = 4 m in the last 2 s: 9 + 4 = 13 m. The displacement is only 5 m.",
+   "units": "m"
+  },
+  {
+   "id": "n-graph-area",
+   "type": "num",
+   "unit": "1D Motion",
+   "topic": "Motion graphs",
+   "prompt": "A velocity-vs-time graph is flat at −15 m/s from t = 0 to 4 s, then a straight line up to 0 m/s at t = 10 s. What is the displacement from 0 to 10 s?",
+   "answer": -105,
+   "explanation": "Rectangle: −15 × 4 = −60 m. Triangle: ½ × (−15) × 6 = −45 m. Total −105 m (below the axis, so negative).",
+   "units": "m"
+  },
+  {
+   "id": "n-stop-time",
+   "type": "num",
+   "unit": "1D Motion",
+   "topic": "Constant acceleration",
+   "prompt": "A car moving at 28 m/s brakes steadily to a stop in 70 m. How long does it take to stop?",
+   "answer": 5,
+   "explanation": "Average velocity while braking = 28/2 = 14 m/s; t = 70 / 14 = 5 s.",
+   "units": "s"
+  },
+  {
+   "id": "n-cruise-west",
+   "type": "num",
+   "unit": "1D Motion",
+   "topic": "Constant velocity",
+   "prompt": "Take East as positive. A plane holds −220 m/s (heading West). How long does it take to cover a displacement of −33,000 m?",
+   "answer": 150,
+   "explanation": "t = Δx / v = −33,000 / −220 = 150 s. The negatives cancel; time is always positive.",
+   "units": "s"
+  },
+  {
+   "id": "m-v-meaning",
+   "type": "mc",
+   "unit": "Vectors",
+   "topic": "Direction (compass)",
+   "prompt": "What does \"25° North of West\" mean?",
+   "choices": [
+    "Point West, then turn 25° toward North",
+    "Point North, then turn 25° toward West",
+    "Point West, then turn 25° toward South",
+    "25° counterclockwise from East"
+   ],
+   "answer": "Point West, then turn 25° toward North",
+   "explanation": "Read it backwards: start at the last direction (West), rotate toward the first (North)."
+  },
+  {
+   "id": "m-v-polar",
+   "type": "mc",
+   "unit": "Vectors",
+   "topic": "Direction (polar angle)",
+   "prompt": "What is the polar angle (counterclockwise from East) of a vector pointing 25° North of West?",
+   "choices": [
+    "155°",
+    "115°",
+    "25°",
+    "205°"
+   ],
+   "answer": "155°",
+   "explanation": "West is 180°; turning 25° toward North (back toward 90°) gives 180° − 25° = 155°. 205° would be 25° South of West."
+  },
+  {
+   "id": "m-v-swap",
+   "type": "mc",
+   "unit": "Vectors",
+   "topic": "Components",
+   "prompt": "A vector points 30° East of North. Which component uses cos 30°?",
+   "choices": [
+    "The y (North) component",
+    "The x (East) component",
+    "Both components",
+    "Neither: you need tan 30°"
+   ],
+   "answer": "The y (North) component",
+   "explanation": "cos goes with the side next to the angle. The 30° is measured from North, so North (y) gets cos and East (x) gets sin."
+  },
+  {
+   "id": "m-v-quadrant",
+   "type": "mc",
+   "unit": "Vectors",
+   "topic": "Direction (polar angle)",
+   "prompt": "R has Rx = −12 and Ry = −5. Your calculator says tan⁻¹(Ry/Rx) = 22.6°. What is R's actual polar angle?",
+   "choices": [
+    "202.6°",
+    "22.6°",
+    "157.4°",
+    "337.4°"
+   ],
+   "answer": "202.6°",
+   "explanation": "Both components are negative, so R is in the 3rd quadrant. tan⁻¹ can't see that (−5/−12 = 5/12), so add 180°."
+  },
+  {
+   "id": "m-v-same",
+   "type": "mc",
+   "unit": "Vectors",
+   "topic": "Magnitude of a sum",
+   "prompt": "When does |A + B| equal |A| + |B|?",
+   "choices": [
+    "Only when A and B point in the same direction",
+    "Always",
+    "When A and B are perpendicular",
+    "When A and B point in opposite directions"
+   ],
+   "answer": "Only when A and B point in the same direction",
+   "explanation": "Magnitudes only add straight up when nothing cancels. Perpendicular gives √(A² + B²); opposite gives |A − B|."
+  },
+  {
+   "id": "m-v-order",
+   "type": "mc",
+   "unit": "Vectors",
+   "topic": "Adding vectors",
+   "prompt": "Does A + B + C equal C + A + B?",
+   "choices": [
+    "Yes: the order doesn't change the resultant",
+    "No: the first vector sets the direction",
+    "Only if they are all the same length",
+    "Only if none of them point West"
+   ],
+   "answer": "Yes: the order doesn't change the resultant",
+   "explanation": "Adding vectors means adding their components, and ordinary addition doesn't care about order."
+  },
+  {
+   "id": "m-v-neg",
+   "type": "mc",
+   "unit": "Vectors",
+   "topic": "Vector subtraction",
+   "prompt": "What is −A compared to A?",
+   "choices": [
+    "Same length, opposite direction",
+    "Same direction, negative length",
+    "Same length, rotated 90°",
+    "Its components swap places"
+   ],
+   "answer": "Same length, opposite direction",
+   "explanation": "Flip both components' signs: the arrow turns around but keeps its length. That's how A − B = A + (−B) works."
+  },
+  {
+   "id": "n-v-walk",
+   "type": "num",
+   "unit": "Vectors",
+   "topic": "Adding vectors",
+   "prompt": "You walk 12 m North, then 5 m West. How far are you from where you started?",
+   "answer": 13,
+   "explanation": "√(12² + 5²) = 13 m. Adding 12 + 5 = 17 m gives the distance walked, not the displacement.",
+   "units": "m"
+  },
+  {
+   "id": "n-v-walk-angle",
+   "type": "num",
+   "unit": "Vectors",
+   "topic": "Direction (polar angle)",
+   "prompt": "You walk 12 m North, then 5 m West. What is the polar angle of your displacement (counterclockwise from East)?",
+   "answer": 112.62,
+   "explanation": "R = (−5, 12) is in the 2nd quadrant: 180° − tan⁻¹(12/5) = 180° − 67.4° = 112.6°.",
+   "units": "degrees",
+   "abs": 1
+  },
+  {
+   "id": "n-v3-mag",
+   "type": "num",
+   "unit": "Vectors",
+   "topic": "Adding vectors",
+   "prompt": "Add three vectors: A = 20 m due East, B = 30 m at 40° North of West, C = 15 m due South. What is the magnitude of the resultant?",
+   "answer": 5.21899,
+   "explanation": "Rx = 20 − 30 cos 40° = -2.98 m; Ry = 30 sin 40° − 15 = 4.28 m; R = √(Rx² + Ry²) = 5.22 m.",
+   "units": "m"
+  },
+  {
+   "id": "n-v3-angle",
+   "type": "num",
+   "unit": "Vectors",
+   "topic": "Direction (compass)",
+   "prompt": "Add three vectors: A = 20 m due East, B = 30 m at 40° North of West, C = 15 m due South. The resultant points θ° North of West. What is θ?",
+   "answer": 55.1627,
+   "explanation": "Rx is negative and Ry positive (North of West). θ = tan⁻¹(|Ry|/|Rx|) = tan⁻¹(4.28/2.98) = 55.2°, i.e. polar 124.8°.",
+   "units": "degrees",
+   "abs": 1
+  },
+  {
+   "id": "n-v-ycomp",
+   "type": "num",
+   "unit": "Vectors",
+   "topic": "Components",
+   "prompt": "A 50 m displacement points 35° West of South. What is its y-component (North = +y)?",
+   "answer": -40.9576,
+   "explanation": "The 35° is measured from South, so the South part uses cos: 50 cos 35° = 40.96 m, negative because it points South.",
+   "units": "m",
+   "abs": 0.05
+  },
+  {
+   "id": "n-v-sub",
+   "type": "num",
+   "unit": "Vectors",
+   "topic": "Vector subtraction",
+   "prompt": "A = 10 m due East and B = 10 m due North. What is the magnitude of A − B?",
+   "answer": 14.1421,
+   "explanation": "A − B = A + (−B) = (10, 0) + (0, −10) = (10, −10), magnitude √200 = 14.14 m. It is not 0: the vectors point different ways.",
+   "units": "m"
+  },
+  {
+   "id": "n-v-theta-west",
+   "type": "num",
+   "unit": "Vectors",
+   "topic": "Direction (compass)",
+   "prompt": "R = (−9 m, +14 m). It points θ° North of West. What is θ?",
+   "answer": 57.2648,
+   "explanation": "Measured from the West axis: tan θ = |Ry| / |Rx| = 14/9, θ = 57.3°. Using 9/14 gives 32.7°, the angle from North.",
+   "units": "degrees",
+   "abs": 1
+  }
+ ]
+}

@@ -79,6 +79,23 @@ test('daily streak', () => {
   assert.deepEqual(game.nextStreak({ last: '2026-10-01', days: 3 }, '2026-10-05'), { last: '2026-10-05', days: 1 });
 });
 
+test('num answers: typed numbers, tolerance, exact counts', () => {
+  for (const [text, want] of [['-12.5', -12.5], ['1,200', 1200], ['3.0e8', 3e8], ['3.0 x 10^8', 3e8], ['3×10^-2', 0.03], ['$450', 450], ['18.3 s', 18.3], ['−875 m', -875], ['.5', 0.5]]) {
+    assert.equal(game.parseNumber(text), want, text);
+  }
+  for (const bad of ['', 'abc', '2.5.3', '10^3', '5 5']) assert.equal(game.parseNumber(bad), null, bad);
+  const q = { type: 'num', answer: -875 };
+  assert.ok(game.checkAnswer(q, '-870'), 'within 2%');
+  assert.ok(!game.checkAnswer(q, '875'), 'the sign is part of the answer');
+  assert.ok(!game.checkAnswer(q, '-800'));
+  assert.ok(game.checkAnswer({ type: 'num', answer: 3, tol: 0 }, '3'));
+  assert.ok(!game.checkAnswer({ type: 'num', answer: 3, tol: 0 }, '3.01'), 'tol 0 is exact');
+  assert.ok(game.checkAnswer({ type: 'num', answer: 112.6, abs: 1 }, '113'), 'abs widens it');
+  assert.ok(!game.checkAnswer({ type: 'num', answer: 1 }, 'nope'));
+  assert.deepEqual(game.validateDeck({ id: 'x', title: 'X', cards: [], questions: [{ id: 'n', type: 'num', prompt: 'p', answer: '5', explanation: 'e' }] }),
+    ['question n: num answer must be a finite number']);
+});
+
 test('validateDeck rejects broken decks', () => {
   const bad = { id: 'x', title: 'X', cards: [{ id: 'a', term: 't', definition: 'd' }, { id: 'a', term: 't', definition: 'd' }],
     questions: [

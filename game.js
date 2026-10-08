@@ -1,6 +1,27 @@
 // Pure game logic, shared by the browser (app.js) and the tests.
 
-export const TYPES = ['mc', 'output', 'trace', 'bug'];
+export const TYPES = ['mc', 'output', 'trace', 'bug', 'num'];
+
+// A typed number: "-12.5", "1,200", "3.0e8", "3.0 x 10^8", "3×10^-2", "$450", or with units after it ("18.3 s").
+// Returns null when it isn't a number.
+export function parseNumber(text) {
+  let s = String(text ?? '').trim().replace(/[\u2212\u2013]/g, '-').replace(/^\$/, '').replace(/(\d)[, ](?=\d{3}\b)/g, '$1');
+  if (/\d\s+\d/.test(s)) return null;
+  s = s.replace(/\s+/g, '');
+  const m = s.match(/^([+-]?(?:\d+\.?\d*|\.\d+))(?:[eE]([+-]?\d+)|[x×*·]10\^?([+-]?\d+))?(.*)$/);
+  if (!m || (m[4] && !/^[a-zA-Z°%$/]/.test(m[4]))) return null;
+  const exp = m[2] ?? m[3];
+  return Number(m[1]) * (exp ? 10 ** Number(exp) : 1);
+}
+
+// num questions: right if within tol (relative, default 2%) OR abs (absolute) of the answer. tol: 0 means exact.
+export function closeEnough(question, value) {
+  if (value == null || !Number.isFinite(value)) return false;
+  const want = question.answer;
+  const tol = question.tol ?? 0.02;
+  const slack = Math.max(Math.abs(want) * tol, question.abs ?? 0);
+  return Math.abs(value - want) <= slack + 1e-9 * Math.max(1, Math.abs(want));
+}
 
 export function shuffle(items) {
   const out = [...items];
@@ -21,6 +42,7 @@ export function checkAnswer(question, response) {
     case 'output': return normalizeOutput(response) === normalizeOutput(question.answer);
     case 'trace': return [question.answer, ...(question.accept || [])].includes(String(response).trim());
     case 'bug': return Number(response) === question.answer;
+    case 'num': return closeEnough(question, parseNumber(response));
     default: return response === question.answer;
   }
 }
@@ -129,7 +151,7 @@ export function validateDeck(deck) {
     if (!TYPES.includes(type)) { errors.push(`${where}: unknown type "${type}"`); return; }
     if (!q.prompt) errors.push(`${where}: missing prompt`);
     if (!q.explanation) errors.push(`${where}: missing explanation`);
-    if (type !== 'mc' && !q.code) errors.push(`${where}: ${type} needs code`);
+    if (!['mc', 'num'].includes(type) && !q.code) errors.push(`${where}: ${type} needs code`);
     if (type === 'trace' && !q.var) errors.push(`${where}: trace needs var (the variable asked about)`);
     if (type === 'mc') {
       if (!Array.isArray(q.choices) || q.choices.length < 2) { errors.push(`${where}: needs at least 2 choices`); return; }
@@ -138,6 +160,9 @@ export function validateDeck(deck) {
     } else if (type === 'bug') {
       const lines = String(q.code || '').split('\n').length;
       if (!Number.isInteger(q.answer) || q.answer < 1 || q.answer > lines) errors.push(`${where}: answer must be a line number 1-${lines}`);
+    } else if (type === 'num') {
+      if (typeof q.answer !== 'number' || !Number.isFinite(q.answer)) errors.push(`${where}: num answer must be a finite number`);
+      for (const k of ['tol', 'abs']) if (q[k] != null && !(typeof q[k] === 'number' && q[k] >= 0)) errors.push(`${where}: ${k} must be a number >= 0`);
     } else if (typeof q.answer !== 'string' || q.answer === '') {
       errors.push(`${where}: answer must be a non-empty string`);
     }

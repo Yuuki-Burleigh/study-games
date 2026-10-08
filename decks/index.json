@@ -7,6 +7,10 @@
         "cs209-java-basics",
         "cs209-loops"
       ]
+    },
+    {
+      "id": "phys121",
+      "file": "decks/phys121.json"
     }
   ]
 }

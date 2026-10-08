@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { rng, jdouble, idiv, imod, jstr, choices, instantiate } from '../gen-kit.js';
-import { validateDeck } from '../game.js';
+import { validateDeck, checkAnswer, TYPES } from '../game.js';
 
 const readJSON = (p) => JSON.parse(readFileSync(new URL(p, import.meta.url), 'utf8'));
 
@@ -42,9 +42,10 @@ for (const entry of readJSON('../decks/index.json').decks) {
     for (const t of templates) {
       assert.match(t.id, /^g-/, t.id);
       assert.equal(typeof t.make, 'function', t.id);
-      assert.ok(['mc', 'output', 'trace', 'bug'].includes(t.type), t.id);
+      assert.ok(TYPES.includes(t.type), t.id);
     }
-    for (const type of ['mc', 'output', 'trace', 'bug']) assert.ok(templates.some((t) => t.type === type), 'has ' + type);
+    // A deck lists its answer formats (Java decks default to all four code formats).
+    for (const type of deck.formats || ['mc', 'output', 'trace', 'bug']) assert.ok(templates.some((t) => t.type === type), 'has ' + type);
   });
 
   test(`${deck.id}: 300 random instances of every template are valid`, () => {
@@ -58,8 +59,9 @@ for (const entry of readJSON('../decks/index.json').decks) {
         assert.doesNotMatch(text, /undefined|NaN|\[object/, `${q.id} has a broken value`);
         if (q.type === 'output') assert.ok(!q.answer.includes('\t'), `${q.id}: no tabs in typed output`);
         if (q.type === 'mc') assert.ok(q.choices.length >= 3, `${q.id}: at least 3 choices`);
+        if (q.type === 'num') assert.ok(checkAnswer(q, String(q.answer)), `${q.id}: its own answer must be accepted`);
         assert.equal(JSON.stringify(instantiate(t, seed)), text, `${q.id} is not deterministic`);
-        seen.add(q.code || q.choices.join());
+        seen.add(q.code || q.prompt + (q.choices || []).join());
       }
       assert.ok(seen.size >= 100, `${t.id}: only ${seen.size} distinct problems in 300 seeds`);
     }

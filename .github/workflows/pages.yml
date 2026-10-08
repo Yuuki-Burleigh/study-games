@@ -30,6 +30,8 @@ jobs:
       - name: Check every answer against real Java (hand-written + sampled from every template)
         # A different seed window each run, so over time the templates get tested on far more random values.
         run: SAMPLES=6 FIRST_SEED=$(( GITHUB_RUN_NUMBER * 1000 )) python3 tools/check_java.py
+      - name: Check every physics answer (hand-written + sampled templates, re-solved from the prompt text)
+        run: SAMPLES=100 FIRST_SEED=$(( GITHUB_RUN_NUMBER * 1000 )) python3 tools/check_physics.py
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

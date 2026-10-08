@@ -56,6 +56,9 @@ def verdict(q):
 
 def check(path):
     deck = json.load(open(path))
+    if not set(deck.get("formats", ["output"])) & {"output", "trace", "bug"}:
+        print(f"{os.path.relpath(path, ROOT)}: no Java in this deck, skipped")
+        return 0
     qs = list(deck["questions"])
     generated = 0
     if deck.get("generators"):

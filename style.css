@@ -204,6 +204,7 @@ code, pre, kbd { font-family: var(--mono); }
 .combo { font-weight: 800; color: var(--accent); min-width: 44px; text-align: right; font-variant-numeric: tabular-nums; }
 
 .qtype { display: inline-flex; align-items: center; gap: 6px; font: 800 0.8rem var(--font); letter-spacing: 0.05em; color: var(--accent); }
+.prompt.long { font-size: clamp(1.05rem, 3.8vw, 1.25rem); line-height: 1.4; }
 .prompt { font-size: clamp(1.3rem, 4.6vw, 1.6rem); font-weight: 800; letter-spacing: -0.02em; line-height: 1.25; margin: 8px 0 16px; white-space: pre-wrap; }
 .topic { color: var(--muted); font-weight: 600; font-size: 0.9rem; }
 
@@ -260,6 +261,8 @@ pre.code {
 .typed:focus { outline: none; border-color: var(--accent); }
 .typed:disabled { opacity: 0.8; }
 textarea.typed { min-height: 104px; }
+.with-units { display: flex; align-items: center; gap: 10px; }
+.with-units .units { font: 700 1.05rem var(--mono); color: var(--muted); white-space: nowrap; }
 .hint { font-size: 0.85rem; color: var(--muted); }
 kbd { font-size: 0.8em; padding: 1px 6px; border-radius: 6px; border: 1px solid var(--line); border-bottom-width: 3px; background: var(--surface); }
 

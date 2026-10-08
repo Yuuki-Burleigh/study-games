@@ -162,7 +162,9 @@ function questionById(deck, id) {
   const t = deck.templates.find((x) => x.id === tid);
   return t && instantiate(t, Number(seed));
 }
-const TYPE_LABEL = { mc: '🎯 Pick one', output: '⌨️ Type the output', trace: '🔍 Trace it', bug: '🐞 Find the bug' };
+const TYPE_LABEL = { mc: '🎯 Pick one', output: '⌨️ Type the output', trace: '🔍 Trace it', bug: '🐞 Find the bug', num: '🧮 Solve it' };
+// The answer as shown after a miss and in the review list.
+const shownAnswer = (q) => (typeOf(q) === 'bug' ? `line ${q.answer}` : typeOf(q) === 'num' ? `${q.answer}${q.units ? ' ' + q.units : ''}` : q.answer);
 
 // ---------- screens ----------
 async function homeScreen() {
@@ -230,7 +232,7 @@ async function deckScreen(id, params) {
     el('div', { class: 'section-label' }, 'PICK A CHALLENGE'),
     el('div', { class: 'modes' },
       count('bug') > 0 && mode('🐞', 'Error hunt', `${count('bug')} programs with one broken line${plus('bug')}`, () => go('quiz', 'types=bug')),
-      count('output', 'trace') > 0 && mode('⌨️', 'Type it', `${count('output', 'trace')} problems${plus('output', 'trace')}, no choices to guess from`, () => go('quiz', 'types=output,trace')),
+      count('output', 'trace', 'num') > 0 && mode('⌨️', 'Type it', `${count('output', 'trace', 'num')} problems${plus('output', 'trace', 'num')}, no choices to guess from`, () => go('quiz', 'types=output,trace,num')),
       count('mc') > 0 && mode('🎯', 'Multiple choice', `${count('mc')} tricky picks${plus('mc')}`, () => go('quiz', 'types=mc')),
       missed.length > 0 && mode('🔁', 'Fix mistakes', `${missed.length} you got wrong last time`, () => { location.hash = `#/deck/${id}/quiz?missed=1`; }, 'alert')),
     el('div', { class: 'section-label' }, 'WARM UP'),
@@ -304,7 +306,7 @@ async function quizScreen(id, params) {
           el('span', { class: 'qtype' }, TYPE_LABEL[typeOf(q)]),
           el('p', {}, el('strong', {}, q.prompt)),
           q.code && codeBlock(q.code),
-          el('p', {}, 'Answer: ', el('span', { class: 'ans' }, typeOf(q) === 'bug' ? `line ${q.answer}` : q.answer)),
+          el('p', {}, 'Answer: ', el('span', { class: 'ans' }, shownAnswer(q))),
           el('p', { class: 'muted' }, q.explanation)))),
       el('div', { class: 'actions' },
         wrong.length > 0 && el('a', { class: 'btn primary', href: `#/deck/${id}/quiz?missed=1`, onclick: (e) => {
@@ -333,7 +335,7 @@ async function quizScreen(id, params) {
     // --- answer UI per type ---
     let body, lockUI, markUI, focusFirst, typeKey = () => {};
     if (type === 'mc') {
-      const mono = q.code || q.order.some((c) => /[;"'\\(){}]/.test(c));
+      const mono = q.code || (!deck.prose && q.order.some((c) => /[;"'\\(){}]/.test(c)));
       const buttons = q.order.map((c, n) => {
         const b = el('button', { class: `choice${mono ? ' mono' : ''}`, 'data-value': c, 'aria-pressed': 'false' },
           el('span', { class: 'key', 'aria-hidden': 'true' }, n + 1), el('span', { class: 'val' }, c));
@@ -376,18 +378,18 @@ async function quizScreen(id, params) {
       typeKey = (e) => { const n = Number(e.key); if (!checked && n >= 1 && n <= lines.length) select(n - 1); };
       focusFirst = () => {};
     } else {
-      const multi = type === 'output';
+      const multi = type === 'output', num = type === 'num';
       const input = multi
         ? el('textarea', { class: 'typed', id: 'answer', rows: 3, spellcheck: 'false', autocapitalize: 'off', autocomplete: 'off', placeholder: 'Type the output…' })
-        : el('input', { class: 'typed', id: 'answer', type: 'text', spellcheck: 'false', autocapitalize: 'off', autocomplete: 'off', placeholder: 'Value…' });
+        : el('input', { class: 'typed', id: 'answer', type: 'text', spellcheck: 'false', autocapitalize: 'off', autocomplete: 'off', placeholder: num ? 'Number…' : 'Value…' });
       input.addEventListener('input', () => setResponse(input.value));
       input.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' && (!multi || e.ctrlKey || e.metaKey)) { e.preventDefault(); e.stopPropagation(); if (!action.disabled) action.click(); }
       });
       body = el('div', { class: 'answer-box' },
-        el('label', { for: 'answer' }, multi ? 'Exact output (spaces and line breaks count)' : 'Your answer (exactly as Java would show it)'),
-        input,
-        el('span', { class: 'hint' }, multi ? el('span', {}, 'Enter makes a new line · ', el('kbd', {}, 'Ctrl'), ' + ', el('kbd', {}, 'Enter'), ' checks') : el('span', {}, el('kbd', {}, 'Enter'), ' checks')));
+        el('label', { for: 'answer' }, multi ? 'Exact output (spaces and line breaks count)' : num ? `Your answer${q.units ? ` in ${q.units}` : ''}` : 'Your answer (exactly as Java would show it)'),
+        num && q.units ? el('div', { class: 'with-units' }, input, el('span', { class: 'units' }, q.units)) : input,
+        el('span', { class: 'hint' }, num ? el('span', {}, (q.tol === 0 && !q.abs ? 'Exact number' : 'Close enough counts') + ' · minus sign for direction · 3e8 or 3x10^8 work · ', el('kbd', {}, 'Enter'), ' checks') : multi ? el('span', {}, 'Enter makes a new line · ', el('kbd', {}, 'Ctrl'), ' + ', el('kbd', {}, 'Enter'), ' checks') : el('span', {}, el('kbd', {}, 'Enter'), ' checks')));
       lockUI = () => { input.disabled = true; };
       markUI = () => {};
       focusFirst = () => input.focus({ preventScroll: true });
@@ -412,12 +414,12 @@ async function quizScreen(id, params) {
       if (endless) { bar.querySelector('.end').textContent = `Done (${score}/${answered})`; questions.push(prep(nextEndless())); }
 
       const praise = ['Nice!', 'Nailed it.', 'Correct.', 'Sharp.', 'Exactly.'];
-      const showYours = !ok && (type === 'output' || type === 'trace');
+      const showYours = !ok && ['output', 'trace', 'num'].includes(type);
       verdict.replaceChildren(...[
         el('strong', {}, ok ? praise[Math.floor(Math.random() * praise.length)] : 'Not quite.', ok && el('span', { class: 'gain' }, `+${gain} XP${combo >= 3 ? ' 🔥' : ''}`)),
         showYours && el('div', { class: 'pair' },
           el('div', { class: 'expected' }, el('small', {}, 'YOU TYPED'), normalizeOutput(response) || '(nothing)'),
-          el('div', { class: 'expected' }, el('small', {}, 'JAVA PRINTS'), q.answer)),
+          el('div', { class: 'expected' }, el('small', {}, type === 'num' ? 'ANSWER' : 'JAVA PRINTS'), shownAnswer(q))),
         !ok && type === 'bug' && el('p', {}, el('strong', { style: 'font-size:1rem' }, `Line ${q.answer} is the broken one.`)),
         el('p', {}, q.explanation)].filter(Boolean));
       dock.classList.add(ok ? 'good' : 'bad');
@@ -438,7 +440,7 @@ async function quizScreen(id, params) {
       bar,
       el('div', {}, el('span', { class: 'qtype' }, TYPE_LABEL[type]), q.topic && el('span', { class: 'topic' }, ` · ${q.topic}`),
         q.generated && el('span', { class: 'fresh', title: 'Generated from a template with random values' }, 'fresh')),
-      el('h1', { class: 'prompt' }, q.prompt),
+      el('h1', { class: q.prompt.length > 140 ? 'prompt long' : 'prompt' }, q.prompt),
       q.code && type !== 'bug' && codeBlock(q.code),
       body,
       dock);

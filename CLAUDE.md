@@ -20,6 +20,7 @@ anything taught so far, across lectures, but must not require anything in "Not t
 | `output` | types the exact output | `code`, `answer` (exact stdout; avoid `\t` since Tab leaves a textarea) |
 | `trace` | types a variable's final value | `code`, `var`, `answer` (as Java would print it, e.g. `85.0`) |
 | `bug` | taps the broken line | `code`, `answer` (1-based line); prompt says "won't compile" or "crashes when it runs" |
+| `num` | types a number (non-code classes) | `answer` (a JSON number), optional `units` (shown by the box), `tol` (relative, default 0.02; `0` = exact, e.g. sig-fig counts), `abs` (absolute slack, e.g. `1` for angles). Typed `3e8`, `3x10^8`, `$450`, `18.3 s` all parse |
 
 - Every problem: unique `id`, `topic` (a concept, used as a filter chip), `prompt`, `explanation` (1-2 sentences:
   why, naming the trap). Distractors = real mistakes (e.g. `hi3` for `"hi" + 1 + 2`).
@@ -31,6 +32,9 @@ anything taught so far, across lectures, but must not require anything in "Not t
   A new lecture never gets a new deck; a new class gets one entry in `decks/index.json`. If decks are ever merged,
   list the old ids under that entry's `"aliases"`: old links redirect and saved progress moves over.
 
+- **Classes without code** (e.g. `decks/phys121.json`): mix `mc` and `num` (roughly 45/55) instead of the four code types,
+  and set `"formats": ["mc", "num"]` (which formats the template test requires) and `"prose": true` (choices in the normal
+  font). Templates may keep a helper kit next to them (`generators/phys121/kit.js`), pinned by tests.
 - `mc` can also use `check: "compiles"` when the choices are single declarations: exactly the answer must compile.
 
 ## 3. Write templates (endless practice)
@@ -78,7 +82,9 @@ accurate `topic`, and split distinct traps into separate templates instead of on
 ## 4. Verify, then publish
 1. `python3 tools/check_java.py` runs every hand-written problem AND a sample from every template (`SAMPLES`, default 20
    per template) through real Java, and must report 0 wrong (Java: `PATH=~/.local/share/mise/installs/java/27.0.0/bin:$PATH`).
-   For a non-Java course, verify answers another way and say how.
+   For a non-Java course, verify answers another way and say how. Physics: `python3 tools/check_physics.py` re-solves
+   every hand-written `num` problem and a sample of every template FROM THE PROMPT TEXT (its own solver per template id;
+   a new template needs a solver there or the check fails), and must report 0 wrong.
 2. `npm test` must pass (it also builds 300 instances of every template and checks they're valid, varied and deterministic).
 3. Commit and push to `main`. The GitHub Action re-runs both checks and only deploys to Pages if they pass (~1 min).
 
