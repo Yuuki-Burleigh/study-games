@@ -240,7 +240,8 @@ async function deckScreen(id, params) {
     el('div', { class: 'section-label' }, 'WARM UP'),
     el('div', { class: 'modes' },
       mode('🃏', 'Flashcards', `${inScope(deck.cards, sc).length} key terms`, () => go('flash')),
-      mode('🔗', 'Match', `Pair ${MATCH_PAIRS} terms against the clock`, () => go('match'))),
+      mode('🔗', 'Match', `Pair ${MATCH_PAIRS} terms against the clock`, () => go('match')),
+      deck.formulas?.length > 0 && mode('📐', 'Formula sheet', `All ${deck.formulas.length} formulas, by unit`, () => { location.hash = `#/deck/${id}/formulas`; })),
     (bestQuiz != null || bestMatch != null) && el('div', { class: 'records' },
       bestQuiz != null && el('span', { class: 'record' }, `🏆 Best quiz ${bestQuiz}%`),
       bestMatch != null && el('span', { class: 'record' }, `⚡ Best match ${bestMatch.toFixed(1)}s`)));
@@ -574,6 +575,24 @@ async function matchScreen(id, params) {
   cleanup = () => { prev(); clearInterval(timer); };
 }
 
+// Every formula in the class, grouped by unit in course order, with a jump bar to each unit.
+async function formulasScreen(id) {
+  const deck = await loadDeck(id);
+  const groups = [...new Set([...(deck.units || []), ...deck.formulas.map((f) => f.unit)])]
+    .map((unit) => ({ unit, rows: deck.formulas.filter((f) => f.unit === unit) })).filter((g) => g.rows.length);
+  const anchor = (unit) => 'f-' + unit.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+  render(
+    el('a', { class: 'link', href: `#/deck/${id}` }, `← ${deck.title}`),
+    el('section', { class: 'deck-head' }, el('h1', {}, 'Formula sheet'), el('p', { class: 'muted' }, `${deck.formulas.length} formulas in ${groups.length} units.`)),
+    groups.length > 1 && el('nav', { class: 'chips units', 'aria-label': 'Jump to a unit' },
+      groups.map((g) => el('button', { class: 'chip unit', onclick: () => document.getElementById(anchor(g.unit)).scrollIntoView({ behavior: 'smooth' }) }, g.unit))),
+    ...groups.map((g) => el('section', { class: 'formula-group', id: anchor(g.unit) },
+      el('h2', {}, g.unit),
+      el('dl', { class: 'formulas' }, g.rows.map((f) => el('div', { class: 'formula' },
+        el('dt', {}, f.name),
+        el('dd', {}, el('span', { class: 'eq' }, f.formula), f.note && el('span', { class: 'muted note' }, f.note))))))));
+}
+
 // ---------- router ----------
 async function route() {
   const [path, query = ''] = location.hash.replace(/^#/, '').split('?');
@@ -582,7 +601,7 @@ async function route() {
   if (!app.firstElementChild || app.querySelector('noscript')) render(el('div', { class: 'skeleton', 'aria-label': 'Loading' }));
   try {
     if (parts[0] === 'deck' && parts[1]) {
-      const screen = { flash: flashScreen, quiz: quizScreen, match: matchScreen }[parts[2]] || deckScreen;
+      const screen = { flash: flashScreen, quiz: quizScreen, match: matchScreen, formulas: formulasScreen }[parts[2]] || deckScreen;
       await screen(parts[1], params);
     } else {
       await homeScreen();

@@ -2118,5 +2118,378 @@
    "units": "kg",
    "explanation": "The beam's weight acts at its center, 2 m from the left end, so 1 m right of the pivot. m × 1 = 10 × 1 → m = 10 kg."
   }
+ ],
+ "formulas": [
+  {
+   "unit": "Measurement & Units",
+   "name": "Sig figs",
+   "formula": "Nonzero digits count; captive zeros count; leading zeros never; trailing zeros only with a decimal point",
+   "note": "190 → 2, 190. → 3, 0.0500 → 3"
+  },
+  {
+   "unit": "Measurement & Units",
+   "name": "Scientific notation",
+   "formula": "a × 10ⁿ, 1 ≤ a < 10",
+   "note": "keep exactly the sig figs in a"
+  },
+  {
+   "unit": "Measurement & Units",
+   "name": "Unit conversion",
+   "formula": "value × (new unit / old unit)",
+   "note": "the old unit must cancel"
+  },
+  {
+   "unit": "Measurement & Units",
+   "name": "Speed conversion",
+   "formula": "1 m/s = 3.6 km/h"
+  },
+  {
+   "unit": "Measurement & Units",
+   "name": "Newton",
+   "formula": "1 N = 1 kg·m/s²"
+  },
+  {
+   "unit": "Measurement & Units",
+   "name": "Joule",
+   "formula": "1 J = 1 N·m = 1 kg·m²/s²"
+  },
+  {
+   "unit": "1D Motion",
+   "name": "Displacement",
+   "formula": "Δx = x_f − x₀",
+   "note": "signed; distance is the path length"
+  },
+  {
+   "unit": "1D Motion",
+   "name": "Average velocity",
+   "formula": "v_avg = Δx / Δt",
+   "note": "average speed = distance / time"
+  },
+  {
+   "unit": "1D Motion",
+   "name": "Acceleration",
+   "formula": "a = Δv / Δt = (v − v₀) / t"
+  },
+  {
+   "unit": "1D Motion",
+   "name": "Constant velocity",
+   "formula": "Δx = vt"
+  },
+  {
+   "unit": "1D Motion",
+   "name": "Kinematics 1",
+   "formula": "v = v₀ + at",
+   "note": "constant a only"
+  },
+  {
+   "unit": "1D Motion",
+   "name": "Kinematics 2",
+   "formula": "Δx = v₀t + ½at²",
+   "note": "constant a only"
+  },
+  {
+   "unit": "1D Motion",
+   "name": "Kinematics 3",
+   "formula": "v² = v₀² + 2aΔx",
+   "note": "no time needed"
+  },
+  {
+   "unit": "1D Motion",
+   "name": "Kinematics 4",
+   "formula": "Δx = ½(v₀ + v)t",
+   "note": "no acceleration needed"
+  },
+  {
+   "unit": "1D Motion",
+   "name": "Graphs",
+   "formula": "x-t slope = v;  v-t slope = a;  v-t area = Δx"
+  },
+  {
+   "unit": "Vectors",
+   "name": "Components",
+   "formula": "Ax = A cos θ,  Ay = A sin θ",
+   "note": "θ from the +x axis; from N/S, swap sin and cos"
+  },
+  {
+   "unit": "Vectors",
+   "name": "Magnitude",
+   "formula": "|R| = √(Rx² + Ry²)"
+  },
+  {
+   "unit": "Vectors",
+   "name": "Direction",
+   "formula": "θ = tan⁻¹(Ry / Rx)",
+   "note": "add 180° when Rx < 0"
+  },
+  {
+   "unit": "Vectors",
+   "name": "Adding",
+   "formula": "Rx = Ax + Bx + …,  Ry = Ay + By + …"
+  },
+  {
+   "unit": "Vectors",
+   "name": "Subtracting",
+   "formula": "A − B = A + (−B)"
+  },
+  {
+   "unit": "Vectors",
+   "name": "Bounds",
+   "formula": "|A| − |B| ≤ |A + B| ≤ |A| + |B|"
+  },
+  {
+   "unit": "Calculus & Motion",
+   "name": "Velocity",
+   "formula": "v(t) = dx/dt"
+  },
+  {
+   "unit": "Calculus & Motion",
+   "name": "Acceleration",
+   "formula": "a(t) = dv/dt = d²x/dt²"
+  },
+  {
+   "unit": "Calculus & Motion",
+   "name": "Power rule",
+   "formula": "d/dt (tⁿ) = n·tⁿ⁻¹"
+  },
+  {
+   "unit": "Calculus & Motion",
+   "name": "Integral",
+   "formula": "∫ tⁿ dt = tⁿ⁺¹/(n + 1) + C",
+   "note": "C is the starting value"
+  },
+  {
+   "unit": "Calculus & Motion",
+   "name": "Position from velocity",
+   "formula": "x(t) = ∫ v dt + x₀"
+  },
+  {
+   "unit": "Calculus & Motion",
+   "name": "Velocity from acceleration",
+   "formula": "v(t) = ∫ a dt + v₀"
+  },
+  {
+   "unit": "Projectile Motion",
+   "name": "Accelerations",
+   "formula": "a_x = 0,  a_y = −9.8 m/s²",
+   "note": "up = +, no air resistance"
+  },
+  {
+   "unit": "Projectile Motion",
+   "name": "Launch components",
+   "formula": "v₀x = v₀ cos θ,  v₀y = v₀ sin θ"
+  },
+  {
+   "unit": "Projectile Motion",
+   "name": "Horizontal",
+   "formula": "Δx = v₀x t"
+  },
+  {
+   "unit": "Projectile Motion",
+   "name": "Vertical",
+   "formula": "Δy = v₀y t − ½(9.8)t²,  v_y = v₀y − 9.8t"
+  },
+  {
+   "unit": "Projectile Motion",
+   "name": "Max height",
+   "formula": "h = v₀y² / (2 × 9.8)",
+   "note": "v_y = 0 at the top"
+  },
+  {
+   "unit": "Projectile Motion",
+   "name": "Level-ground range",
+   "formula": "R = v₀² sin 2θ / 9.8"
+  },
+  {
+   "unit": "Projectile Motion",
+   "name": "Fall time (horizontal launch)",
+   "formula": "t = √(2h / 9.8)",
+   "note": "only the height sets the time"
+  },
+  {
+   "unit": "Momentum & Impulse",
+   "name": "Momentum",
+   "formula": "p = mv",
+   "note": "vector, kg·m/s"
+  },
+  {
+   "unit": "Momentum & Impulse",
+   "name": "Conservation",
+   "formula": "p₁ + p₂ (before) = p₁ + p₂ (after)",
+   "note": "closed system"
+  },
+  {
+   "unit": "Momentum & Impulse",
+   "name": "Stick together",
+   "formula": "m₁v₁ + m₂v₂ = (m₁ + m₂)v_f"
+  },
+  {
+   "unit": "Momentum & Impulse",
+   "name": "Elastic (also)",
+   "formula": "½m₁v₁² + ½m₂v₂² is conserved"
+  },
+  {
+   "unit": "Momentum & Impulse",
+   "name": "Elastic, target at rest",
+   "formula": "v₁f = (m₁ − m₂)/(m₁ + m₂)·v₁,  v₂f = 2m₁/(m₁ + m₂)·v₁"
+  },
+  {
+   "unit": "Momentum & Impulse",
+   "name": "Impulse",
+   "formula": "J = FΔt = Δp = p_f − p_i",
+   "note": "area under F-t; N·s = kg·m/s"
+  },
+  {
+   "unit": "Forces & Friction",
+   "name": "Newton's 2nd law",
+   "formula": "F_net = ma = Δp/Δt"
+  },
+  {
+   "unit": "Forces & Friction",
+   "name": "Weight",
+   "formula": "W = mg,  g = 9.8 m/s²"
+  },
+  {
+   "unit": "Forces & Friction",
+   "name": "Static friction",
+   "formula": "f_s ≤ μs F_N",
+   "note": "matches the push up to its max"
+  },
+  {
+   "unit": "Forces & Friction",
+   "name": "Kinetic friction",
+   "formula": "f_k = μk F_N",
+   "note": "while sliding"
+  },
+  {
+   "unit": "Forces & Friction",
+   "name": "Normal force (level)",
+   "formula": "F_N = mg"
+  },
+  {
+   "unit": "Forces & Friction",
+   "name": "Incline",
+   "formula": "F_N = mg cos θ,  along the ramp mg sin θ"
+  },
+  {
+   "unit": "Circular Motion & Gravity",
+   "name": "Centripetal acceleration",
+   "formula": "a_c = v² / r",
+   "note": "toward the center"
+  },
+  {
+   "unit": "Circular Motion & Gravity",
+   "name": "Centripetal force",
+   "formula": "F_c = mv² / r"
+  },
+  {
+   "unit": "Circular Motion & Gravity",
+   "name": "Gravity",
+   "formula": "F = Gm₁m₂ / r²",
+   "note": "G = 6.67 × 10⁻¹¹ N·m²/kg²"
+  },
+  {
+   "unit": "Circular Motion & Gravity",
+   "name": "Orbit speed",
+   "formula": "v = √(GM / r)"
+  },
+  {
+   "unit": "Circular Motion & Gravity",
+   "name": "Period",
+   "formula": "T = 2πr / v"
+  },
+  {
+   "unit": "Rotation & Torque",
+   "name": "Arc length",
+   "formula": "s = rθ",
+   "note": "θ in radians"
+  },
+  {
+   "unit": "Rotation & Torque",
+   "name": "Rotational kinematics",
+   "formula": "ω = ω₀ + αt,  Δθ = ω₀t + ½αt²,  ω² = ω₀² + 2αΔθ"
+  },
+  {
+   "unit": "Rotation & Torque",
+   "name": "Rotations",
+   "formula": "1 rotation = 2π rad = 360°"
+  },
+  {
+   "unit": "Rotation & Torque",
+   "name": "Torque",
+   "formula": "|τ| = rF sin θ",
+   "note": "N·m; CCW = +, CW = −"
+  },
+  {
+   "unit": "Rotation & Torque",
+   "name": "Newton's 2nd (rotation)",
+   "formula": "τ_net = Iα"
+  },
+  {
+   "unit": "Rotation & Torque",
+   "name": "Moments of inertia",
+   "formula": "rod (center) mL²/12;  rod (end) mL²/3;  ring mr²;  sphere ⅖mr²"
+  },
+  {
+   "unit": "Rotation & Torque",
+   "name": "Angular momentum",
+   "formula": "L = Iω"
+  },
+  {
+   "unit": "Rotation & Torque",
+   "name": "Rotational KE",
+   "formula": "KE = ½Iω²"
+  },
+  {
+   "unit": "Energy",
+   "name": "Kinetic energy",
+   "formula": "KE = ½mv²"
+  },
+  {
+   "unit": "Energy",
+   "name": "Gravitational PE",
+   "formula": "PE = mgh"
+  },
+  {
+   "unit": "Energy",
+   "name": "Spring PE",
+   "formula": "PE = ½kx²"
+  },
+  {
+   "unit": "Energy",
+   "name": "Conservation",
+   "formula": "KE₀ + PE₀ = KE_f + PE_f"
+  },
+  {
+   "unit": "Energy",
+   "name": "Friction work",
+   "formula": "W = μk F_N d",
+   "note": "energy lost to friction"
+  },
+  {
+   "unit": "Energy",
+   "name": "Calories",
+   "formula": "1 cal = 4.18 J,  1 food Calorie = 4180 J"
+  },
+  {
+   "unit": "Equilibrium",
+   "name": "Net force",
+   "formula": "ΣF = 0  (ΣFx = 0, ΣFy = 0)"
+  },
+  {
+   "unit": "Equilibrium",
+   "name": "Net torque",
+   "formula": "Στ = 0",
+   "note": "about any pivot"
+  },
+  {
+   "unit": "Equilibrium",
+   "name": "Seesaw",
+   "formula": "m₁d₁ = m₂d₂"
+  },
+  {
+   "unit": "Equilibrium",
+   "name": "Uniform beam",
+   "formula": "its weight acts at its center"
+  }
  ]
 }

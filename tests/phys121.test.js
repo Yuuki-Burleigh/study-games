@@ -52,3 +52,8 @@ test('Physics 121 deck: units, mix and scope', async () => {
   const quizUnits = ['Measurement & Units', '1D Motion', 'Vectors'];
   for (const q of deck.questions.filter((x) => quizUnits.includes(x.unit))) assert.doesNotMatch(q.prompt, /9\.8|projectile|gravity|force|î|ĵ/i, q.id);
 });
+
+test('Physics 121 formula sheet covers every unit', () => {
+  for (const u of deck.units) assert.ok(deck.formulas.some((f) => f.unit === u), `formulas for ${u}`);
+  for (const f of deck.formulas) assert.ok(f.name && f.formula && deck.units.includes(f.unit), JSON.stringify(f));
+});

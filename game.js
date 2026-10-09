@@ -144,6 +144,11 @@ export function validateDeck(deck) {
     if (!c.term || !c.definition) errors.push(`card ${c.id || i}: needs term and definition`);
   });
 
+  (deck.formulas || []).forEach((f, i) => {
+    if (!f.name || !f.formula) errors.push(`formula ${i}: needs name and formula`);
+    if (deck.units && !deck.units.includes(f.unit)) errors.push(`formula ${f.name || i}: unknown unit "${f.unit}"`);
+  });
+
   (deck.questions || []).forEach((q, i) => {
     const where = `question ${q.id || i}`;
     const type = q.type || 'mc';

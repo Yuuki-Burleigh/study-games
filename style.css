@@ -360,3 +360,15 @@ kbd { font-size: 0.8em; padding: 1px 6px; border-radius: 6px; border: 1px solid 
   *, *::before, *::after { animation: none !important; transition: none !important; }
   html { scroll-behavior: auto; }
 }
+
+/* formula sheet */
+.formula-group { margin-top: 28px; scroll-margin-top: 16px; }
+.formula-group h2 { font-size: 1.15rem; font-weight: 800; margin: 0 0 10px; }
+.formulas { margin: 0; display: grid; gap: 8px; }
+.formula { background: var(--surface); border: 2px solid var(--line); border-radius: 14px; padding: 10px 14px;
+  display: grid; grid-template-columns: minmax(120px, 13rem) 1fr; gap: 4px 16px; align-items: baseline; }
+.formula dt { font-weight: 700; color: var(--muted); font-size: 0.92rem; }
+.formula dd { margin: 0; display: flex; flex-direction: column; gap: 2px; }
+.formula .eq { font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 1rem; color: var(--ink); overflow-wrap: anywhere; }
+.formula .note { font-size: 0.85rem; }
+@media (max-width: 520px) { .formula { grid-template-columns: 1fr; } }

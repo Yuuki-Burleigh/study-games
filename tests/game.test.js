@@ -154,3 +154,9 @@ test('index.html uses relative paths only', () => {
   const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
   assert.doesNotMatch(html, /(src|href)="\//);
 });
+
+test('validateDeck checks formulas', () => {
+  const base = { id: 'x', title: 'X', units: ['A'], cards: [], questions: [] };
+  assert.deepEqual(game.validateDeck({ ...base, formulas: [{ unit: 'A', name: 'n', formula: 'f' }] }), []);
+  assert.deepEqual(game.validateDeck({ ...base, formulas: [{ unit: 'B', name: 'n', formula: 'f' }] }), ['formula n: unknown unit "B"']);
+});
