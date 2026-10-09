@@ -164,7 +164,9 @@ function questionById(deck, id) {
 }
 const TYPE_LABEL = { mc: '🎯 Pick one', output: '⌨️ Type the output', trace: '🔍 Trace it', bug: '🐞 Find the bug', num: '🧮 Solve it' };
 // The answer as shown after a miss and in the review list.
-const shownAnswer = (q) => (typeOf(q) === 'bug' ? `line ${q.answer}` : typeOf(q) === 'num' ? `${q.answer}${q.units ? ' ' + q.units : ''}` : q.answer);
+// 1.355e+19 reads better as 1.355 × 10^19 than as twenty digits.
+const bigOrTiny = (x) => x !== 0 && (Math.abs(x) >= 1e7 || Math.abs(x) < 1e-3);
+const shownAnswer = (q) => (typeOf(q) === 'bug' ? `line ${q.answer}` : typeOf(q) === 'num' ? `${bigOrTiny(q.answer) ? q.answer.toPrecision(4).replace(/e\+?(-?\d+)/, ' × 10^$1') : q.answer}${q.units ? ' ' + q.units : ''}` : q.answer);
 
 // ---------- screens ----------
 async function homeScreen() {

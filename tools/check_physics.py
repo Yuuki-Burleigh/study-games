@@ -211,6 +211,121 @@ def solve(q):
         a, b = float(find(r'A is (\d+)', p)), float(find(r'B is (\d+)', p))
         bad = [c for c in q['choices'] if not abs(a - b) <= float(c) <= a + b]
         return bad[0] if len(bad) == 1 else f'{len(bad)} impossible choices'
+    # ---- Mechanics Blueprint units ----
+    g = 9.8
+    if tid in ('g-p-calc-v', 'g-p-calc-a'):
+        m = re.search(r'x\(t\) = (\d*)t³ ([+−]) (\d*)t² ([+−]) (\d*)t ([+−]) (\d+)', p)
+        co = lambda c, sgn='+': (1 if c == '' else int(c)) * (-1 if sgn == '−' else 1)
+        A, B, C = co(m.group(1)), co(m.group(3), m.group(2)), co(m.group(5), m.group(4))
+        T = float(find(r'at t = (\d+) s', p))
+        return 3 * A * T * T + 2 * B * T + C if tid == 'g-p-calc-v' else 6 * A * T + 2 * B
+    if tid == 'g-p-calc-int':
+        A, sb, B, C = re.search(r'v\(t\) = (\d+)t² ([+−]) (\d+)t \+ (\d+)', p).groups()
+        A, B, C = float(A), float(B) * (-1 if sb == '−' else 1), float(C)
+        T = float(find(r'at t = (\d+) s\?', p))
+        return A * T ** 3 / 3 + B * T ** 2 / 2 + C * T
+    if tid == 'g-p-calc-power':
+        sup = str.maketrans('⁰¹²³⁴⁵⁶⁷⁸⁹', '0123456789')
+        A, n = re.search(r'x\(t\) = (\d+)t([⁰¹²³⁴⁵⁶⁷⁸⁹]+)', p).groups()
+        A, n = int(A), int(n.translate(sup))
+        pw = 't' if n - 1 == 1 else 't' + str(n - 1).translate(str.maketrans('0123456789', '⁰¹²³⁴⁵⁶⁷⁸⁹'))
+        return f'v(t) = {A * n}{pw}'
+    if tid.startswith('g-p-proj-') and 'horizontally' in p:
+        h, v = float(find(r'leaves a (\d+) m high', p)), float(find(r'at (\d+) m/s horizontally', p))
+        t = math.sqrt(2 * h / g)
+        return {'g-p-proj-time': t, 'g-p-proj-range': v * t, 'g-p-proj-vy': -g * t}[tid]
+    if tid in ('g-p-proj-maxh', 'g-p-proj-range-level', 'g-p-proj-wall'):
+        v, th = map(float, re.search(r'at (\d+) m/s, (\d+)° above the horizontal', p).groups())
+        vx, vy = v * math.cos(math.radians(th)), v * math.sin(math.radians(th))
+        if tid == 'g-p-proj-maxh': return vy ** 2 / (2 * g)
+        if tid == 'g-p-proj-range-level': return v * v * math.sin(math.radians(2 * th)) / g
+        d = float(find(r'wall (\d+) m away', p)); t = d / vx
+        return vy * t - g / 2 * t * t
+    if tid == 'g-p-mom-stick':
+        m1, v1, m2 = map(float, re.search(r'A (\d+) kg \w+ moving right at (\d+) m/s hits a (\d+) kg', p).groups())
+        m = re.search(r'hits a \d+ kg \w+ moving (left|right) at (\d+) m/s', p)
+        v2 = 0 if not m else float(m.group(2)) * (-1 if m.group(1) == 'left' else 1)
+        return (m1 * v1 + m2 * v2) / (m1 + m2)
+    if tid in ('g-p-elastic-1', 'g-p-elastic-2'):
+        m1, v, m2 = map(float, re.search(r'A (\d+) kg ball moving right at (\d+) m/s hits a (\d+) kg ball', p).groups())
+        asked = float(find(r'What is the (\d+) kg ball', p))
+        # momentum + kinetic energy conservation, solved directly (target at rest)
+        v1f, v2f = (m1 - m2) / (m1 + m2) * v, 2 * m1 / (m1 + m2) * v
+        assert abs(m1 * v1f + m2 * v2f - m1 * v) < 1e-9 and abs(m1 * v1f ** 2 + m2 * v2f ** 2 - m1 * v * v) < 1e-6
+        return v1f if asked == m1 else v2f
+    if tid == 'g-p-impulse-v':
+        m, v0, Fz, d, t = re.search(r'A (\d+) kg \w+ moving right at (\d+) m/s is pushed by a constant (\d+) N force pointing (\w+) for (\d+) s', p).groups()
+        return float(v0) + (1 if d == 'right' else -1) * float(Fz) * float(t) / float(m)
+    if tid == 'g-p-impulse-area':
+        Fz, t1, t2 = map(float, re.search(r'constant (\d+) N from t = 0 to t = (\d+) s, then a straight-line drop to 0 N at t = (\d+) s', p).groups())
+        return Fz * t1 + Fz * (t2 - t1) / 2
+    mus = lambda: (float(find(r'μs = (\d+(?:\.\d+)?)', p)), float(find(r'μk = (\d+(?:\.\d+)?)', p)))
+    if tid == 'g-p-f-static':
+        m = float(find(r'A (\d+) kg box', p)); return mus()[0] * m * g
+    if tid == 'g-p-f-moves':
+        m, P = float(find(r'A (\d+) kg box', p)), float(find(r'with (\d+) N', p)); s_, k_ = mus()
+        if P > s_ * m * g:
+            want, word = (P - k_ * m * g) / m, 'slides'
+        else:
+            want, word = P, 'stays put'
+        hits = [c for c in q['choices'] if word in c and abs(nums(c)[0] - want) <= 0.01 + abs(want) * 1e-3]
+        return hits[0] if len(hits) == 1 else f'{len(hits)} matching choices'
+    if tid == 'g-p-f-kin-accel':
+        m, P = float(find(r'A (\d+) kg box', p)), float(find(r'with (\d+) N', p)); s_, k_ = mus()
+        assert P > s_ * m * g, 'push too weak to slide'
+        return (P - k_ * m * g) / m
+    if tid == 'g-p-f-slide-stop':
+        v, k_ = float(find(r'slides at (\d+) m/s', p)), float(find(r'μk = (\d+(?:\.\d+)?)', p)); return v * v / (2 * k_ * g)
+    if tid == 'g-p-f-incline-normal':
+        m, th = float(find(r'A (\d+) kg crate', p)), float(find(r'tilted (\d+)°', p)); return m * g * math.cos(math.radians(th))
+    if tid == 'g-p-f-incline-accel':
+        th = math.radians(float(find(r'on a (\d+)° ramp', p))); s_, k_ = mus()
+        assert math.tan(th) > s_, 'it would not slide'
+        return g * (math.sin(th) - k_ * math.cos(th))
+    def sci(txt):
+        m, e = re.match(r'(\d+(?:\.\d+)?) × 10([⁻⁰¹²³⁴⁵⁶⁷⁸⁹]+)', txt).groups()
+        return float(m) * 10 ** int(e.translate(str.maketrans('⁻⁰¹²³⁴⁵⁶⁷⁸⁹', '-0123456789')))
+    SCI = r'([\d.]+ × 10[⁻⁰¹²³⁴⁵⁶⁷⁸⁹]+)'
+    Gc = 6.67e-11
+    if tid == 'g-p-circ-ac':
+        rr, v = map(float, re.search(r'radius (\d+) m at a steady (\d+) m/s', p).groups()); return v * v / rr
+    if tid == 'g-p-circ-force':
+        m, rr, v = map(float, re.search(r'A (\d+(?:\.\d+)?) kg ball .* radius (\d+(?:\.\d+)?) m at (\d+) m/s', p).groups()); return m * v * v / rr
+    if tid == 'g-p-circ-speed':
+        m, Fz, rr = map(float, re.search(r'A (\d+) kg car can get at most (\d+) N .* radius (\d+) m', p).groups()); return math.sqrt(Fz * rr / m)
+    if tid == 'g-p-grav-F':
+        m1, m2, d = [sci(x) for x in re.findall(SCI, p)[:3]]; return Gc * m1 * m2 / d ** 2
+    if tid == 'g-p-orbit-v':
+        M, rr = [sci(x) for x in re.findall(SCI, p)[:2]]; return math.sqrt(Gc * M / rr)
+    if tid == 'g-p-rot-alpha':
+        w0, w1, t = map(float, re.search(r'from (\d+) rad/s to (\d+) rad/s in (\d+) s', p).groups()); return (w1 - w0) / t
+    if tid == 'g-p-rot-angle':
+        w0, a, t = map(float, re.search(r'at (\d+) rad/s .* of (\d+) rad/s² for (\d+) s', p).groups()); return w0 * t + a * t * t / 2
+    if tid == 'g-p-rot-revs':
+        w, t = map(float, re.search(r'steady (\d+) rad/s for (\d+) s', p).groups()); return w * t / (2 * math.pi)
+    if tid == 'g-p-torque':
+        L, Fz, th = map(float, re.search(r'A (\d+(?:\.\d+)?) m long wrench gets a (\d+) N push at its end, at (\d+)°', p).groups())
+        return L * Fz * math.sin(math.radians(th))
+    if tid == 'g-p-rod-alpha':
+        m, L, Fz = map(float, re.search(r'uniform (\d+) kg rod, (\d+) m long.* A (\d+) N force', p).groups())
+        return Fz * (L / 2) / (m * L * L / 12)
+    if tid == 'g-p-e-drop':
+        return math.sqrt(2 * g * float(find(r'from rest (\d+) m above', p)))
+    if tid == 'g-p-e-ramp':
+        v0, h = map(float, re.search(r'moving at (\d+) m/s slides down a frictionless ramp that drops (\d+) m', p).groups()); return math.sqrt(v0 * v0 + 2 * g * h)
+    if tid == 'g-p-e-hill':
+        v0, h = map(float, re.search(r'rolling at (\d+) m/s coasts up a frictionless hill (\d+) m high', p).groups()); return math.sqrt(v0 * v0 - 2 * g * h)
+    if tid == 'g-p-e-friction':
+        m, v0, d = map(float, re.search(r'A (\d+) kg box slides at (\d+) m/s across (\d+) m', p).groups()); k_ = float(find(r'μk = (\d+(?:\.\d+)?)', p))
+        return math.sqrt(v0 * v0 - 2 * k_ * g * d)
+    if tid == 'g-p-e-spring':
+        k_, x, m = map(float, re.search(r'k = (\d+) N/m\) is compressed (\d+(?:\.\d+)?) m and then launches a (\d+(?:\.\d+)?) kg', p).groups()); return x * math.sqrt(k_ / m)
+    if tid == 'g-p-eq-seesaw':
+        m1, d1, m2 = map(float, re.search(r'a (\d+) kg person sits (\d+(?:\.\d+)?) m left .* a (\d+) kg person', p).groups()); return m1 * d1 / m2
+    if tid == 'g-p-eq-mass':
+        m1, d1, d2 = map(float, re.search(r'A (\d+(?:\.\d+)?) kg weight hangs (\d+(?:\.\d+)?) m left .* hung (\d+(?:\.\d+)?) m right', p).groups()); return m1 * d1 / d2
+    if tid == 'g-p-eq-support':
+        mb, m1, m2 = map(float, re.search(r'A (\d+) kg board .* a (\d+) kg person and a (\d+) kg person', p).groups()); return (mb + m1 + m2) * g
     return None
 
 # Hand-written num problems, worked again from their prompts.
@@ -225,6 +340,50 @@ HAND = {
     'n-cruise-west': 33000 / 220, 'n-v-walk': 13, 'n-v-walk-angle': 180 - math.degrees(math.atan(12 / 5)),
     'n-v3-mag': math.hypot(20 - 30 * math.cos(math.radians(40)), 30 * math.sin(math.radians(40)) - 15),
     'n-v3-angle': math.degrees(math.atan((30 * math.sin(math.radians(40)) - 15) / (30 * math.cos(math.radians(40)) - 20))),
+    'n-conv-marathon': 42.16285806243965,
+    'n-troy': 32.154340836012864,
+    'n-trip-graph': 80.0,
+    'c-v': 88,
+    'c-a': 32,
+    'c-int-x': 66,
+    'c-int-v': 29,
+    'c-zero': 2,
+    'pj-t': 2.531435020952764,
+    'pj-x': 1.2371791482634835,
+    'pj-max': 9.700561468471566,
+    'pj-hang': 2.81404081145747,
+    'pj-wall': 2.9283681454033283,
+    'mo-stick': 7.5,
+    'mo-head': 0.0,
+    'mo-imp': 13.049999999999999,
+    'mo-force': 8700.0,
+    'mo-2d': 5.0,
+    'mo-elastic': -3.0,
+    'fo-fma': 3.0,
+    'fo-static': 176.4,
+    'fo-kin': 3.3099999999999996,
+    'fo-incline': 4.141658965058855,
+    'fo-2d': 6.25,
+    'fo-strip': 3.8775510204081627,
+    'ci-a': 3.6,
+    'ci-F': 9375.0,
+    'ci-v': 9.797958971132712,
+    'gr-F': 1.9848379516601562e+20,
+    'gr-v': 7663.642471384188,
+    'ro-alpha': -5,
+    'ro-theta': 250,
+    'ro-rev': 71.6197243913529,
+    'ro-tau': 20.784609690826528,
+    'ro-ring': 6.0,
+    'en-ke': 135000.0,
+    'en-pe': 64680.0,
+    'en-drop': 19.79898987322333,
+    'en-spring': 4.0,
+    'en-friction': 9.183673469387754,
+    'eq-seesaw': 1.5,
+    'eq-support': 882.0000000000001,
+    'eq-mass': 2.0000000000000004,
+    'eq-beam': 10.0,
     'n-v-ycomp': -50 * math.cos(math.radians(35)), 'n-v-sub': math.sqrt(200), 'n-v-theta-west': math.degrees(math.atan(14 / 9)),
 }
 

@@ -35,7 +35,8 @@ test('compass directions and vector sums', () => {
 });
 
 test('Physics 121 deck: units, mix and scope', async () => {
-  assert.deepEqual(deck.units, ['Measurement & Units', '1D Motion', 'Vectors']);
+  assert.deepEqual(deck.units, ['Measurement & Units', '1D Motion', 'Vectors', 'Calculus & Motion', 'Projectile Motion',
+    'Momentum & Impulse', 'Forces & Friction', 'Circular Motion & Gravity', 'Rotation & Torque', 'Energy', 'Equilibrium']);
   const count = (t) => deck.questions.filter((q) => q.type === t).length;
   assert.ok(deck.questions.length >= 40 && count('mc') >= 15 && count('num') >= 15, 'type mix');
   assert.ok(deck.cards.length >= 20);
@@ -47,6 +48,7 @@ test('Physics 121 deck: units, mix and scope', async () => {
   // Quiz 1 is scope, not a question bank: its own numbers stay out.
   const quiz = ['-50 m/s', '-70 m/s', '$2000', '$5000', '0.0500', '140.'];
   for (const q of deck.questions) for (const s of quiz) assert.ok(!q.prompt.includes(s), `${q.id} reuses the quiz's "${s}"`);
-  // Nothing from "Not taught yet".
-  for (const q of deck.questions) assert.doesNotMatch(q.prompt, /9\.8|projectile|gravity|newton|force|î|ĵ/i, q.id);
+  // The Quiz 1 units stay inside Quiz 1: later topics live in their own (blueprint) units.
+  const quizUnits = ['Measurement & Units', '1D Motion', 'Vectors'];
+  for (const q of deck.questions.filter((x) => quizUnits.includes(x.unit))) assert.doesNotMatch(q.prompt, /9\.8|projectile|gravity|force|î|ĵ/i, q.id);
 });

@@ -2,7 +2,7 @@
  "id": "phys121",
  "title": "Physics 121",
  "course": "Physics 121",
- "description": "Measurement (sig figs, scientific notation, unit conversion and dimensional analysis), 1D motion with signs, and adding vectors.",
+ "description": "The whole Mechanics Blueprint: measurement and units, 1D motion, vectors, calculus, projectiles, momentum and impulse, forces and friction, circular motion and gravity, rotation and torque, energy, and equilibrium.",
  "scope": "courses/phys121.md",
  "generators": "generators/phys121.js",
  "formats": [
@@ -13,7 +13,15 @@
  "units": [
   "Measurement & Units",
   "1D Motion",
-  "Vectors"
+  "Vectors",
+  "Calculus & Motion",
+  "Projectile Motion",
+  "Momentum & Impulse",
+  "Forces & Friction",
+  "Circular Motion & Gravity",
+  "Rotation & Torque",
+  "Energy",
+  "Equilibrium"
  ],
  "cards": [
   {
@@ -77,6 +85,13 @@
    "term": "Profit",
    "definition": "Revenue − costs. Negative profit is a loss. A rate cost ($/day) must be multiplied by the time first.",
    "topic": "Rates & profit",
+   "unit": "Measurement & Units"
+  },
+  {
+   "id": "c-si",
+   "term": "SI base units",
+   "definition": "Meter, kilogram, second, ampere, kelvin, mole, candela. Everything else (N, J, W) is built from them.",
+   "topic": "SI units",
    "unit": "Measurement & Units"
   },
   {
@@ -218,6 +233,153 @@
    "definition": "The single vector equal to the sum of the others: tip-to-tail, or add the components.",
    "topic": "Adding vectors",
    "unit": "Vectors"
+  },
+  {
+   "id": "c-deriv",
+   "term": "Derivative",
+   "definition": "Rate of change. v = dx/dt, a = dv/dt. Power rule: d/dt(tⁿ) = n·tⁿ⁻¹.",
+   "topic": "Derivatives",
+   "unit": "Calculus & Motion"
+  },
+  {
+   "id": "c-integral",
+   "term": "Integral",
+   "definition": "Area under the curve, the reverse of a derivative: ∫tⁿ dt = tⁿ⁺¹/(n+1) + C, and C is the starting value.",
+   "topic": "Integrals",
+   "unit": "Calculus & Motion"
+  },
+  {
+   "id": "c-proj",
+   "term": "Projectile motion",
+   "definition": "2D motion where a_x = 0 and a_y = −9.8 m/s². Solve x and y as two 1D problems linked by time.",
+   "topic": "Projectile ideas",
+   "unit": "Projectile Motion"
+  },
+  {
+   "id": "c-limit",
+   "term": "Limiting factor",
+   "definition": "The quantity that ends the motion (a fall height, a wall distance). Use it to find t, then use t in the other direction.",
+   "topic": "Projectile ideas",
+   "unit": "Projectile Motion"
+  },
+  {
+   "id": "c-mom",
+   "term": "Momentum",
+   "definition": "p = mv, a vector (kg·m/s). Conserved in any collision of a closed system.",
+   "topic": "Momentum",
+   "unit": "Momentum & Impulse"
+  },
+  {
+   "id": "c-inel",
+   "term": "Inelastic collision",
+   "definition": "Objects stick: m₁v₁ + m₂v₂ = (m₁ + m₂)v_f. Momentum kept, kinetic energy lost.",
+   "topic": "Inelastic collisions",
+   "unit": "Momentum & Impulse"
+  },
+  {
+   "id": "c-el",
+   "term": "Elastic collision",
+   "definition": "Objects bounce and kinetic energy is conserved too: two equations, two unknown final velocities.",
+   "topic": "Elastic collisions",
+   "unit": "Momentum & Impulse"
+  },
+  {
+   "id": "c-imp",
+   "term": "Impulse",
+   "definition": "J = FΔt = Δp (N·s = kg·m/s). For a changing force, it is the area under the F-t graph.",
+   "topic": "Impulse",
+   "unit": "Momentum & Impulse"
+  },
+  {
+   "id": "c-newton2",
+   "term": "Newton's 2nd law",
+   "definition": "F_net = ma (also F = Δp/Δt). Add all external forces as vectors first.",
+   "topic": "F = ma",
+   "unit": "Forces & Friction"
+  },
+  {
+   "id": "c-fric",
+   "term": "Friction",
+   "definition": "|f| = μ·F_N, parallel to the surface. Static: up to μs·F_N, matching the push. Kinetic (sliding): μk·F_N.",
+   "topic": "Static friction",
+   "unit": "Forces & Friction"
+  },
+  {
+   "id": "c-normal",
+   "term": "Normal force",
+   "definition": "A surface's push perpendicular to itself. mg on a level floor, mg cos θ on a ramp.",
+   "topic": "Inclines",
+   "unit": "Forces & Friction"
+  },
+  {
+   "id": "c-ac",
+   "term": "Centripetal acceleration",
+   "definition": "a = v²/r, pointing to the center. Constant speed in a circle is still acceleration.",
+   "topic": "Centripetal motion",
+   "unit": "Circular Motion & Gravity"
+  },
+  {
+   "id": "c-grav",
+   "term": "Newton's gravity",
+   "definition": "F = Gm₁m₂/r², G = 6.67 × 10⁻¹¹ N·m²/kg². r is center to center.",
+   "topic": "Gravity & orbits",
+   "unit": "Circular Motion & Gravity"
+  },
+  {
+   "id": "c-orbit",
+   "term": "Circular orbit",
+   "definition": "Gravity is the centripetal force: GMm/r² = mv²/r, so v = √(GM/r).",
+   "topic": "Gravity & orbits",
+   "unit": "Circular Motion & Gravity"
+  },
+  {
+   "id": "c-rotmap",
+   "term": "Linear ↔ rotational",
+   "definition": "x→θ, v→ω, a→α, m→I, F→τ, p = mv → L = Iω. Same kinematics equations, angles in radians.",
+   "topic": "Rotational kinematics",
+   "unit": "Rotation & Torque"
+  },
+  {
+   "id": "c-tau",
+   "term": "Torque",
+   "definition": "|τ| = rF sin θ (N·m), the rotational \"force\". τ_net = Iα.",
+   "topic": "Torque",
+   "unit": "Rotation & Torque"
+  },
+  {
+   "id": "c-I",
+   "term": "Moment of inertia",
+   "definition": "The rotational \"mass\": depends on mass AND how far it sits from the axis. Rod (center) mL²/12, rod (end) mL²/3, ring mr², sphere ⅖mr².",
+   "topic": "Moment of inertia",
+   "unit": "Rotation & Torque"
+  },
+  {
+   "id": "c-ke",
+   "term": "Kinetic energy",
+   "definition": "KE = ½mv² (joules). A scalar.",
+   "topic": "Energy basics",
+   "unit": "Energy"
+  },
+  {
+   "id": "c-pe",
+   "term": "Potential energy",
+   "definition": "Gravity: mgh (h above your chosen zero). Spring: ½kx² (x = stretch or squeeze).",
+   "topic": "Energy basics",
+   "unit": "Energy"
+  },
+  {
+   "id": "c-cons",
+   "term": "Conservation of energy",
+   "definition": "KE₀ + PE₀ = KE_f + PE_f, minus any work friction does (μk·F_N·d). Energy is moved around, never made or destroyed.",
+   "topic": "Conservation of energy",
+   "unit": "Energy"
+  },
+  {
+   "id": "c-eq",
+   "term": "Static equilibrium",
+   "definition": "Σ F = 0 and Σ τ = 0. Pick the pivot point to make unknown forces drop out of the torque sum.",
+   "topic": "Equilibrium ideas",
+   "unit": "Equilibrium"
   }
  ],
  "questions": [
@@ -495,6 +657,56 @@
    "explanation": "Cost per item: $9/day × 200 days = $1,800. Profit = $1,500 − $1,800 = −$300, a loss."
   },
   {
+   "id": "m-si-base",
+   "type": "mc",
+   "unit": "Measurement & Units",
+   "topic": "SI units",
+   "prompt": "Which of these is one of the seven SI base units?",
+   "choices": [
+    "ampere (A)",
+    "newton (N)",
+    "joule (J)",
+    "watt (W)"
+   ],
+   "answer": "ampere (A)",
+   "explanation": "The base units are meter, kilogram, second, ampere, kelvin, mole and candela. Newtons, joules and watts are derived from them."
+  },
+  {
+   "id": "m-si-derived",
+   "type": "mc",
+   "unit": "Measurement & Units",
+   "topic": "SI units",
+   "prompt": "A newton is a derived unit. What is it in base units?",
+   "choices": [
+    "kg·m/s²",
+    "kg·m/s",
+    "kg·m²/s²",
+    "m/s²"
+   ],
+   "answer": "kg·m/s²",
+   "explanation": "F = ma: kilograms times m/s². kg·m/s is momentum and kg·m²/s² is a joule."
+  },
+  {
+   "id": "n-conv-marathon",
+   "type": "num",
+   "unit": "Measurement & Units",
+   "topic": "Unit conversion",
+   "prompt": "A marathon is 26.2 miles. How many kilometers is that? (1 km = 0.6214 mi)",
+   "answer": 42.16,
+   "units": "km",
+   "explanation": "Put miles on the bottom so they cancel: 26.2 mi × (1 km / 0.6214 mi) = 42.16 km. Multiplying by 0.6214 gives the wrong direction."
+  },
+  {
+   "id": "n-troy",
+   "type": "num",
+   "unit": "Measurement & Units",
+   "topic": "Unit conversion",
+   "prompt": "Gold is priced per troy ounce (31.10 g), not the everyday ounce (28.35 g). How many troy ounces are in 1 kg of gold?",
+   "answer": 32.15,
+   "units": "troy oz",
+   "explanation": "1000 g × (1 troy oz / 31.10 g) = 32.15 troy oz. The blueprint's gold example uses 35.27 oz/kg, which is the everyday ounce, so it overcounts the gold's value by about 10%."
+  },
+  {
    "id": "m-dd-laps",
    "type": "mc",
    "unit": "1D Motion",
@@ -735,6 +947,16 @@
    "units": "s"
   },
   {
+   "id": "n-trip-graph",
+   "type": "num",
+   "unit": "1D Motion",
+   "topic": "Multi-part trips",
+   "prompt": "East is positive. A cyclist starts from rest and reaches 16 m/s in 20 s, rides at 16 m/s for 160 m, then brakes steadily to a stop over 400 m. How long does the whole trip take?",
+   "answer": 80,
+   "units": "s",
+   "explanation": "Each acceleration change is a new problem: 20 s, then 160/16 = 10 s, then Δx = ½(v₀ + v)t → t = 2(400)/16 = 50 s: 80 s total. (The blueprint's v-t graph for its own trip of this kind labels the end at 100 s, but its parts add up to 120 s.)"
+  },
+  {
    "id": "m-v-meaning",
    "type": "mc",
    "unit": "Vectors",
@@ -912,6 +1134,989 @@
    "explanation": "Measured from the West axis: tan θ = |Ry| / |Rx| = 14/9, θ = 57.3°. Using 9/14 gives 32.7°, the angle from North.",
    "units": "degrees",
    "abs": 1
+  },
+  {
+   "id": "m-round-mag",
+   "type": "mc",
+   "unit": "Vectors",
+   "topic": "Magnitude of a sum",
+   "prompt": "A resultant is √1300 m. What is that to 4 significant figures?",
+   "choices": [
+    "36.06 m",
+    "36.05 m",
+    "36.0 m",
+    "36.1 m"
+   ],
+   "answer": "36.06 m",
+   "explanation": "√1300 = 36.0555…, and the 5 after the 36.05 rounds it up to 36.06. (The blueprint's Example 15 writes 36.05, which drops the digit instead of rounding.)"
+  },
+  {
+   "id": "c-deriv-meaning",
+   "type": "mc",
+   "unit": "Calculus & Motion",
+   "topic": "Derivatives",
+   "prompt": "Velocity is the ___ of position with respect to time.",
+   "choices": [
+    "derivative (rate of change)",
+    "integral (area under the curve)",
+    "square",
+    "reciprocal"
+   ],
+   "answer": "derivative (rate of change)",
+   "explanation": "v = dx/dt: how fast position changes. Going the other way, integrating velocity gives back position."
+  },
+  {
+   "id": "c-area",
+   "type": "mc",
+   "unit": "Calculus & Motion",
+   "topic": "Integrals",
+   "prompt": "On a v-t graph, what does the area under the curve between t₁ and t₂ give?",
+   "choices": [
+    "The displacement between t₁ and t₂",
+    "The acceleration",
+    "The velocity at t₂",
+    "The average acceleration"
+   ],
+   "answer": "The displacement between t₁ and t₂",
+   "explanation": "Area = ∫v dt = Δx. The slope of the v-t graph is the acceleration."
+  },
+  {
+   "id": "c-const",
+   "type": "mc",
+   "unit": "Calculus & Motion",
+   "topic": "Integrals",
+   "prompt": "Integrating v(t) gives x(t) plus a constant. What does that constant stand for?",
+   "choices": [
+    "The starting position x₀",
+    "The initial velocity v₀",
+    "The acceleration",
+    "Nothing, it is always 0"
+   ],
+   "answer": "The starting position x₀",
+   "explanation": "At t = 0 every t term vanishes and only the constant is left, so it is x(0) = x₀. Integrating a(t) the same way leaves v₀."
+  },
+  {
+   "id": "c-kind",
+   "type": "mc",
+   "unit": "Calculus & Motion",
+   "topic": "Derivatives",
+   "prompt": "x(t) = 4t² − 3t + 2 (meters, seconds). What kind of motion is this?",
+   "choices": [
+    "Constant acceleration of 8 m/s²",
+    "Constant acceleration of 4 m/s²",
+    "Constant velocity of 4 m/s",
+    "Constant acceleration of 2 m/s²"
+   ],
+   "answer": "Constant acceleration of 8 m/s²",
+   "explanation": "v(t) = 8t − 3 and a(t) = 8: constant. The t² coefficient is ½a, not a, which is where Δx = v₀t + ½at² comes from."
+  },
+  {
+   "id": "c-v",
+   "type": "num",
+   "unit": "Calculus & Motion",
+   "topic": "Derivatives",
+   "prompt": "x(t) = 3t⁴ − 2t² + 5 (meters, t in seconds). What is the velocity at t = 2 s?",
+   "answer": 88,
+   "units": "m/s",
+   "explanation": "v(t) = 12t³ − 4t, so v(2) = 96 − 8 = 88 m/s.",
+   "tol": 0
+  },
+  {
+   "id": "c-a",
+   "type": "num",
+   "unit": "Calculus & Motion",
+   "topic": "Derivatives",
+   "prompt": "x(t) = 3t⁴ − 2t² + 5 (meters, t in seconds). What is the acceleration at t = 1 s?",
+   "answer": 32,
+   "units": "m/s²",
+   "explanation": "v(t) = 12t³ − 4t, then a(t) = 36t² − 4: a(1) = 32 m/s².",
+   "tol": 0
+  },
+  {
+   "id": "c-int-x",
+   "type": "num",
+   "unit": "Calculus & Motion",
+   "topic": "Integrals",
+   "prompt": "v(t) = 6t² + 4 (m/s), and the object is at x = 0 when t = 0. Where is it at t = 3 s?",
+   "answer": 66,
+   "units": "m",
+   "explanation": "x(t) = 2t³ + 4t + 0, so x(3) = 54 + 12 = 66 m."
+  },
+  {
+   "id": "c-int-v",
+   "type": "num",
+   "unit": "Calculus & Motion",
+   "topic": "Integrals",
+   "prompt": "a(t) = 12t (m/s², t in seconds), and v = 5 m/s at t = 0. What is v at t = 2 s?",
+   "answer": 29,
+   "units": "m/s",
+   "explanation": "v(t) = 6t² + v₀ = 6t² + 5, so v(2) = 29 m/s. Forgetting the +5 gives 24."
+  },
+  {
+   "id": "c-zero",
+   "type": "num",
+   "unit": "Calculus & Motion",
+   "topic": "Derivatives",
+   "prompt": "v(t) = 3t² − 12 (m/s). At what time t > 0 is the object momentarily at rest?",
+   "answer": 2,
+   "units": "s",
+   "explanation": "Set v = 0: 3t² = 12, t = 2 s. That is where x(t) turns around."
+  },
+  {
+   "id": "pj-shared",
+   "type": "mc",
+   "unit": "Projectile Motion",
+   "topic": "Projectile ideas",
+   "prompt": "In a projectile problem, which quantity do the x and y parts share?",
+   "choices": [
+    "Time",
+    "Acceleration",
+    "Initial velocity",
+    "Displacement"
+   ],
+   "answer": "Time",
+   "explanation": "x and y are two separate 1D problems (a_x = 0, a_y = −9.8 m/s²). Only t is the same in both, which is why you solve for t in one and use it in the other."
+  },
+  {
+   "id": "pj-ax",
+   "type": "mc",
+   "unit": "Projectile Motion",
+   "topic": "Projectile ideas",
+   "prompt": "Ignoring air resistance, what is a projectile's horizontal acceleration?",
+   "choices": [
+    "0 m/s²",
+    "−9.8 m/s²",
+    "9.8 m/s²",
+    "It depends on the launch angle"
+   ],
+   "answer": "0 m/s²",
+   "explanation": "Gravity only pulls down, so v_x never changes. −9.8 m/s² is a_y."
+  },
+  {
+   "id": "pj-top",
+   "type": "mc",
+   "unit": "Projectile Motion",
+   "topic": "Projectile ideas",
+   "prompt": "At the very top of its path, a ball launched at an angle has:",
+   "choices": [
+    "v_y = 0, but v_x is unchanged",
+    "v = 0 in every direction",
+    "a = 0",
+    "v_x = 0, but v_y is at its largest"
+   ],
+   "answer": "v_y = 0, but v_x is unchanged",
+   "explanation": "It stops rising, so v_y = 0, but it is still moving sideways at v_x. Gravity is still acting, so a_y = −9.8 m/s² at the top too."
+  },
+  {
+   "id": "pj-race",
+   "type": "mc",
+   "unit": "Projectile Motion",
+   "topic": "Projectile ideas",
+   "prompt": "One ball is dropped and another is fired horizontally from the same height at the same instant. Which lands first? (no air resistance)",
+   "choices": [
+    "They land at the same time",
+    "The dropped ball",
+    "The fired ball",
+    "It depends on how fast the fired ball goes"
+   ],
+   "answer": "They land at the same time",
+   "explanation": "Both start with v_y = 0 and fall the same height with the same a_y, so the y problem (and the time) is identical. The horizontal speed only changes where it lands."
+  },
+  {
+   "id": "pj-angles",
+   "type": "mc",
+   "unit": "Projectile Motion",
+   "topic": "Angled launch",
+   "prompt": "Launched from level ground at the same speed, which angle gives the same range as 30°?",
+   "choices": [
+    "60°",
+    "45°",
+    "15°",
+    "90°"
+   ],
+   "answer": "60°",
+   "explanation": "Range depends on sin(2θ), and sin 60° = sin 120°: complementary angles (30° and 60°) land in the same spot. 45° goes farthest."
+  },
+  {
+   "id": "pj-t",
+   "type": "num",
+   "unit": "Projectile Motion",
+   "topic": "Horizontal launch",
+   "prompt": "A ball rolls off a 31.4 m high roof at 12 m/s horizontally. How long is it in the air? (g = 9.8 m/s²)",
+   "answer": 2.531,
+   "units": "s",
+   "explanation": "Only the fall matters for time: −31.4 = ½(−9.8)t² → t = 2.53 s. The 12 m/s is horizontal."
+  },
+  {
+   "id": "pj-x",
+   "type": "num",
+   "unit": "Projectile Motion",
+   "topic": "Horizontal launch",
+   "prompt": "A marble rolls off a 1.2 m high table at 2.5 m/s. How far from the table's edge does it land? (g = 9.8 m/s²)",
+   "answer": 1.237,
+   "units": "m",
+   "explanation": "t from the fall: √(2·1.2/9.8) = 0.495 s. Then Δx = 2.5 × 0.495 = 1.24 m."
+  },
+  {
+   "id": "pj-max",
+   "type": "num",
+   "unit": "Projectile Motion",
+   "topic": "Angled launch",
+   "prompt": "A soccer ball is kicked from the ground at 18 m/s, 50° above the horizontal. How high does it go? (g = 9.8 m/s²)",
+   "answer": 9.701,
+   "units": "m",
+   "explanation": "v₀y = 18 sin 50° = 13.79 m/s. At the top v_y = 0: Δy = 13.79²/(2·9.8) = 9.70 m."
+  },
+  {
+   "id": "pj-hang",
+   "type": "num",
+   "unit": "Projectile Motion",
+   "topic": "Angled launch",
+   "prompt": "A soccer ball is kicked from level ground at 18 m/s, 50° above the horizontal. How long is it in the air? (g = 9.8 m/s²)",
+   "answer": 2.814,
+   "units": "s",
+   "explanation": "It lands when Δy = 0: 0 = v₀y t − 4.9t², so t = 2v₀y/9.8 = 2(13.79)/9.8 = 2.81 s."
+  },
+  {
+   "id": "pj-wall",
+   "type": "num",
+   "unit": "Projectile Motion",
+   "topic": "Angled launch",
+   "prompt": "A dart is thrown from ground level at 25 m/s, 20° above the horizontal, at a wall 30 m away. How high up the wall does it hit? (g = 9.8 m/s²)",
+   "answer": 2.928,
+   "units": "m",
+   "explanation": "Δx is the limiting factor: t = 30/(25 cos 20°) = 1.277 s. Δy = (25 sin 20°)t − 4.9t² = 2.93 m. (Carry the digits: the blueprint's Spider-Man example, done the same way, comes out to 7.74 m, not 7.69 m.)"
+  },
+  {
+   "id": "mo-vector",
+   "type": "mc",
+   "unit": "Momentum & Impulse",
+   "topic": "Momentum",
+   "prompt": "Why does momentum have a direction?",
+   "choices": [
+    "It is mass × velocity, and velocity is a vector",
+    "Mass has a direction",
+    "Only in 2D problems",
+    "It doesn't: momentum is a scalar"
+   ],
+   "answer": "It is mass × velocity, and velocity is a vector",
+   "explanation": "p = mv. Mass is a scalar, so p points wherever v points; moving left means negative momentum."
+  },
+  {
+   "id": "mo-conserved",
+   "type": "mc",
+   "unit": "Momentum & Impulse",
+   "topic": "Momentum",
+   "prompt": "When is the total momentum of a system conserved?",
+   "choices": [
+    "When no net outside force acts on it (a closed system)",
+    "Only in elastic collisions",
+    "Only when the objects stick together",
+    "Only when both start at rest"
+   ],
+   "answer": "When no net outside force acts on it (a closed system)",
+   "explanation": "Inside forces during a collision cancel in pairs, so momentum is conserved in every collision of a closed system, elastic or not."
+  },
+  {
+   "id": "mo-ke",
+   "type": "mc",
+   "unit": "Momentum & Impulse",
+   "topic": "Inelastic collisions",
+   "prompt": "Two carts collide and stick together. What happens to their total kinetic energy?",
+   "choices": [
+    "Some of it is lost (to heat, sound, bending)",
+    "It is conserved",
+    "It increases",
+    "All of it disappears"
+   ],
+   "answer": "Some of it is lost (to heat, sound, bending)",
+   "explanation": "Momentum is conserved, kinetic energy isn't: that is what \"inelastic\" means. Only elastic collisions keep KE."
+  },
+  {
+   "id": "mo-units",
+   "type": "mc",
+   "unit": "Momentum & Impulse",
+   "topic": "Impulse",
+   "prompt": "Which unit is the same as 1 N·s?",
+   "choices": [
+    "1 kg·m/s",
+    "1 kg·m/s²",
+    "1 J",
+    "1 kg·m²/s"
+   ],
+   "answer": "1 kg·m/s",
+   "explanation": "N = kg·m/s², times s gives kg·m/s: impulse and momentum have the same units, since J = Δp."
+  },
+  {
+   "id": "mo-airbag",
+   "type": "mc",
+   "unit": "Momentum & Impulse",
+   "topic": "Impulse",
+   "prompt": "An airbag makes your head stop over a longer time. Why does that help?",
+   "choices": [
+    "Same change in momentum, so a longer Δt means a smaller force",
+    "It reduces your change in momentum",
+    "It increases the impulse",
+    "It makes the collision elastic"
+   ],
+   "answer": "Same change in momentum, so a longer Δt means a smaller force",
+   "explanation": "You go from moving to stopped either way, so J = Δp is fixed. J = FΔt: stretch Δt and F shrinks."
+  },
+  {
+   "id": "mo-stick",
+   "type": "num",
+   "unit": "Momentum & Impulse",
+   "topic": "Inelastic collisions",
+   "prompt": "A 1500 kg car going East at 20 m/s rear-ends a 2500 kg truck at rest, and they lock together. What is their velocity right after? (East = +)",
+   "answer": 7.5,
+   "units": "m/s",
+   "explanation": "30,000 kg·m/s before = (4000 kg)v after, so v = 7.5 m/s."
+  },
+  {
+   "id": "mo-head",
+   "type": "num",
+   "unit": "Momentum & Impulse",
+   "topic": "Inelastic collisions",
+   "prompt": "A 3 kg puck moving right at 4 m/s and a 2 kg puck moving left at 6 m/s collide and stick. What is their velocity after? (right = +)",
+   "answer": 0,
+   "units": "m/s",
+   "explanation": "(3)(4) + (2)(−6) = 0, so the stuck pair stops dead: 0 m/s. The left-moving puck's momentum is negative.",
+   "abs": 0.01
+  },
+  {
+   "id": "mo-imp",
+   "type": "num",
+   "unit": "Momentum & Impulse",
+   "topic": "Impulse",
+   "prompt": "A 0.145 kg baseball comes in at 40 m/s (moving left) and leaves the bat at 50 m/s (moving right). What impulse does the bat give it? (right = +)",
+   "answer": 13.05,
+   "units": "N·s",
+   "explanation": "J = Δp = (0.145)(+50) − (0.145)(−40) = 13.05 N·s. Using 50 − 40 forgets that the ball reversed direction."
+  },
+  {
+   "id": "mo-force",
+   "type": "num",
+   "unit": "Momentum & Impulse",
+   "topic": "Impulse",
+   "prompt": "The bat in a hit gives a baseball an impulse of 13.05 N·s over 0.0015 s. What is the average force?",
+   "answer": 8700,
+   "units": "N",
+   "explanation": "F = J/Δt = 13.05/0.0015 = 8700 N."
+  },
+  {
+   "id": "mo-2d",
+   "type": "num",
+   "unit": "Momentum & Impulse",
+   "topic": "Inelastic collisions",
+   "prompt": "A 4 kg cart moving East at 6 m/s and a 2 kg cart moving North at 9 m/s collide and stick. How fast do they move afterward?",
+   "answer": 5,
+   "units": "m/s",
+   "explanation": "Do x and y separately: p_x = 24, p_y = 18 kg·m/s, so p = 30 kg·m/s and v = 30/6 = 5 m/s."
+  },
+  {
+   "id": "mo-elastic",
+   "type": "num",
+   "unit": "Momentum & Impulse",
+   "topic": "Elastic collisions",
+   "prompt": "A 2 kg ball moving right at 6 m/s hits a 6 kg ball at rest head-on, elastically. What is the 2 kg ball's velocity after? (right = +)",
+   "answer": -3,
+   "units": "m/s",
+   "explanation": "v₁f = (m₁ − m₂)/(m₁ + m₂)·v₁ = (−4/8)(6) = −3 m/s: the lighter ball bounces back."
+  },
+  {
+   "id": "fo-static-match",
+   "type": "mc",
+   "unit": "Forces & Friction",
+   "topic": "Static friction",
+   "prompt": "A 30 kg box stays still while you push it sideways with 50 N. The max static friction μs·mg is 120 N. How big is the friction force right now?",
+   "choices": [
+    "50 N",
+    "120 N",
+    "0 N",
+    "170 N"
+   ],
+   "answer": "50 N",
+   "explanation": "Static friction matches the push exactly, up to its limit. μs·mg = 120 N is the most it can give, not what it always gives."
+  },
+  {
+   "id": "fo-mus",
+   "type": "mc",
+   "unit": "Forces & Friction",
+   "topic": "Static friction",
+   "prompt": "Why is μs usually bigger than μk for the same surfaces?",
+   "choices": [
+    "It takes more force to start something sliding than to keep it sliding",
+    "Kinetic friction only acts on light objects",
+    "Static friction depends on speed",
+    "μk includes air resistance"
+   ],
+   "answer": "It takes more force to start something sliding than to keep it sliding",
+   "explanation": "Once it slides, kinetic friction (μk·F_N) takes over and is smaller, which is why a heavy box gets easier to push once it starts moving."
+  },
+  {
+   "id": "fo-press",
+   "type": "mc",
+   "unit": "Forces & Friction",
+   "topic": "F = ma",
+   "prompt": "A book rests on a table and you press down on it. What happens to the normal force?",
+   "choices": [
+    "It increases",
+    "It decreases",
+    "It stays equal to mg",
+    "It becomes zero"
+   ],
+   "answer": "It increases",
+   "explanation": "The table pushes back on everything pressing into it: F_N = mg + your push. More normal force means more friction too."
+  },
+  {
+   "id": "fo-fbd",
+   "type": "mc",
+   "unit": "Forces & Friction",
+   "topic": "Kinetic friction",
+   "prompt": "A box slides to the right across a floor. On its free-body diagram, which way does kinetic friction point?",
+   "choices": [
+    "Left (opposite the sliding)",
+    "Right",
+    "Down",
+    "Up"
+   ],
+   "answer": "Left (opposite the sliding)",
+   "explanation": "Friction is parallel to the surface and opposes the sliding. Weight points down and the normal force up."
+  },
+  {
+   "id": "fo-mass-cancel",
+   "type": "mc",
+   "unit": "Forces & Friction",
+   "topic": "Inclines",
+   "prompt": "A 2 kg block and a 20 kg block slide down the same ramp with the same μk. Which accelerates faster?",
+   "choices": [
+    "Same acceleration: the mass cancels",
+    "The 20 kg block",
+    "The 2 kg block",
+    "It depends on the angle"
+   ],
+   "answer": "Same acceleration: the mass cancels",
+   "explanation": "a = g(sin θ − μk cos θ): every force here is proportional to m, so m drops out."
+  },
+  {
+   "id": "fo-fma",
+   "type": "num",
+   "unit": "Forces & Friction",
+   "topic": "F = ma",
+   "prompt": "A 25 kg crate on frictionless ice is pulled East with 120 N and West with 45 N. What is its acceleration? (East = +)",
+   "answer": 3,
+   "units": "m/s²",
+   "explanation": "F_net = 120 − 45 = 75 N, so a = 75/25 = 3 m/s² East."
+  },
+  {
+   "id": "fo-static",
+   "type": "num",
+   "unit": "Forces & Friction",
+   "topic": "Static friction",
+   "prompt": "A 40 kg dresser sits on a floor with μs = 0.45. What push is needed to start it sliding? (g = 9.8 m/s²)",
+   "answer": 176.4,
+   "units": "N",
+   "explanation": "μs·mg = 0.45 × 40 × 9.8 = 176.4 N."
+  },
+  {
+   "id": "fo-kin",
+   "type": "num",
+   "unit": "Forces & Friction",
+   "topic": "Kinetic friction",
+   "prompt": "You push the same 40 kg dresser (μk = 0.30) with 250 N and it slides. What is its acceleration? (g = 9.8 m/s²)",
+   "answer": 3.31,
+   "units": "m/s²",
+   "explanation": "Kinetic friction: 0.30 × 40 × 9.8 = 117.6 N. F_net = 132.4 N, a = 3.31 m/s²."
+  },
+  {
+   "id": "fo-incline",
+   "type": "num",
+   "unit": "Forces & Friction",
+   "topic": "Inclines",
+   "prompt": "A 12 kg sled slides down a frictionless 25° hill. What is its acceleration? (g = 9.8 m/s²)",
+   "answer": 4.142,
+   "units": "m/s²",
+   "explanation": "Only mg sin 25° acts along the slope: a = 9.8 sin 25° = 4.14 m/s². The mass cancels."
+  },
+  {
+   "id": "fo-2d",
+   "type": "num",
+   "unit": "Forces & Friction",
+   "topic": "F = ma",
+   "prompt": "An 8 kg puck on frictionless ice is pushed with 30 N East and 40 N North at the same time. What is the size of its acceleration?",
+   "answer": 6.25,
+   "units": "m/s²",
+   "explanation": "Add forces as vectors: √(30² + 40²) = 50 N, so a = 50/8 = 6.25 m/s². 70/8 adds them as if they were in a line."
+  },
+  {
+   "id": "fo-strip",
+   "type": "num",
+   "unit": "Forces & Friction",
+   "topic": "Kinetic friction",
+   "prompt": "A 600 kg go-kart at 10 m/s slides across a 4 m strip with μk = 0.5, then onto gravel with μk = 0.8. How far into the gravel does it slide? (g = 9.8 m/s²)",
+   "answer": 3.878,
+   "units": "m",
+   "explanation": "Strip: a = −4.9 m/s², v² = 100 − 2(4.9)(4) = 60.8. Gravel: a = −7.84 m/s², Δx = 60.8/(2·7.84) = 3.88 m. Keep v² unrounded: the blueprint's F1 example rounds √24.8 = 4.98 m/s down to 4.9 and gets 1.36 m instead of 1.41 m."
+  },
+  {
+   "id": "ci-accel",
+   "type": "mc",
+   "unit": "Circular Motion & Gravity",
+   "topic": "Centripetal motion",
+   "prompt": "A car drives around a circle at a constant 15 m/s. Is it accelerating?",
+   "choices": [
+    "Yes: its direction keeps changing",
+    "No: its speed is constant",
+    "Only if it speeds up",
+    "Only on banked curves"
+   ],
+   "answer": "Yes: its direction keeps changing",
+   "explanation": "Velocity is speed and direction, so turning is accelerating: a = v²/r, toward the center."
+  },
+  {
+   "id": "ci-dir",
+   "type": "mc",
+   "unit": "Circular Motion & Gravity",
+   "topic": "Centripetal motion",
+   "prompt": "Which way does centripetal acceleration point?",
+   "choices": [
+    "Toward the center of the circle",
+    "Along the velocity",
+    "Away from the center",
+    "Straight down"
+   ],
+   "answer": "Toward the center of the circle",
+   "explanation": "It is always perpendicular to the velocity, pointing to the center: that is what bends the path."
+  },
+  {
+   "id": "ci-cause",
+   "type": "mc",
+   "unit": "Circular Motion & Gravity",
+   "topic": "Centripetal motion",
+   "prompt": "What supplies the centripetal force for a car on a flat curve?",
+   "choices": [
+    "Friction between the tires and the road",
+    "Gravity",
+    "The engine",
+    "The car's speed"
+   ],
+   "answer": "Friction between the tires and the road",
+   "explanation": "Centripetal force is a job, not a new force: on a flat road friction does it (on ice, the car goes straight)."
+  },
+  {
+   "id": "gr-double",
+   "type": "mc",
+   "unit": "Circular Motion & Gravity",
+   "topic": "Gravity & orbits",
+   "prompt": "If the distance between two planets doubles, the gravitational force between them becomes:",
+   "choices": [
+    "¼ as big",
+    "½ as big",
+    "2 times as big",
+    "4 times as big"
+   ],
+   "answer": "¼ as big",
+   "explanation": "F = Gm₁m₂/d²: doubling d makes d² four times bigger, so F is a quarter."
+  },
+  {
+   "id": "gr-mass-cancel",
+   "type": "mc",
+   "unit": "Circular Motion & Gravity",
+   "topic": "Gravity & orbits",
+   "prompt": "Does a satellite's own mass change the speed it needs for a given circular orbit?",
+   "choices": [
+    "No: it cancels from GMm/r² = mv²/r",
+    "Yes: heavier needs faster",
+    "Yes: heavier needs slower",
+    "Only close to the planet"
+   ],
+   "answer": "No: it cancels from GMm/r² = mv²/r",
+   "explanation": "m appears on both sides, so v = √(GM/r) depends only on the planet's mass and the orbit radius."
+  },
+  {
+   "id": "ci-a",
+   "type": "num",
+   "unit": "Circular Motion & Gravity",
+   "topic": "Centripetal motion",
+   "prompt": "A kid rides the edge of a merry-go-round, 2.5 m from the center, at 3 m/s. What is the kid's centripetal acceleration?",
+   "answer": 3.6,
+   "units": "m/s²",
+   "explanation": "a = v²/r = 3²/2.5 = 3.6 m/s², toward the center."
+  },
+  {
+   "id": "ci-F",
+   "type": "num",
+   "unit": "Circular Motion & Gravity",
+   "topic": "Centripetal motion",
+   "prompt": "A 1200 kg car rounds a curve of radius 80 m at 25 m/s. How much sideways force does the road supply?",
+   "answer": 9375,
+   "units": "N",
+   "explanation": "F = mv²/r = 1200 × 25² / 80 = 9375 N."
+  },
+  {
+   "id": "ci-v",
+   "type": "num",
+   "unit": "Circular Motion & Gravity",
+   "topic": "Centripetal motion",
+   "prompt": "A string breaks above 40 N. What is the fastest a 0.5 kg ball can whirl on it in a horizontal circle of radius 1.2 m (frictionless table)?",
+   "answer": 9.798,
+   "units": "m/s",
+   "explanation": "40 = 0.5v²/1.2 → v = √96 = 9.80 m/s."
+  },
+  {
+   "id": "gr-F",
+   "type": "num",
+   "unit": "Circular Motion & Gravity",
+   "topic": "Gravity & orbits",
+   "prompt": "The Moon (7.35 × 10²² kg) is 3.84 × 10⁸ m from Earth (5.97 × 10²⁴ kg). What is the gravitational force between them? (G = 6.67 × 10⁻¹¹ N·m²/kg²)",
+   "answer": 198500000000000000000,
+   "units": "N",
+   "explanation": "F = Gm₁m₂/d² = 1.98 × 10²⁰ N. Remember to square the distance."
+  },
+  {
+   "id": "gr-v",
+   "type": "num",
+   "unit": "Circular Motion & Gravity",
+   "topic": "Gravity & orbits",
+   "prompt": "A space station orbits 6.78 × 10⁶ m from Earth's center (Earth: 5.97 × 10²⁴ kg). How fast does it move? (G = 6.67 × 10⁻¹¹ N·m²/kg²)",
+   "answer": 7664,
+   "units": "m/s",
+   "explanation": "GMm/r² = mv²/r → v = √(GM/r) = 7664 m/s. (Same method for Earth around the Sun: the blueprint's Example 19 numbers give a period of about 363 days, not 362.)"
+  },
+  {
+   "id": "ro-rad",
+   "type": "mc",
+   "unit": "Rotation & Torque",
+   "topic": "Rotational kinematics",
+   "prompt": "The rotational kinematics equations (Δθ = ω₀t + ½αt² etc.) need angles in:",
+   "choices": [
+    "radians",
+    "degrees",
+    "rotations",
+    "any unit, as long as you're consistent"
+   ],
+   "answer": "radians",
+   "explanation": "They come from s = rθ, which only works in radians. Convert: 1 rotation = 2π rad = 360°."
+  },
+  {
+   "id": "ro-arc",
+   "type": "mc",
+   "unit": "Rotation & Torque",
+   "topic": "Rotational kinematics",
+   "prompt": "A wheel of radius 0.3 m turns through 4 rad. How far does a point on its rim travel?",
+   "choices": [
+    "1.2 m",
+    "13.3 m",
+    "0.075 m",
+    "4.3 m"
+   ],
+   "answer": "1.2 m",
+   "explanation": "s = rθ = 0.3 × 4 = 1.2 m. Stretched out, the arc is just a 1D distance."
+  },
+  {
+   "id": "ro-sign",
+   "type": "mc",
+   "unit": "Rotation & Torque",
+   "topic": "Rotational kinematics",
+   "prompt": "Using the class convention, a wheel spinning clockwise has an angular velocity that is:",
+   "choices": [
+    "negative",
+    "positive",
+    "zero",
+    "undefined"
+   ],
+   "answer": "negative",
+   "explanation": "Counterclockwise is positive and clockwise negative, just like left being negative in 1D."
+  },
+  {
+   "id": "ro-angle",
+   "type": "mc",
+   "unit": "Rotation & Torque",
+   "topic": "Torque",
+   "prompt": "To get the most torque from a wrench, push at what angle to the handle?",
+   "choices": [
+    "90°",
+    "0°",
+    "45°",
+    "180°"
+   ],
+   "answer": "90°",
+   "explanation": "|τ| = rF sin θ is largest when sin θ = 1. At 0° or 180° you push along the handle and get no torque."
+  },
+  {
+   "id": "ro-I",
+   "type": "mc",
+   "unit": "Rotation & Torque",
+   "topic": "Moment of inertia",
+   "prompt": "A rod with the same mass and length can spin about its center or about one end. Which is easier to spin up?",
+   "choices": [
+    "About its center (mL²/12 vs mL²/3)",
+    "About one end",
+    "They are the same",
+    "It depends on the force"
+   ],
+   "answer": "About its center (mL²/12 vs mL²/3)",
+   "explanation": "More mass far from the axis means a bigger I. About the end, I is 4× bigger, so the same torque gives ¼ the α."
+  },
+  {
+   "id": "ro-alpha",
+   "type": "num",
+   "unit": "Rotation & Torque",
+   "topic": "Rotational kinematics",
+   "prompt": "A fan spinning at 50 rad/s is switched off and stops in 10 s. What is its angular acceleration?",
+   "answer": -5,
+   "units": "rad/s²",
+   "explanation": "α = (0 − 50)/10 = −5 rad/s², negative because it slows down."
+  },
+  {
+   "id": "ro-theta",
+   "type": "num",
+   "unit": "Rotation & Torque",
+   "topic": "Rotational kinematics",
+   "prompt": "A fan slows steadily from 50 rad/s to 0 in 10 s. Through what angle does it turn while stopping?",
+   "answer": 250,
+   "units": "rad",
+   "explanation": "Δθ = ½(ω₀ + ω)t = ½(50 + 0)(10) = 250 rad."
+  },
+  {
+   "id": "ro-rev",
+   "type": "num",
+   "unit": "Rotation & Torque",
+   "topic": "Rotational kinematics",
+   "prompt": "A wheel turns at a steady 7.5 rad/s for 60 s. How many rotations is that?",
+   "answer": 71.62,
+   "units": "rotations",
+   "explanation": "Δθ = 7.5 × 60 = 450 rad, and 450/2π = 71.6 rotations."
+  },
+  {
+   "id": "ro-tau",
+   "type": "num",
+   "unit": "Rotation & Torque",
+   "topic": "Torque",
+   "prompt": "You pull a door handle 0.8 m from the hinge with 30 N, at 60° to the door. What torque do you apply?",
+   "answer": 20.78,
+   "units": "N·m",
+   "explanation": "|τ| = rF sin θ = 0.8 × 30 × sin 60° = 20.8 N·m."
+  },
+  {
+   "id": "ro-ring",
+   "type": "num",
+   "unit": "Rotation & Torque",
+   "topic": "Moment of inertia",
+   "prompt": "A 2 kg ring of radius 0.5 m (I = mr²) gets a net torque of 3 N·m. What is its angular acceleration?",
+   "answer": 6,
+   "units": "rad/s²",
+   "explanation": "I = 2 × 0.5² = 0.5 kg·m², so α = τ/I = 6 rad/s²."
+  },
+  {
+   "id": "en-scalar",
+   "type": "mc",
+   "unit": "Energy",
+   "topic": "Energy basics",
+   "prompt": "Why don't you give a direction for energy (like \"75 J North\")?",
+   "choices": [
+    "Energy is a scalar",
+    "It always points down",
+    "Only kinetic energy has a direction",
+    "Joules already include a direction"
+   ],
+   "answer": "Energy is a scalar",
+   "explanation": "Energy has size only, so energy problems need no components, which is why they are often easier than kinematics."
+  },
+  {
+   "id": "en-joule",
+   "type": "mc",
+   "unit": "Energy",
+   "topic": "Energy basics",
+   "prompt": "1 joule equals:",
+   "choices": [
+    "1 kg·m²/s²",
+    "1 kg·m/s²",
+    "1 kg·m/s",
+    "1 N/m"
+   ],
+   "answer": "1 kg·m²/s²",
+   "explanation": "½mv² has units kg·(m/s)² = kg·m²/s². kg·m/s² is a newton, kg·m/s is momentum."
+  },
+  {
+   "id": "en-race",
+   "type": "mc",
+   "unit": "Energy",
+   "topic": "Conservation of energy",
+   "prompt": "A 1 kg ball and a 10 kg ball are dropped from the same height (no air resistance). Which is moving faster at the ground?",
+   "choices": [
+    "They have the same speed",
+    "The 10 kg ball",
+    "The 1 kg ball",
+    "It depends on the height"
+   ],
+   "answer": "They have the same speed",
+   "explanation": "mgh = ½mv²: m cancels, v = √(2gh). The heavy ball has more energy, but not more speed."
+  },
+  {
+   "id": "en-time",
+   "type": "mc",
+   "unit": "Energy",
+   "topic": "Conservation of energy",
+   "prompt": "Energy conservation gives the speed at the bottom of a ramp. What can't it tell you?",
+   "choices": [
+    "How long the slide took",
+    "The final speed",
+    "The height change",
+    "The kinetic energy at the bottom"
+   ],
+   "answer": "How long the slide took",
+   "explanation": "Energy has no time in it. For time you still need kinematics."
+  },
+  {
+   "id": "en-double",
+   "type": "mc",
+   "unit": "Energy",
+   "topic": "Energy basics",
+   "prompt": "If a car's speed doubles, its kinetic energy:",
+   "choices": [
+    "Quadruples",
+    "Doubles",
+    "Stays the same",
+    "Halves"
+   ],
+   "answer": "Quadruples",
+   "explanation": "KE = ½mv²: 2× speed gives 2² = 4× the energy, which is also 4× the braking distance."
+  },
+  {
+   "id": "en-ke",
+   "type": "num",
+   "unit": "Energy",
+   "topic": "Energy basics",
+   "prompt": "What is the kinetic energy of a 1200 kg car moving at 15 m/s?",
+   "answer": 135000,
+   "units": "J",
+   "explanation": "½mv² = ½ × 1200 × 15² = 135,000 J."
+  },
+  {
+   "id": "en-pe",
+   "type": "num",
+   "unit": "Energy",
+   "topic": "Energy basics",
+   "prompt": "A 55 kg climber goes up 120 m. How much gravitational potential energy does she gain? (g = 9.8 m/s²)",
+   "answer": 64680,
+   "units": "J",
+   "explanation": "mgh = 55 × 9.8 × 120 = 64,680 J."
+  },
+  {
+   "id": "en-drop",
+   "type": "num",
+   "unit": "Energy",
+   "topic": "Conservation of energy",
+   "prompt": "A water balloon is dropped from rest 20 m up. How fast is it going just before it hits the ground? (g = 9.8 m/s², no air resistance)",
+   "answer": 19.8,
+   "units": "m/s",
+   "explanation": "mgh = ½mv² → v = √(2 × 9.8 × 20) = 19.8 m/s."
+  },
+  {
+   "id": "en-spring",
+   "type": "num",
+   "unit": "Energy",
+   "topic": "Spring energy",
+   "prompt": "A spring with k = 800 N/m is compressed 0.10 m. How much energy does it store?",
+   "answer": 4,
+   "units": "J",
+   "explanation": "½kx² = ½ × 800 × 0.10² = 4 J. Forgetting to square x gives 40."
+  },
+  {
+   "id": "en-friction",
+   "type": "num",
+   "unit": "Energy",
+   "topic": "Work & friction",
+   "prompt": "A 4 kg puck slides at 6 m/s onto a floor with μk = 0.2. How far does it go before stopping? (g = 9.8 m/s²)",
+   "answer": 9.184,
+   "units": "m",
+   "explanation": "All of ½mv² = 72 J goes into friction work μk·mg·d = 7.84d, so d = 9.18 m. (In the blueprint's Example 23, part b works out to 23.4 m/s; it rounds down to 23.3.)"
+  },
+  {
+   "id": "eq-def",
+   "type": "mc",
+   "unit": "Equilibrium",
+   "topic": "Equilibrium ideas",
+   "prompt": "An object is in static equilibrium when:",
+   "choices": [
+    "Net force = 0 AND net torque = 0",
+    "Net force = 0 only",
+    "Net torque = 0 only",
+    "It moves at a constant speed"
+   ],
+   "answer": "Net force = 0 AND net torque = 0",
+   "explanation": "Zero net force keeps it from sliding, zero net torque keeps it from spinning. You need both."
+  },
+  {
+   "id": "eq-equal",
+   "type": "mc",
+   "unit": "Equilibrium",
+   "topic": "Balancing torques",
+   "prompt": "Two kids of equal mass sit on a seesaw. Where must they sit to balance it?",
+   "choices": [
+    "At equal distances from the pivot",
+    "Both at the very ends, wherever the pivot is",
+    "On the same side",
+    "Anywhere"
+   ],
+   "answer": "At equal distances from the pivot",
+   "explanation": "Torque is weight × distance; equal weights need equal distances."
+  },
+  {
+   "id": "eq-cg",
+   "type": "mc",
+   "unit": "Equilibrium",
+   "topic": "Equilibrium ideas",
+   "prompt": "For torque, where does a uniform beam's weight act?",
+   "choices": [
+    "At its center",
+    "At the pivot",
+    "At both ends",
+    "Nowhere: a beam's weight makes no torque"
+   ],
+   "answer": "At its center",
+   "explanation": "A uniform beam acts as if all its weight sits at its middle, which makes torque whenever the pivot isn't there."
+  },
+  {
+   "id": "eq-seesaw",
+   "type": "num",
+   "unit": "Equilibrium",
+   "topic": "Balancing torques",
+   "prompt": "A 30 kg kid sits 2 m left of a seesaw's pivot. Where must a 40 kg kid sit to balance? (distance right of the pivot; ignore the board's weight)",
+   "answer": 1.5,
+   "units": "m",
+   "explanation": "30 × 2 = 40 × d → d = 1.5 m. The heavier kid sits closer."
+  },
+  {
+   "id": "eq-support",
+   "type": "num",
+   "unit": "Equilibrium",
+   "topic": "Balancing forces",
+   "prompt": "A 15 kg board balances on one pivot with a 30 kg kid and a 45 kg kid on it. How hard does the pivot push up? (g = 9.8 m/s²)",
+   "answer": 882,
+   "units": "N",
+   "explanation": "Net force = 0: (15 + 30 + 45) × 9.8 = 882 N. Don't forget the board."
+  },
+  {
+   "id": "eq-mass",
+   "type": "num",
+   "unit": "Equilibrium",
+   "topic": "Balancing torques",
+   "prompt": "A 3 kg weight hangs 0.4 m left of a balance's pivot. What mass hung 0.6 m right of the pivot keeps it level?",
+   "answer": 2,
+   "units": "kg",
+   "explanation": "3 × 0.4 = m × 0.6 → m = 2 kg."
+  },
+  {
+   "id": "eq-beam",
+   "type": "num",
+   "unit": "Equilibrium",
+   "topic": "Balancing torques",
+   "prompt": "A uniform 10 kg beam, 4 m long, rests on a pivot 1 m from its left end. What mass hung at the left end keeps it level?",
+   "answer": 10,
+   "units": "kg",
+   "explanation": "The beam's weight acts at its center, 2 m from the left end, so 1 m right of the pivot. m × 1 = 10 × 1 → m = 10 kg."
   }
  ]
 }
