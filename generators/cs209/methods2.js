@@ -123,7 +123,7 @@ export default [
     const a = r.int(2, 9), b = r.int(2, 9), name = r.pick(['mean', 'average', 'middle']);
     const p = prog(main([bad(`int r = ${name}(${a}, ${b});`), 'System.out.println(r);']), method(`double ${name}(int x, int y)`, ['return (x + y) / 2.0;']));
     return { prompt: "Which line won't compile?", ...p,
-      explanation: `${name} returns a double, and a double can't be stored in an int. Declare double r (or change the return type).` };
+      explanation: `${name} returns a double, and a double can't be stored in an int. Declare double r.` };
   } },
   { id: 'g-m2-bug-retmismatch', type: 'bug', topic: RET, make(r) {
     const a = r.int(3, 20), name = r.pick(CALC), dv = r.pick([2, 4, 5]);

@@ -443,7 +443,7 @@
   {
    "id": "mm-c-catch",
    "term": "catching a return",
-   "definition": "A returned value is lost unless the call is assigned: count = incrementValue(count);.",
+   "definition": "A call is replaced by its returned value, so use it: assign it (count = incrementValue(count);) or put it in an expression or argument. A call used as a statement on its own discards the value.",
    "topic": "Catching a returned value",
    "unit": "Methods Continued"
   },
@@ -2906,7 +2906,7 @@
     "Change the return type to void"
    ],
    "answer": "Assign the call: count = incrementValue(count);",
-   "explanation": "A returned value that nothing catches is lost. The assignment receives it.",
+   "explanation": "A call used as a statement on its own throws its returned value away. Assigning the call stores the value in count.",
    "unit": "Methods Continued"
   },
   {
