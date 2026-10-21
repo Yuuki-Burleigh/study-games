@@ -134,7 +134,7 @@ test('one deck per class: every item and template belongs to a declared unit', a
   const index = readJSON('../decks/index.json');
   assert.equal(new Set(index.decks.map((d) => d.id.replace(/-.*/, ''))).size, index.decks.length, 'one deck per course');
   const deck = readJSON('../decks/cs209.json');
-  assert.deepEqual(deck.units, ['Java Basics', 'For Loops', 'Nested Loops']);
+  assert.deepEqual(deck.units, ['Java Basics', 'For Loops', 'Nested Loops', 'Static Methods', 'Methods Continued']);
   for (const x of [...deck.cards, ...deck.questions]) assert.ok(deck.units.includes(x.unit), `${x.id}: unit "${x.unit}"`);
   const templates = (await import('../' + deck.generators)).default;
   for (const t of templates) assert.ok(deck.units.includes(t.unit), `${t.id}: unit "${t.unit}"`);

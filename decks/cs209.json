@@ -2,13 +2,15 @@
  "id": "cs209",
  "title": "CS 209",
  "course": "CS 209",
- "description": "Intro Java, lectures 9-24 through 10-8: how Java runs, printing and concatenation, escape sequences, variables, types, division, for loops, loop scope and nested loops.",
+ "description": "Intro Java, lectures 9-24 through 10-20: how Java runs, printing and concatenation, escape sequences, variables, types, division, for loops, loop scope, nested loops, ++x, and static methods (parameters, return values, global vs local variables).",
  "scope": "courses/cs209.md",
  "generators": "generators/cs209.js",
  "units": [
   "Java Basics",
   "For Loops",
-  "Nested Loops"
+  "Nested Loops",
+  "Static Methods",
+  "Methods Continued"
  ],
  "cards": [
   {
@@ -360,6 +362,118 @@
    "definition": "If either side is a double, the result is a double and keeps its fraction: 7 / 2.0 is 3.5.",
    "topic": "Nested + earlier topics",
    "unit": "Nested Loops"
+  },
+  {
+   "id": "sm-c-void",
+   "term": "void",
+   "definition": "A return type meaning the method returns nothing: it only does something, like printing.",
+   "topic": "Method signatures",
+   "unit": "Static Methods"
+  },
+  {
+   "id": "sm-c-sig",
+   "term": "public static type name(params)",
+   "definition": "A method header: the type before the name is what comes back; the typed parameters inside ( ) are what goes in.",
+   "topic": "Method signatures",
+   "unit": "Static Methods"
+  },
+  {
+   "id": "sm-c-param",
+   "term": "parameter",
+   "definition": "A variable in the method's header that receives the value sent in. It needs a data type, like (int n).",
+   "topic": "Passing values (copies)",
+   "unit": "Static Methods"
+  },
+  {
+   "id": "sm-c-copy",
+   "term": "calling with a value",
+   "definition": "A call sends a copy of the value, not the variable, so the parameter can have a different name and changes to it don't affect the caller.",
+   "topic": "Passing values (copies)",
+   "unit": "Static Methods"
+  },
+  {
+   "id": "sm-c-call",
+   "term": "method call",
+   "definition": "Writing the method's name with values in ( ), like greet(5);. A method never runs unless main (or code main runs) calls it.",
+   "topic": "Calling methods",
+   "unit": "Static Methods"
+  },
+  {
+   "id": "sm-c-return",
+   "term": "return",
+   "definition": "Sends one value back to the caller; it must match the declared return type. void methods return nothing.",
+   "topic": "Return values",
+   "unit": "Static Methods"
+  },
+  {
+   "id": "sm-c-main",
+   "term": "main",
+   "definition": "The steering wheel of the program: it starts and ends there, and only runs other methods when it calls them.",
+   "topic": "Order of execution",
+   "unit": "Static Methods"
+  },
+  {
+   "id": "sm-c-pre",
+   "term": "++x",
+   "definition": "Adds 1 to x first, then the new value is used: with x = 5, ++x gives 6 right away.",
+   "topic": "Pre-increment (++x)",
+   "unit": "Static Methods"
+  },
+  {
+   "id": "mm-c-global",
+   "term": "global variable",
+   "definition": "Declared in the class outside every method (public static int count = 0;). Every method can use it without declaring it again.",
+   "topic": "Global vs local variables",
+   "unit": "Methods Continued"
+  },
+  {
+   "id": "mm-c-local",
+   "term": "local variable",
+   "definition": "Declared inside a method (or loop). It exists only there, and no other method can see it.",
+   "topic": "Global vs local variables",
+   "unit": "Methods Continued"
+  },
+  {
+   "id": "mm-c-shadow",
+   "term": "local beats global",
+   "definition": "If a local variable or parameter has the same name as a global, the local one takes precedence inside that method. Sending a global as an argument also creates a new local copy.",
+   "topic": "Parameter shadows a global",
+   "unit": "Methods Continued"
+  },
+  {
+   "id": "mm-c-catch",
+   "term": "catching a return",
+   "definition": "A returned value is lost unless the call is assigned: count = incrementValue(count);.",
+   "topic": "Catching a returned value",
+   "unit": "Methods Continued"
+  },
+  {
+   "id": "mm-c-match",
+   "term": "return type must match",
+   "definition": "return needs a value of the declared type: an int method can't return a double like n / 2.0.",
+   "topic": "Return values",
+   "unit": "Methods Continued"
+  },
+  {
+   "id": "mm-c-noinput",
+   "term": "output without input",
+   "definition": "A method that returns a value can have empty ( ): public static int seven() { return 7; }.",
+   "topic": "Method signatures",
+   "unit": "Methods Continued"
+  },
+  {
+   "id": "mm-c-fresh",
+   "term": "each call starts fresh",
+   "definition": "A method's local variables (like a sum starting at 0) are created anew on every call, so two calls don't share them.",
+   "topic": "Methods with loops",
+   "unit": "Methods Continued"
+  },
+  {
+   "id": "mm-c-order",
+   "term": "arguments match by position",
+   "definition": "The first value goes to the first parameter, the second to the second: diff(10, 4) is not diff(4, 10).",
+   "topic": "Method signatures",
+   "unit": "Methods Continued"
   }
  ],
  "questions": [
@@ -2451,6 +2565,591 @@
    "answer": 7,
    "explanation": "sum / 2.0 is a double (int with double), which can't be stored in an int. Use double avg.",
    "unit": "Nested Loops"
+  },
+  {
+   "type": "mc",
+   "id": "sm-mc-header",
+   "topic": "Method signatures",
+   "prompt": "Which description fits this header?",
+   "code": "public static void show(int n)",
+   "choices": [
+    "Takes one int and returns nothing",
+    "Takes nothing and returns an int",
+    "Takes one int and returns an int",
+    "Takes nothing and returns nothing"
+   ],
+   "answer": "Takes one int and returns nothing",
+   "explanation": "void is the return type: nothing comes back. The (int n) is an input, so one int goes in and nothing comes out.",
+   "unit": "Static Methods"
+  },
+  {
+   "type": "mc",
+   "id": "sm-mc-nocall",
+   "topic": "Order of execution",
+   "prompt": "What does this print?",
+   "code": "public static void main(String[] args) {\n    System.out.println(\"Start\");\n}\npublic static void printHello() {\n    System.out.println(\"Hello\");\n}",
+   "choices": [
+    "Start",
+    "Hello",
+    "StartHello",
+    "Nothing"
+   ],
+   "answer": "Start",
+   "run": true,
+   "explanation": "main is the steering wheel: only what main runs (directly) executes. printHello is defined but never called, so it never prints.",
+   "unit": "Static Methods"
+  },
+  {
+   "type": "mc",
+   "id": "sm-mc-kind",
+   "topic": "Method signatures",
+   "prompt": "Which kind of method is this: closed box, input but no output, or input and output?",
+   "code": "public static double average(int a, int b)",
+   "choices": [
+    "Takes input and returns an output",
+    "Closed box: nothing in, nothing out",
+    "Takes input but returns nothing",
+    "Takes nothing but returns an int"
+   ],
+   "answer": "Takes input and returns an output",
+   "explanation": "It has two parameters (input) and the return type double (output), so it takes input and returns an output.",
+   "unit": "Static Methods"
+  },
+  {
+   "type": "mc",
+   "id": "sm-mc-expr-arg",
+   "topic": "Passing values (copies)",
+   "prompt": "What does this print?",
+   "code": "public static void main(String[] args) {\n    int seats = 30;\n    announce(seats + 5);\n}\npublic static void announce(int n) {\n    System.out.println(\"Seats: \" + n);\n}",
+   "choices": [
+    "Seats: 35",
+    "Seats: 30",
+    "Seats: 305",
+    "Seats: seats + 5"
+   ],
+   "answer": "Seats: 35",
+   "run": true,
+   "explanation": "The call sends the VALUE of seats + 5, which is 35. Inside announce, n is 35 and \"Seats: \" + n glues it on.",
+   "unit": "Static Methods"
+  },
+  {
+   "type": "mc",
+   "id": "sm-mc-pre",
+   "topic": "Pre-increment (++x)",
+   "prompt": "What does this print?",
+   "code": "public static void main(String[] args) {\n    int a = 4;\n    int b = a + 1;\n    ++a;\n    System.out.println(a + \" \" + b);\n}",
+   "choices": [
+    "5 5",
+    "4 5",
+    "5 6",
+    "4 4"
+   ],
+   "answer": "5 5",
+   "run": true,
+   "explanation": "b is set to a + 1 = 5 while a is still 4 (a + 1 doesn't change a). Then ++a adds 1 to a, so a is 5 too: both are 5.",
+   "unit": "Static Methods"
+  },
+  {
+   "type": "mc",
+   "id": "sm-mc-header2",
+   "topic": "Method signatures",
+   "prompt": "Which header is for a method that takes two ints and returns their average as a double?",
+   "choices": [
+    "public static double average(int a, int b)",
+    "public static int average(int a, int b)",
+    "public static void average(int a, int b)",
+    "public static double average(a, b)"
+   ],
+   "answer": "public static double average(int a, int b)",
+   "explanation": "The return type before the name is double. Every parameter needs its own type, so (a, b) with no types is invalid.",
+   "unit": "Static Methods"
+  },
+  {
+   "type": "mc",
+   "id": "sm-mc-validcall",
+   "topic": "Calling methods",
+   "prompt": "Which line correctly calls this method?",
+   "code": "public static void show(int n) {\n    System.out.println(n);\n}",
+   "choices": [
+    "show(7);",
+    "int r = show(7);",
+    "show();",
+    "show(7.5);"
+   ],
+   "answer": "show(7);",
+   "explanation": "show is void, so its call can't be stored in r. It needs exactly one int: no argument is too few, and 7.5 is a double.",
+   "unit": "Static Methods"
+  },
+  {
+   "type": "mc",
+   "id": "sm-mc-main",
+   "topic": "Order of execution",
+   "prompt": "Which statement about main is true?",
+   "choices": [
+    "Other methods run only when main (or code main starts) calls them",
+    "Methods run in the order they are written in the file",
+    "Every method in the class runs automatically",
+    "Methods written above main run first"
+   ],
+   "answer": "Other methods run only when main (or code main starts) calls them",
+   "explanation": "The program starts and ends with main. A method sits idle until a method call like greet(); asks for it.",
+   "unit": "Static Methods"
+  },
+  {
+   "type": "output",
+   "id": "sm-out-stars",
+   "topic": "Methods with loops",
+   "prompt": "Type exactly what this prints.",
+   "code": "public static void main(String[] args) {\n    for (int i = 1; i <= 3; i++) {\n        stars(i);\n    }\n}\npublic static void stars(int n) {\n    for (int j = 1; j <= n; j++) {\n        System.out.print(\"*\");\n    }\n    System.out.println();\n}",
+   "answer": "*\n**\n***",
+   "explanation": "main's loop calls stars with 1, 2, 3. Each call prints that many * and then ends its line.",
+   "unit": "Static Methods"
+  },
+  {
+   "type": "output",
+   "id": "sm-out-frame",
+   "topic": "Order of execution",
+   "prompt": "Type exactly what this prints.",
+   "code": "public static void main(String[] args) {\n    header();\n    System.out.println(\"Body\");\n    footer();\n    header();\n}\npublic static void footer() {\n    System.out.println(\"End\");\n}\npublic static void header() {\n    System.out.println(\"Start\");\n}",
+   "answer": "Start\nBody\nEnd\nStart",
+   "explanation": "Calls run in the order main makes them (header, Body, footer, header), not the order the methods are written.",
+   "unit": "Static Methods"
+  },
+  {
+   "type": "output",
+   "id": "sm-out-reset",
+   "topic": "Passing values (copies)",
+   "prompt": "Type exactly what this prints.",
+   "code": "public static void main(String[] args) {\n    int n = 7;\n    reset(n);\n    System.out.println(n);\n}\npublic static void reset(int n) {\n    n = 0;\n    System.out.println(n);\n}",
+   "answer": "0\n7",
+   "explanation": "Even with the same name, the parameter n is a separate copy of the value 7. Setting it to 0 doesn't touch main's n.",
+   "unit": "Static Methods"
+  },
+  {
+   "type": "output",
+   "id": "sm-out-describe",
+   "topic": "Calling methods",
+   "prompt": "Type exactly what this prints.",
+   "code": "public static void main(String[] args) {\n    describe(\"Mia\", 20);\n}\npublic static void describe(String name, int age) {\n    System.out.println(name + \" is \" + age + 1);\n}",
+   "answer": "Mia is 201",
+   "explanation": "Concatenation goes left to right: after a String, + age glues 20 and then + 1 glues 1. Not 21.",
+   "unit": "Static Methods"
+  },
+  {
+   "type": "output",
+   "id": "sm-out-pre",
+   "topic": "Pre-increment (++x)",
+   "prompt": "Type exactly what this prints.",
+   "code": "public static void main(String[] args) {\n    int x = 3;\n    System.out.println(++x);\n    System.out.println(x);\n}",
+   "answer": "4\n4",
+   "explanation": "++x adds 1 first and then uses the new value, so it prints 4, and x really is 4 afterwards.",
+   "unit": "Static Methods"
+  },
+  {
+   "type": "output",
+   "id": "sm-out-order",
+   "topic": "Passing values (copies)",
+   "prompt": "Type exactly what this prints.",
+   "code": "public static void main(String[] args) {\n    diff(10, 4);\n    diff(4, 10);\n}\npublic static void diff(int a, int b) {\n    System.out.println(a - b);\n}",
+   "answer": "6\n-6",
+   "explanation": "Arguments match parameters by position, so the second call is a = 4, b = 10: 4 - 10 = -6.",
+   "unit": "Static Methods"
+  },
+  {
+   "type": "trace",
+   "id": "sm-tr-square",
+   "topic": "Return values",
+   "prompt": "After main finishes, what is the value of r?",
+   "code": "public static void main(String[] args) {\n    int r = square(4) + square(3);\n}\npublic static int square(int n) {\n    return n * n;\n}",
+   "var": "r",
+   "answer": "25",
+   "explanation": "Each call is replaced by its returned value: 16 + 9 = 25.",
+   "unit": "Static Methods"
+  },
+  {
+   "type": "trace",
+   "id": "sm-tr-share",
+   "topic": "Return values",
+   "prompt": "After main finishes, what is the value of each?",
+   "code": "public static void main(String[] args) {\n    int each = share(17, 5);\n}\npublic static int share(int total, int people) {\n    return total / people;\n}",
+   "var": "each",
+   "answer": "3",
+   "explanation": "17 / 5 is int / int, so the method returns 3 (the remainder is dropped).",
+   "unit": "Static Methods"
+  },
+  {
+   "type": "trace",
+   "id": "sm-tr-half",
+   "topic": "Return values",
+   "prompt": "After main finishes, what is the value of h?",
+   "code": "public static void main(String[] args) {\n    double h = half(9);\n}\npublic static int half(int n) {\n    return n / 2;\n}",
+   "var": "h",
+   "answer": "4.0",
+   "explanation": "half returns the int 4 (9 / 2 truncates). Storing an int in a double just makes it 4.0: the .5 is already gone.",
+   "unit": "Static Methods"
+  },
+  {
+   "type": "trace",
+   "id": "sm-tr-pre",
+   "topic": "Pre-increment (++x)",
+   "prompt": "After main finishes, what is the value of b?",
+   "code": "public static void main(String[] args) {\n    int a = 5;\n    int b = ++a * 2;\n}",
+   "var": "b",
+   "answer": "12",
+   "explanation": "++a makes a 6 first, then the 6 is used: 6 * 2 = 12 (not 5 * 2).",
+   "unit": "Static Methods"
+  },
+  {
+   "type": "trace",
+   "id": "sm-tr-temp",
+   "topic": "Return values",
+   "prompt": "After main finishes, what is the value of f?",
+   "code": "public static void main(String[] args) {\n    double f = toF(100.0);\n}\npublic static double toF(double c) {\n    return (c * 9 / 5) + 32;\n}",
+   "var": "f",
+   "answer": "212.0",
+   "explanation": "100.0 * 9 = 900.0, / 5 = 180.0, + 32 = 212.0. All doubles, so nothing is truncated.",
+   "unit": "Static Methods"
+  },
+  {
+   "type": "bug",
+   "id": "sm-bug-print-void",
+   "topic": "Return values",
+   "prompt": "Which line won't compile?",
+   "code": "public static void main(String[] args) {\n    int n = 4;\n    System.out.println(shout(n));\n}\npublic static void shout(int n) {\n    System.out.println(n * 2);\n}",
+   "answer": 3,
+   "explanation": "shout is void, so shout(n) has no value to print. Either call it alone (shout(n);) or make it return an int.",
+   "unit": "Static Methods"
+  },
+  {
+   "type": "bug",
+   "id": "sm-bug-noreturn",
+   "topic": "Return values",
+   "prompt": "Which line won't compile?",
+   "code": "public static void main(String[] args) {\n    double r = half(9);\n    System.out.println(r);\n}\npublic static double half(int n) {\n    double h = n / 2.0;\n}",
+   "answer": 7,
+   "explanation": "The method promises a double but never returns one. javac flags the closing brace: add return h; before it.",
+   "unit": "Static Methods"
+  },
+  {
+   "type": "bug",
+   "id": "sm-bug-notypes",
+   "topic": "Method signatures",
+   "prompt": "Which line won't compile?",
+   "code": "public static void main(String[] args) {\n    System.out.println(area(3, 4));\n}\npublic static int area(w, h) {\n    return w * h;\n}",
+   "answer": 4,
+   "explanation": "Every parameter needs a data type: (int w, int h). Parameters are declared like variables.",
+   "unit": "Static Methods"
+  },
+  {
+   "type": "bug",
+   "id": "sm-bug-returntype",
+   "topic": "Return values",
+   "prompt": "Which line won't compile?",
+   "code": "public static void main(String[] args) {\n    int p = percent(3, 8);\n    System.out.println(p);\n}\npublic static int percent(int a, int b) {\n    return a * 100.0 / b;\n}",
+   "answer": 6,
+   "explanation": "a * 100.0 / b is a double, but the method promises an int. The returned value must match the declared return type.",
+   "unit": "Static Methods"
+  },
+  {
+   "type": "bug",
+   "id": "sm-bug-zero",
+   "topic": "Return values",
+   "prompt": "This compiles. Which line crashes when it runs?",
+   "code": "public static void main(String[] args) {\n    int count = 0;\n    int total = 90;\n    System.out.println(share(total, count));\n}\npublic static int share(int t, int n) {\n    return t / n;\n}",
+   "answer": 7,
+   "explanation": "main passes count = 0, so t / n divides by zero inside share. The crash is reported where the division happens.",
+   "unit": "Static Methods"
+  },
+  {
+   "type": "mc",
+   "id": "mm-mc-shadow",
+   "topic": "Global vs local variables",
+   "prompt": "What does this print?",
+   "code": "public static int count = 10;\npublic static void main(String[] args) {\n    add();\n    System.out.println(count);\n}\npublic static void add() {\n    int count = 0;\n    count = count + 1;\n}",
+   "choices": [
+    "10",
+    "11",
+    "1",
+    "0"
+   ],
+   "answer": "10",
+   "run": true,
+   "explanation": "The int count inside add is a brand-new local variable that takes precedence there. The global count is never touched, so main prints 10.",
+   "unit": "Methods Continued"
+  },
+  {
+   "type": "mc",
+   "id": "mm-mc-catch",
+   "topic": "Catching a returned value",
+   "prompt": "What does this print?",
+   "code": "public static int count = 5;\npublic static void main(String[] args) {\n    count = bump(count);\n    System.out.println(count);\n}\npublic static int bump(int count) {\n    return count + 1;\n}",
+   "choices": [
+    "6",
+    "5",
+    "7",
+    "1"
+   ],
+   "answer": "6",
+   "run": true,
+   "explanation": "The parameter count is a local copy, but the method returns count + 1 = 6 and the assignment catches it into main's count.",
+   "unit": "Methods Continued"
+  },
+  {
+   "type": "mc",
+   "id": "mm-mc-keep",
+   "topic": "Catching a returned value",
+   "prompt": "How do you keep the value that incrementValue returns?",
+   "choices": [
+    "Assign the call: count = incrementValue(count);",
+    "Call it twice in a row",
+    "Declare count again inside the method",
+    "Change the return type to void"
+   ],
+   "answer": "Assign the call: count = incrementValue(count);",
+   "explanation": "A returned value that nothing catches is lost. The assignment receives it.",
+   "unit": "Methods Continued"
+  },
+  {
+   "type": "mc",
+   "id": "mm-mc-where",
+   "topic": "Global vs local variables",
+   "prompt": "Where do you declare a variable so every method can use it without declaring it again?",
+   "choices": [
+    "Inside the class, outside every method, as public static",
+    "Inside main",
+    "As a parameter of every method",
+    "After the return statement"
+   ],
+   "answer": "Inside the class, outside every method, as public static",
+   "explanation": "A variable declared in the class, outside all methods, is global. One declared inside main is local to main.",
+   "unit": "Methods Continued"
+  },
+  {
+   "type": "mc",
+   "id": "mm-mc-returnok",
+   "topic": "Return values",
+   "prompt": "The header is public static int pick(). Which return statement is valid?",
+   "choices": [
+    "return 7;",
+    "return 7.5;",
+    "return \"7\";",
+    "return;"
+   ],
+   "answer": "return 7;",
+   "explanation": "The returned value must match the declared type: an int. 7.5 is a double, \"7\" a String, and a bare return sends nothing back.",
+   "unit": "Methods Continued"
+  },
+  {
+   "type": "mc",
+   "id": "mm-mc-noinput",
+   "topic": "Method signatures",
+   "prompt": "Can a method that returns a value take no inputs?",
+   "choices": [
+    "Yes, like public static int seven() { return 7; }",
+    "No, a method that returns a value needs at least one input",
+    "Only if its return type is void",
+    "Only if it returns a double"
+   ],
+   "answer": "Yes, like public static int seven() { return 7; }",
+   "explanation": "Input and output are independent: a method can return a value with an empty ( ).",
+   "unit": "Methods Continued"
+  },
+  {
+   "type": "mc",
+   "id": "mm-mc-missing",
+   "topic": "Calling methods",
+   "prompt": "A method has the header (int n), and a call sends no value. What happens?",
+   "choices": [
+    "It won't compile: the call doesn't match the parameters",
+    "n becomes 0",
+    "The method is skipped",
+    "It prints nothing but compiles"
+   ],
+   "answer": "It won't compile: the call doesn't match the parameters",
+   "explanation": "Calls must match the header. A missing argument is a mismatch error before the program ever runs.",
+   "unit": "Methods Continued"
+  },
+  {
+   "type": "mc",
+   "id": "mm-mc-localwins",
+   "topic": "Global vs local variables",
+   "prompt": "What does this print?",
+   "code": "public static int score = 3;\npublic static void main(String[] args) {\n    System.out.println(score + bonus());\n}\npublic static int bonus() {\n    int score = 10;\n    return score;\n}",
+   "choices": [
+    "13",
+    "6",
+    "20",
+    "30"
+   ],
+   "answer": "13",
+   "run": true,
+   "explanation": "In main, score is the global 3. bonus() declares its own local score = 10, which takes precedence inside bonus and is what it returns. 3 + 10 = 13.",
+   "unit": "Methods Continued"
+  },
+  {
+   "type": "output",
+   "id": "mm-out-count",
+   "topic": "Global vs local variables",
+   "prompt": "Type exactly what this prints.",
+   "code": "public static int count = 0;\npublic static void main(String[] args) {\n    bump();\n    bump();\n    bump();\n    System.out.println(\"Count is \" + count + 1);\n}\npublic static void bump() {\n    count = count + 2;\n}",
+   "answer": "Count is 61",
+   "explanation": "Three calls make the global count 6. Then the String comes first, so + 6 and + 1 are glued as text: Count is 61.",
+   "unit": "Methods Continued"
+  },
+  {
+   "type": "output",
+   "id": "mm-out-temp",
+   "topic": "Return values",
+   "prompt": "Type exactly what this prints.",
+   "code": "public static void main(String[] args) {\n    double f = 212.0;\n    double c = toC(f);\n    printer(f, c);\n    printer(14.0, toC(14.0));\n}\npublic static double toC(double f) {\n    return (f - 32) * 5 / 9;\n}\npublic static void printer(double f, double c) {\n    System.out.println(f + \" F is \" + c + \" C\");\n}",
+   "answer": "212.0 F is 100.0 C\n14.0 F is -10.0 C",
+   "explanation": "(212.0 - 32) * 5 / 9 = 100.0 and (14.0 - 32) * 5 / 9 = -10.0. A call can be used directly as an argument, as in the second printer call.",
+   "unit": "Methods Continued"
+  },
+  {
+   "type": "output",
+   "id": "mm-out-lost",
+   "topic": "Catching a returned value",
+   "prompt": "Type exactly what this prints.",
+   "code": "public static void main(String[] args) {\n    int n = 3;\n    triple(n);\n    n = twice(n);\n    System.out.println(\"n = \" + n);\n}\npublic static int triple(int v) {\n    return v * 3;\n}\npublic static int twice(int v) {\n    return v * 2;\n}",
+   "answer": "n = 6",
+   "explanation": "triple(n) returns 9 but nothing catches it, so n is unchanged. Only n = twice(n) stores a result: 3 * 2 = 6.",
+   "unit": "Methods Continued"
+  },
+  {
+   "type": "output",
+   "id": "mm-out-rows",
+   "topic": "Methods with loops",
+   "prompt": "Type exactly what this prints.",
+   "code": "public static void main(String[] args) {\n    printRow('#', 3);\n    printRow('o', 1);\n    printRow('#', 2);\n}\npublic static void printRow(char sym, int len) {\n    for (int i = 1; i <= len; i++) {\n        System.out.print(sym);\n    }\n    System.out.println();\n}",
+   "answer": "###\no\n##",
+   "explanation": "Each call prints sym len times and then ends the row. A char parameter takes a char value like '#'.",
+   "unit": "Methods Continued"
+  },
+  {
+   "type": "output",
+   "id": "mm-out-effects",
+   "topic": "Catching a returned value",
+   "prompt": "Type exactly what this prints.",
+   "code": "public static void main(String[] args) {\n    int a = 5;\n    addOne(a);\n    int b = addOne(a);\n    System.out.println(a + \" \" + b);\n}\npublic static int addOne(int v) {\n    System.out.println(\"in \" + v);\n    return v + 1;\n}",
+   "answer": "in 5\nin 5\n5 6",
+   "explanation": "Both calls print \"in 5\" while they run (a method's printing happens either way). Only the second call's result is caught, in b; a stays 5.",
+   "unit": "Methods Continued"
+  },
+  {
+   "type": "output",
+   "id": "mm-out-shadowparam",
+   "topic": "Parameter shadows a global",
+   "prompt": "Type exactly what this prints.",
+   "code": "public static int level = 1;\npublic static void main(String[] args) {\n    show(5);\n    System.out.println(level);\n}\npublic static void show(int level) {\n    System.out.println(level * 2);\n}",
+   "answer": "10\n1",
+   "explanation": "show's parameter is its own local level (5) that takes precedence, so it prints 10. The global level is still 1.",
+   "unit": "Methods Continued"
+  },
+  {
+   "type": "trace",
+   "id": "mm-tr-chain",
+   "topic": "Catching a returned value",
+   "prompt": "After main finishes, what is the value of x?",
+   "code": "public static void main(String[] args) {\n    int x = 2;\n    x = dbl(x);\n    x = dbl(x) + 1;\n}\npublic static int dbl(int n) {\n    return n * 2;\n}",
+   "var": "x",
+   "answer": "9",
+   "explanation": "First x = 4. Then dbl(4) = 8, plus 1 = 9, and that is caught back into x.",
+   "unit": "Methods Continued"
+  },
+  {
+   "type": "trace",
+   "id": "mm-tr-total",
+   "topic": "Global vs local variables",
+   "prompt": "After main finishes, what is the value of total?",
+   "code": "public static int total = 0;\npublic static void main(String[] args) {\n    addScore(10);\n    addScore(5);\n    addScore(7);\n}\npublic static void addScore(int s) {\n    total = total + s;\n}",
+   "var": "total",
+   "answer": "22",
+   "explanation": "total is global, so each call adds to the same variable: 0 + 10 + 5 + 7 = 22.",
+   "unit": "Methods Continued"
+  },
+  {
+   "type": "trace",
+   "id": "mm-tr-half",
+   "topic": "Return values",
+   "prompt": "After main finishes, what is the value of r?",
+   "code": "public static void main(String[] args) {\n    double r = middle(7, 8);\n}\npublic static int middle(int a, int b) {\n    return (a + b) / 2;\n}",
+   "var": "r",
+   "answer": "7.0",
+   "explanation": "(7 + 8) / 2 is int division = 7. The method returns the int 7, which a double stores as 7.0, not 7.5.",
+   "unit": "Methods Continued"
+  },
+  {
+   "type": "trace",
+   "id": "mm-tr-loop",
+   "topic": "Methods with loops",
+   "prompt": "After main finishes, what is the value of r?",
+   "code": "public static void main(String[] args) {\n    int r = f(7);\n}\npublic static int f(int n) {\n    int c = 0;\n    for (int i = 1; i <= n; i++) {\n        c += i % 3;\n    }\n    return c;\n}",
+   "var": "r",
+   "answer": "7",
+   "explanation": "i % 3 for i = 1..7 is 1, 2, 0, 1, 2, 0, 1, which adds up to 7.",
+   "unit": "Methods Continued"
+  },
+  {
+   "type": "trace",
+   "id": "mm-tr-char",
+   "topic": "Return values",
+   "prompt": "After main finishes, what is the value of next?",
+   "code": "public static void main(String[] args) {\n    int next = after('c');\n}\npublic static int after(char c) {\n    return c + 1;\n}",
+   "var": "next",
+   "answer": "100",
+   "explanation": "'c' is 99 as a number, so c + 1 is the int 100 (the method returns an int, not the letter 'd').",
+   "unit": "Methods Continued"
+  },
+  {
+   "type": "bug",
+   "id": "mm-bug-local",
+   "topic": "Global vs local variables",
+   "prompt": "Which line won't compile?",
+   "code": "public static void main(String[] args) {\n    int r = addUp(4);\n    System.out.println(sum);\n}\npublic static int addUp(int n) {\n    int sum = 0;\n    for (int i = 1; i <= n; i++) {\n        sum += i;\n    }\n    return sum;\n}",
+   "answer": 3,
+   "explanation": "sum is declared inside addUp, so it only exists there. main should print r, which caught the returned value.",
+   "unit": "Methods Continued"
+  },
+  {
+   "type": "bug",
+   "id": "mm-bug-voidret",
+   "topic": "Return values",
+   "prompt": "Which line won't compile?",
+   "code": "public static void main(String[] args) {\n    announce(3);\n}\npublic static void announce(int n) {\n    System.out.println(n);\n    return n;\n}",
+   "answer": 6,
+   "explanation": "A void method returns nothing, so return n; is not allowed. Change void to int if a value should come back.",
+   "unit": "Methods Continued"
+  },
+  {
+   "type": "bug",
+   "id": "mm-bug-lossy",
+   "topic": "Return values",
+   "prompt": "Which line won't compile?",
+   "code": "public static void main(String[] args) {\n    int r = average(7, 8);\n    System.out.println(r);\n}\npublic static double average(int a, int b) {\n    return (a + b) / 2.0;\n}",
+   "answer": 2,
+   "explanation": "average returns a double (7.5) and a double can't be stored in an int. Declare double r.",
+   "unit": "Methods Continued"
+  },
+  {
+   "type": "bug",
+   "id": "mm-bug-noargs",
+   "topic": "Calling methods",
+   "prompt": "Which line won't compile?",
+   "code": "public static void main(String[] args) {\n    double f = convert();\n    System.out.println(f);\n}\npublic static double convert(double c) {\n    return c * 9 / 5 + 32;\n}",
+   "answer": 2,
+   "explanation": "convert declares one parameter, so a call must send a double. Calling it with nothing is a mismatch error.",
+   "unit": "Methods Continued"
+  },
+  {
+   "type": "bug",
+   "id": "mm-bug-modzero",
+   "topic": "Calling methods",
+   "prompt": "This compiles. Which line crashes when it runs?",
+   "code": "public static void main(String[] args) {\n    for (int size = 2; size >= 0; size--) {\n        System.out.println(wrap(10, size));\n    }\n}\npublic static int wrap(int v, int size) {\n    return v % size;\n}",
+   "answer": 7,
+   "explanation": "The last pass sends size = 0, and % by zero crashes just like / does. The crash is reported inside wrap, where the % runs.",
+   "unit": "Methods Continued"
   }
  ]
 }

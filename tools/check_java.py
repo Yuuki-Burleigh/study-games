@@ -15,10 +15,25 @@ from concurrent.futures import ThreadPoolExecutor
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+MAIN = re.compile(r"^public static void main\(", re.M)
+
+def with_print(code, var):
+    """Append print(var) to a snippet; in a whole-class program, put it before main's closing `}` (first line that is just `}`)."""
+    if not MAIN.search(code):
+        return code + f"\nSystem.out.print({var});"
+    lines = code.split("\n")
+    end = lines.index("}")
+    return "\n".join(lines[:end] + [f"    System.out.print({var});"] + lines[end:])
+
 def java(body):
     d = tempfile.mkdtemp()
     with open(os.path.join(d, "T.java"), "w") as f:
-        f.write("public class T { public static void main(String[] args) {\n" + body + "\n} }\n")
+        # Code that declares its own `public static void main` is a whole class body (methods, globals):
+        # wrap only the class. Otherwise it is a snippet and goes inside main.
+        if MAIN.search(body):
+            f.write("public class T {\n" + body + "\n}\n")
+        else:
+            f.write("public class T { public static void main(String[] args) {\n" + body + "\n} }\n")
     c = subprocess.run(["javac", "-Xmaxerrs", "1", "T.java"], cwd=d, capture_output=True, text=True)
     if c.returncode:
         m = re.search(r"T\.java:(\d+):", c.stderr)
@@ -44,7 +59,7 @@ def verdict(q):
         kind, _, out = java(q["code"])
         ok, got = kind == "ok" and norm(out) == norm(q["answer"]), norm(out)
     elif t == "trace":
-        kind, _, out = java(q["code"] + f"\nSystem.out.print({q['var']});")
+        kind, _, out = java(with_print(q["code"], q["var"]))
         ok, got = kind == "ok" and out == q["answer"], out
     elif t == "bug":
         kind, line, _ = java(q["code"])
