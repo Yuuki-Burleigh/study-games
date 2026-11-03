@@ -4,6 +4,7 @@ import loops from './cs209/loops.js';
 import nested from './cs209/nested.js';
 import methods from './cs209/methods.js';
 import methods2 from './cs209/methods2.js';
+import scanner from './cs209/scanner.js';
 
 const unit = (name, templates) => templates.map((t) => ({ ...t, unit: name }));
 
@@ -13,4 +14,5 @@ export default [
   ...unit('Nested Loops', nested),
   ...unit('Static Methods', methods),
   ...unit('Methods Continued', methods2),
+  ...unit('Scanner & Strings', scanner),
 ];

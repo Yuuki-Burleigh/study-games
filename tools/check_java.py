@@ -25,9 +25,17 @@ def with_print(code, var):
     end = lines.index("}")
     return "\n".join(lines[:end] + [f"    System.out.print({var});"] + lines[end:])
 
-def java(body):
+def java(body, stdin=None):
+    """stdin: the problem's `input` (what the user types); leading `import` lines of the code go above the class."""
     d = tempfile.mkdtemp()
+    lines = body.split("\n")
+    imports = []
+    while lines and lines[0].startswith("import "):
+        imports.append(lines.pop(0))
+    head = "".join(l + "\n" for l in imports)
+    body = "\n".join(lines)
     with open(os.path.join(d, "T.java"), "w") as f:
+        f.write(head)
         # Code that declares its own `public static void main` is a whole class body (methods, globals):
         # wrap only the class. Otherwise it is a snippet and goes inside main.
         if MAIN.search(body):
@@ -38,7 +46,7 @@ def java(body):
     if c.returncode:
         m = re.search(r"T\.java:(\d+):", c.stderr)
         return "compile", (int(m.group(1)) - 1 if m else None), c.stderr.strip()
-    r = subprocess.run(["java", "T"], cwd=d, capture_output=True, text=True, timeout=20)
+    r = subprocess.run(["java", "T"], cwd=d, capture_output=True, text=True, timeout=20, input=None if stdin is None else stdin + "\n")
     if r.returncode:
         m = re.search(r"T\.java:(\d+)\)", r.stderr)
         return "runtime", (int(m.group(1)) - 1 if m else None), r.stdout
@@ -56,13 +64,13 @@ def verdict(q):
         compiles = [c for c in q["choices"] if java(wrap.replace("%s", c))[0] == "ok"]
         ok, got = compiles == [q["answer"]], f"compiling choices: {compiles}"
     elif t == "output" or (t == "mc" and q.get("run")):
-        kind, _, out = java(q["code"])
+        kind, _, out = java(q["code"], q.get("input"))
         ok, got = kind == "ok" and norm(out) == norm(q["answer"]), norm(out)
     elif t == "trace":
-        kind, _, out = java(with_print(q["code"], q["var"]))
+        kind, _, out = java(with_print(q["code"], q["var"]), q.get("input"))
         ok, got = kind == "ok" and out == q["answer"], out
     elif t == "bug":
-        kind, line, _ = java(q["code"])
+        kind, line, _ = java(q["code"], q.get("input"))
         runtime = "crash" in q["prompt"].lower() or "runs" in q["prompt"].lower()
         ok, got = kind == ("runtime" if runtime else "compile") and line == q["answer"], f"{kind} at line {line}"
     else:

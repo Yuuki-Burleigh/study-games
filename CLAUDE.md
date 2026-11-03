@@ -35,6 +35,7 @@ anything taught so far, across lectures, but must not require anything in "Not t
 - **Classes without code** (e.g. `decks/phys121.json`): mix `mc` and `num` (roughly 45/55) instead of the four code types,
   and set `"formats": ["mc", "num"]` (which formats the template test requires) and `"prose": true` (choices in the normal
   font). Templates may keep a helper kit next to them (`generators/phys121/kit.js`), pinned by tests.
+- Programs that read input (Scanner): the problem carries `input` (the lines the user types, joined by `\n`; check_java.py feeds it to `System.in`), and the `prompt` must show it too (` Input (↵ = Enter): ... ↵`). Code that starts with `import ...` lines keeps them above the class when run.
 - `mc` can also use `check: "compiles"` when the choices are single declarations: exactly the answer must compile.
 
 ## 3. Write templates (endless practice)

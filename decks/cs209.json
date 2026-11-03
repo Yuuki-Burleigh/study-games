@@ -2,7 +2,7 @@
  "id": "cs209",
  "title": "CS 209",
  "course": "CS 209",
- "description": "Intro Java, lectures 9-24 through 10-20: how Java runs, printing and concatenation, escape sequences, variables, types, division, for loops, loop scope, nested loops, ++x, and static methods (parameters, return values, global vs local variables).",
+ "description": "Intro Java, lectures 9-24 through 10-27: how Java runs, printing and concatenation, escape sequences, variables, types, division, for loops, loop scope, nested loops, ++x, and static methods (parameters, return values, global vs local variables), Scanner input and tokens, and String methods (length, substring, indexOf, toUpperCase) with Math.min.",
  "scope": "courses/cs209.md",
  "generators": "generators/cs209.js",
  "units": [
@@ -10,7 +10,8 @@
   "For Loops",
   "Nested Loops",
   "Static Methods",
-  "Methods Continued"
+  "Methods Continued",
+  "Scanner & Strings"
  ],
  "cards": [
   {
@@ -474,6 +475,104 @@
    "definition": "The first value goes to the first parameter, the second to the second: diff(10, 4) is not diff(4, 10).",
    "topic": "Method signatures",
    "unit": "Methods Continued"
+  },
+  {
+   "id": "ss-c-scanner",
+   "term": "Scanner",
+   "definition": "An object that reads input. Set it up with `Scanner console = new Scanner(System.in);` (System.in = the keyboard). It needs `import java.util.*;` (or `import java.util.Scanner;`, capital S) at the top.",
+   "topic": "Scanner setup",
+   "unit": "Scanner & Strings"
+  },
+  {
+   "id": "ss-c-read-methods",
+   "term": "nextInt() / nextDouble() / next() / nextLine()",
+   "definition": "nextInt() gives an int, nextDouble() a double, next() the next token as a String, nextLine() the whole rest of the line. Each waits for the user to press Enter.",
+   "topic": "Scanner read methods",
+   "unit": "Scanner & Strings"
+  },
+  {
+   "id": "ss-c-token",
+   "term": "token",
+   "definition": "One unit of input: a run of characters between whitespace (spaces, tabs, new lines). Scanner skips the whitespace and ignores where the lines break.",
+   "topic": "Tokens",
+   "unit": "Scanner & Strings"
+  },
+  {
+   "id": "ss-c-next-vs-nextline",
+   "term": "next() vs nextLine()",
+   "definition": "next() stops at the first whitespace and gives one token; nextLine() gives the whole line, spaces included.",
+   "topic": "Scanner read methods",
+   "unit": "Scanner & Strings"
+  },
+  {
+   "id": "ss-c-mismatch",
+   "term": "input mismatch",
+   "definition": "If the next token is not the type you ask for (nextInt() on `twelve`), the program crashes when it runs. Typing 3.5 for nextInt() is the same crash.",
+   "topic": "Input errors",
+   "unit": "Scanner & Strings"
+  },
+  {
+   "id": "ss-c-out-of-tokens",
+   "term": "out of tokens",
+   "definition": "Reading more tokens than the user typed crashes the program when it runs.",
+   "topic": "Input errors",
+   "unit": "Scanner & Strings"
+  },
+  {
+   "id": "ss-c-string-object",
+   "term": "String",
+   "definition": "An object, so it has methods you call with a dot. A String is written with quotes and, unlike most objects, needs no `new`.",
+   "topic": "String methods",
+   "unit": "Scanner & Strings"
+  },
+  {
+   "id": "ss-c-length",
+   "term": "length()",
+   "definition": "Number of characters, spaces included: \"hi there\".length() is 8. It is a method, so the parentheses are required.",
+   "topic": "String methods",
+   "unit": "Scanner & Strings"
+  },
+  {
+   "id": "ss-c-touppercase",
+   "term": "toUpperCase()",
+   "definition": "Gives back an uppercase copy. It does not change the variable: `s.toUpperCase();` alone does nothing; `s = s.toUpperCase();` keeps the result.",
+   "topic": "Strings are not changed",
+   "unit": "Scanner & Strings"
+  },
+  {
+   "id": "ss-c-index0",
+   "term": "index starts at 0",
+   "definition": "The first character is at position 0, so the last is at length() - 1.",
+   "topic": "substring",
+   "unit": "Scanner & Strings"
+  },
+  {
+   "id": "ss-c-substring2",
+   "term": "substring(start, end)",
+   "definition": "Starts AT start and stops ONE BEFORE end. \"planet\".substring(1, 3) is \"la\" (positions 1 and 2). The notes say \"first through 3rd\": that is wrong, it is the 2nd and 3rd characters.",
+   "topic": "substring",
+   "unit": "Scanner & Strings"
+  },
+  {
+   "id": "ss-c-substring1",
+   "term": "substring(start)",
+   "definition": "With one number it keeps everything from start to the end: \"planet\".substring(2) is \"anet\".",
+   "topic": "substring",
+   "unit": "Scanner & Strings"
+  },
+  {
+   "id": "ss-c-indexof",
+   "term": "indexOf(str)",
+   "definition": "The position of the FIRST place str appears, counting from 0. Often used to find a space and then cut the String around it.",
+   "topic": "indexOf",
+   "unit": "Scanner & Strings"
+  },
+  {
+   "id": "ss-c-math-min",
+   "term": "Math.min(a, b)",
+   "definition": "The smaller of two numbers, e.g. Math.min(3, name.length()) is never more than 3.",
+   "topic": "Math.min",
+   "unit": "Scanner & Strings"
   }
  ],
  "questions": [
@@ -3150,6 +3249,600 @@
    "answer": 7,
    "explanation": "The last pass sends size = 0, and % by zero crashes just like / does. The crash is reported inside wrap, where the % runs.",
    "unit": "Methods Continued"
+  },
+  {
+   "type": "mc",
+   "id": "ss-setup",
+   "topic": "Scanner setup",
+   "prompt": "Which line sets up a Scanner that reads from the keyboard?",
+   "choices": [
+    "Scanner console = new Scanner(System.in);",
+    "Scanner console = Scanner(System.in);",
+    "Scanner console = new Scanner(System.out);",
+    "Scanner console = new System.in();"
+   ],
+   "answer": "Scanner console = new Scanner(System.in);",
+   "check": "compiles",
+   "wrap": "import java.util.*;\n%s",
+   "explanation": "A Scanner is an object, so it is made with new, and System.in is the keyboard. System.out is for output, and Scanner(...) without new is not a constructor call.",
+   "unit": "Scanner & Strings"
+  },
+  {
+   "type": "mc",
+   "id": "ss-import",
+   "topic": "Scanner setup",
+   "prompt": "What does `import java.util.*;` at the top of the file do?",
+   "choices": [
+    "Lets the program use Scanner (and the rest of java.util) by name",
+    "Starts reading input from the keyboard",
+    "Creates a Scanner object",
+    "Imports only the Scanner class"
+   ],
+   "answer": "Lets the program use Scanner (and the rest of java.util) by name",
+   "explanation": "import only makes the name known to the compiler; you still need `new Scanner(System.in)` to get an object. The * means everything in java.util, so it is not Scanner only. (The notes write `java.util.scanner`: the class is capital-S Scanner.)",
+   "unit": "Scanner & Strings"
+  },
+  {
+   "type": "mc",
+   "id": "ss-sum",
+   "topic": "Scanner read methods",
+   "prompt": "What does this print? Input (↵ = Enter): 12 7 ↵",
+   "code": "import java.util.*;\nScanner console = new Scanner(System.in);\nint a = console.nextInt();\nint b = console.nextInt();\nSystem.out.println(a + b);",
+   "choices": [
+    "19",
+    "127",
+    "5",
+    "12 7"
+   ],
+   "answer": "19",
+   "run": true,
+   "input": "12 7",
+   "explanation": "nextInt() gives the int 12, then the int 7, so + is addition. println never echoes what the user typed.",
+   "unit": "Scanner & Strings"
+  },
+  {
+   "type": "mc",
+   "id": "ss-mismatch",
+   "topic": "Input errors",
+   "prompt": "The user types twelve and the program reaches `int n = console.nextInt();`. What happens?",
+   "choices": [
+    "It crashes when it runs: the token is not an int",
+    "It does not compile because twelve is a String",
+    "n becomes 0",
+    "n becomes 12"
+   ],
+   "answer": "It crashes when it runs: the token is not an int",
+   "explanation": "Whether the input fits is only known while the program runs, so this is a runtime crash (input mismatch), not a compile error. Java does not convert words to numbers.",
+   "unit": "Scanner & Strings"
+  },
+  {
+   "type": "mc",
+   "id": "ss-tokens",
+   "topic": "Tokens",
+   "prompt": "How many tokens can a Scanner read from this line? (« » mark where the line starts and ends)  Input (↵ = Enter): «  7   apples  3 » ↵",
+   "choices": [
+    "3",
+    "2",
+    "7",
+    "5"
+   ],
+   "answer": "3",
+   "explanation": "Tokens are the pieces between whitespace, no matter how many spaces separate them: 7, apples, 3.",
+   "unit": "Scanner & Strings"
+  },
+  {
+   "type": "mc",
+   "id": "ss-twotokens",
+   "topic": "Scanner read methods",
+   "prompt": "What does this print? Input (↵ = Enter): Mia Lopez 15 ↵",
+   "code": "import java.util.*;\nScanner console = new Scanner(System.in);\nString a = console.next();\nString b = console.next();\nSystem.out.println(b + a);",
+   "choices": [
+    "LopezMia",
+    "MiaLopez",
+    "Lopez Mia",
+    "Mia Lopez 15"
+   ],
+   "answer": "LopezMia",
+   "run": true,
+   "input": "Mia Lopez 15",
+   "explanation": "next() reads one token each time: a is Mia, b is Lopez. b + a joins them with no space; the 15 is never read.",
+   "unit": "Scanner & Strings"
+  },
+  {
+   "type": "mc",
+   "id": "ss-nextline",
+   "topic": "Scanner read methods",
+   "prompt": "What does this print? Input (↵ = Enter): hello there world ↵",
+   "code": "import java.util.*;\nScanner console = new Scanner(System.in);\nString s = console.nextLine();\nSystem.out.println(s.length());",
+   "choices": [
+    "17",
+    "5",
+    "3",
+    "16"
+   ],
+   "answer": "17",
+   "run": true,
+   "input": "hello there world",
+   "explanation": "nextLine() takes the whole line, spaces included: 5 + 1 + 5 + 1 + 5 = 17. next() would have given just hello (5).",
+   "unit": "Scanner & Strings"
+  },
+  {
+   "type": "mc",
+   "id": "ss-next",
+   "topic": "Scanner read methods",
+   "prompt": "What does this print? Input (↵ = Enter): hello there world ↵",
+   "code": "import java.util.*;\nScanner console = new Scanner(System.in);\nString s = console.next();\nSystem.out.println(s.length());",
+   "choices": [
+    "5",
+    "17",
+    "3",
+    "6"
+   ],
+   "answer": "5",
+   "run": true,
+   "input": "hello there world",
+   "explanation": "next() stops at the first whitespace, so s is hello (5). The rest of the line is still waiting to be read.",
+   "unit": "Scanner & Strings"
+  },
+  {
+   "type": "mc",
+   "id": "ss-endtoken",
+   "topic": "Tokens",
+   "prompt": "Where does a token end?",
+   "choices": [
+    "At whitespace: a space, a tab or a new line",
+    "Only at the end of the line",
+    "Only at a comma",
+    "At a quotation mark"
+   ],
+   "answer": "At whitespace: a space, a tab or a new line",
+   "explanation": "Scanner splits on whitespace only. Quotes do not group words together and commas are just characters.",
+   "unit": "Scanner & Strings"
+  },
+  {
+   "type": "mc",
+   "id": "ss-substr25",
+   "topic": "substring",
+   "prompt": "What does this print?",
+   "code": "String word = \"classroom\";\nSystem.out.println(word.substring(2, 5));",
+   "choices": [
+    "ass",
+    "assr",
+    "las",
+    "lass"
+   ],
+   "answer": "ass",
+   "run": true,
+   "explanation": "Positions start at 0: c0 l1 a2 s3 s4 r5. substring(2, 5) starts at 2 and stops one before 5, so a-s-s. Including position 5 would give assr.",
+   "unit": "Scanner & Strings"
+  },
+  {
+   "type": "mc",
+   "id": "ss-substr1",
+   "topic": "substring",
+   "prompt": "What does this print?",
+   "code": "String s = \"planet\";\nSystem.out.println(s.substring(2));",
+   "choices": [
+    "anet",
+    "lanet",
+    "ane",
+    "pl"
+   ],
+   "answer": "anet",
+   "run": true,
+   "explanation": "With one number, substring keeps everything from that position to the end. Position 2 of planet is the a.",
+   "unit": "Scanner & Strings"
+  },
+  {
+   "type": "mc",
+   "id": "ss-immut",
+   "topic": "Strings are not changed",
+   "prompt": "What does this print?",
+   "code": "String s = \"hello\";\ns.toUpperCase();\nSystem.out.println(s);",
+   "choices": [
+    "hello",
+    "HELLO",
+    "Hello",
+    "It does not compile"
+   ],
+   "answer": "hello",
+   "run": true,
+   "explanation": "toUpperCase() returns a new String; s itself is never changed, and here the result is thrown away.",
+   "unit": "Scanner & Strings"
+  },
+  {
+   "type": "mc",
+   "id": "ss-keep",
+   "topic": "Strings are not changed",
+   "prompt": "Which line makes name uppercase for the rest of the program?",
+   "choices": [
+    "name = name.toUpperCase();",
+    "name.toUpperCase();",
+    "toUpperCase(name);",
+    "name = toUpperCase;"
+   ],
+   "answer": "name = name.toUpperCase();",
+   "explanation": "The method hands back a new String, so you have to catch it by assigning, just like a returned value from your own method. The second line compiles but changes nothing.",
+   "unit": "Scanner & Strings"
+  },
+  {
+   "type": "mc",
+   "id": "ss-indexof",
+   "topic": "indexOf",
+   "prompt": "What does this print?",
+   "code": "String s = \"banana\";\nSystem.out.println(s.indexOf(\"n\"));",
+   "choices": [
+    "2",
+    "3",
+    "1",
+    "4"
+   ],
+   "answer": "2",
+   "run": true,
+   "explanation": "indexOf gives the position of the first n, counting from 0: b0 a1 n2. The later n at 4 and counting from 1 are the traps.",
+   "unit": "Scanner & Strings"
+  },
+  {
+   "type": "mc",
+   "id": "ss-min",
+   "topic": "Math.min",
+   "prompt": "What does this print?",
+   "code": "String name = \"Jo\";\nSystem.out.println(Math.min(5, name.length()));",
+   "choices": [
+    "2",
+    "5",
+    "7",
+    "0"
+   ],
+   "answer": "2",
+   "run": true,
+   "explanation": "Math.min picks the smaller of 5 and the length 2. It never makes the number bigger.",
+   "unit": "Scanner & Strings"
+  },
+  {
+   "type": "mc",
+   "id": "ss-cat-mc",
+   "topic": "Input + earlier topics",
+   "prompt": "What does this print? Input (↵ = Enter): 4 6 ↵",
+   "code": "import java.util.*;\nScanner console = new Scanner(System.in);\nint a = console.nextInt();\nint b = console.nextInt();\nSystem.out.println(\"Sum: \" + a + b);",
+   "choices": [
+    "Sum: 46",
+    "Sum: 10",
+    "10",
+    "Sum: 4 6"
+   ],
+   "answer": "Sum: 46",
+   "run": true,
+   "input": "4 6",
+   "explanation": "The String comes first, so + a and + b are both concatenation: Sum: 46. Parentheses, (a + b), would be needed for 10.",
+   "unit": "Scanner & Strings"
+  },
+  {
+   "type": "output",
+   "id": "ss-cat",
+   "topic": "Input + earlier topics",
+   "prompt": "Type exactly what this prints. Input (↵ = Enter): 3 4 ↵",
+   "code": "import java.util.*;\nScanner console = new Scanner(System.in);\nSystem.out.print(\"Enter two numbers: \");\nint a = console.nextInt();\nint b = console.nextInt();\nSystem.out.println(a + b + \" total\");",
+   "input": "3 4",
+   "answer": "Enter two numbers: 7 total",
+   "explanation": "print keeps the cursor on the same line, so the result follows the prompt. a + b has no String before it, so it adds first (7) and then joins \" total\".",
+   "unit": "Scanner & Strings"
+  },
+  {
+   "type": "output",
+   "id": "ss-upper",
+   "topic": "String methods",
+   "prompt": "Type exactly what this prints. Input (↵ = Enter): Ada Lopez 30 ↵",
+   "code": "import java.util.*;\nScanner console = new Scanner(System.in);\nString a = console.next();\nString b = console.next();\nSystem.out.println(b.toUpperCase() + \", \" + a);",
+   "input": "Ada Lopez 30",
+   "answer": "LOPEZ, Ada",
+   "explanation": "a is the first token (Ada) and b the second (Lopez). The second line's text is shouted and printed first.",
+   "unit": "Scanner & Strings"
+  },
+  {
+   "type": "output",
+   "id": "ss-sum3",
+   "topic": "Input + earlier topics",
+   "prompt": "Type exactly what this prints. Input (↵ = Enter): 12 5 20 ↵",
+   "code": "import java.util.*;\nScanner console = new Scanner(System.in);\nint sum = 0;\nfor (int i = 1; i <= 3; i++) {\n    sum += console.nextInt();\n}\nSystem.out.println(sum / 3);",
+   "input": "12 5 20",
+   "answer": "12",
+   "explanation": "The loop reads three tokens (12, 5, 20), so sum is 37. int / int drops the fraction: 37 / 3 = 12, not 12.33.",
+   "unit": "Scanner & Strings"
+  },
+  {
+   "type": "output",
+   "id": "ss-mississippi",
+   "topic": "substring",
+   "prompt": "Type exactly what this prints. Input (↵ = Enter): Mississippi ↵",
+   "code": "import java.util.*;\nScanner console = new Scanner(System.in);\nString w = console.next();\nSystem.out.println(w.substring(0, 4) + w.substring(7));",
+   "input": "Mississippi",
+   "answer": "Missippi",
+   "explanation": "substring(0, 4) is the first four letters (Miss); substring(7) is everything from position 7 (ippi). Positions 4 to 6 (iss) are skipped.",
+   "unit": "Scanner & Strings"
+  },
+  {
+   "type": "output",
+   "id": "ss-split",
+   "topic": "indexOf",
+   "prompt": "Type exactly what this prints. Input (↵ = Enter): Java is fun ↵",
+   "code": "import java.util.*;\nScanner console = new Scanner(System.in);\nString line = console.nextLine();\nint sp = line.indexOf(\" \");\nSystem.out.println(line.substring(0, sp));\nSystem.out.println(line.substring(sp + 1));",
+   "input": "Java is fun",
+   "answer": "Java\nis fun",
+   "explanation": "The first space is at position 4. substring(0, 4) stops before it (Java); substring(5) starts after it and keeps the rest (is fun).",
+   "unit": "Scanner & Strings"
+  },
+  {
+   "type": "output",
+   "id": "ss-order",
+   "topic": "Scanner read methods",
+   "prompt": "Type exactly what this prints. Input (↵ = Enter): 5 apples ↵",
+   "code": "import java.util.*;\nScanner console = new Scanner(System.in);\nint n = console.nextInt();\nString what = console.next();\nSystem.out.println(n * 2 + what);\nSystem.out.println(what + n * 2);",
+   "input": "5 apples",
+   "answer": "10apples\napples10",
+   "explanation": "n * 2 is 10 in both lines (* runs before +). Line 1 has a number on the left, so 10 is joined to apples; line 2 starts with a String, so 10 is joined onto it: 10apples, apples10.",
+   "unit": "Scanner & Strings"
+  },
+  {
+   "type": "output",
+   "id": "ss-kept",
+   "topic": "Strings are not changed",
+   "prompt": "Type exactly what this prints. Input (↵ = Enter): abc ↵",
+   "code": "import java.util.*;\nScanner console = new Scanner(System.in);\nString s = console.next();\nString t = s.toUpperCase();\nSystem.out.println(s + t);",
+   "input": "abc",
+   "answer": "abcABC",
+   "explanation": "s is never changed by toUpperCase(); the uppercase copy was caught in t. So both print.",
+   "unit": "Scanner & Strings"
+  },
+  {
+   "type": "output",
+   "id": "ss-minsec",
+   "topic": "Input + earlier topics",
+   "prompt": "Type exactly what this prints. Input (↵ = Enter): 135 ↵",
+   "code": "import java.util.*;\nScanner console = new Scanner(System.in);\nint total = console.nextInt();\nSystem.out.println(total / 60 + \" min \" + total % 60 + \" sec\");",
+   "input": "135",
+   "answer": "2 min 15 sec",
+   "explanation": "/ and % run before +: 135 / 60 = 2 whole minutes and 135 % 60 = 15 seconds left over.",
+   "unit": "Scanner & Strings"
+  },
+  {
+   "type": "output",
+   "id": "ss-mincut",
+   "topic": "Math.min",
+   "prompt": "Type exactly what this prints. Input (↵ = Enter): Hi there ↵",
+   "code": "import java.util.*;\nScanner console = new Scanner(System.in);\nString w = console.next();\nSystem.out.println(w.substring(0, Math.min(3, w.length())));",
+   "input": "Hi there",
+   "answer": "Hi",
+   "explanation": "Hi has 2 letters, so Math.min(3, 2) is 2 and substring(0, 2) is the whole word. With a longer word the 3 would win.",
+   "unit": "Scanner & Strings"
+  },
+  {
+   "type": "output",
+   "id": "ss-dbl",
+   "topic": "Scanner read methods",
+   "prompt": "Type exactly what this prints. Input (↵ = Enter): 2.5 4 ↵",
+   "code": "import java.util.*;\nScanner console = new Scanner(System.in);\ndouble w = console.nextDouble();\nint h = console.nextInt();\nSystem.out.println(w * h);",
+   "input": "2.5 4",
+   "answer": "10.0",
+   "explanation": "w is 2.5 and h is 4. double * int is a double, so the result prints with a decimal: 10.0, not 10.",
+   "unit": "Scanner & Strings"
+  },
+  {
+   "type": "output",
+   "id": "ss-lines",
+   "topic": "Tokens",
+   "prompt": "Type exactly what this prints. Input (↵ = Enter): 3 ↵ 4 5 ↵",
+   "code": "import java.util.*;\nScanner console = new Scanner(System.in);\nint a = console.nextInt();\nint b = console.nextInt();\nint c = console.nextInt();\nSystem.out.println(a * b * c);",
+   "input": "3\n4 5",
+   "answer": "60",
+   "explanation": "Tokens ignore line breaks, so the three reads get 3, 4 and 5 even though they were typed on two lines.",
+   "unit": "Scanner & Strings"
+  },
+  {
+   "type": "trace",
+   "id": "ss-q",
+   "topic": "Input + earlier topics",
+   "prompt": "After this runs, what is the value of avg? Input (↵ = Enter): 7 2 ↵",
+   "code": "import java.util.*;\nScanner console = new Scanner(System.in);\nint a = console.nextInt();\nint b = console.nextInt();\ndouble avg = (a + b) / 2;",
+   "var": "avg",
+   "input": "7 2",
+   "answer": "4.0",
+   "explanation": "a + b is 9; int / int is 4 (the .5 is dropped) and only then stored in the double: 4.0.",
+   "unit": "Scanner & Strings"
+  },
+  {
+   "type": "trace",
+   "id": "ss-sp",
+   "topic": "indexOf",
+   "prompt": "After this runs, what is the value of i? Input (↵ = Enter): Hello World ↵",
+   "code": "import java.util.*;\nScanner console = new Scanner(System.in);\nString s = console.nextLine();\nint i = s.indexOf(\" \");",
+   "var": "i",
+   "input": "Hello World",
+   "answer": "5",
+   "explanation": "Hello is positions 0 to 4, so the space is at position 5.",
+   "unit": "Scanner & Strings"
+  },
+  {
+   "type": "trace",
+   "id": "ss-part",
+   "topic": "substring",
+   "prompt": "After this runs, what is the value of part? Input (↵ = Enter): Hello World ↵",
+   "code": "import java.util.*;\nScanner console = new Scanner(System.in);\nString s = console.nextLine();\nint i = s.indexOf(\" \");\nString part = s.substring(i + 1);",
+   "var": "part",
+   "input": "Hello World",
+   "answer": "World",
+   "explanation": "i is 5; i + 1 skips the space, and substring with one number keeps the rest.",
+   "unit": "Scanner & Strings"
+  },
+  {
+   "type": "trace",
+   "id": "ss-lost",
+   "topic": "Strings are not changed",
+   "prompt": "After this runs, what is the value of t? Input (↵ = Enter): java ↵",
+   "code": "import java.util.*;\nScanner console = new Scanner(System.in);\nString s = console.next();\ns.toUpperCase();\nString t = s;",
+   "var": "t",
+   "input": "java",
+   "answer": "java",
+   "explanation": "The result of s.toUpperCase() was never assigned, so s is still java and so is t.",
+   "unit": "Scanner & Strings"
+  },
+  {
+   "type": "trace",
+   "id": "ss-third",
+   "topic": "Tokens",
+   "prompt": "After this runs, what is the value of x? Input (↵ = Enter): 4 9 6 ↵",
+   "code": "import java.util.*;\nScanner console = new Scanner(System.in);\nint small = Math.min(console.nextInt(), console.nextInt());\nint x = console.nextInt();",
+   "var": "x",
+   "input": "4 9 6",
+   "answer": "6",
+   "explanation": "The first two reads feed Math.min (4 and 9, so small is 4). The third read is the 6.",
+   "unit": "Scanner & Strings"
+  },
+  {
+   "type": "trace",
+   "id": "ss-half",
+   "topic": "Scanner read methods",
+   "prompt": "After this runs, what is the value of half? Input (↵ = Enter): 12.5 ↵",
+   "code": "import java.util.*;\nScanner console = new Scanner(System.in);\ndouble d = console.nextDouble();\ndouble half = d / 2;",
+   "var": "half",
+   "input": "12.5",
+   "answer": "6.25",
+   "explanation": "12.5 is read as a double, so / 2 keeps the fraction: 6.25.",
+   "unit": "Scanner & Strings"
+  },
+  {
+   "type": "trace",
+   "id": "ss-msg",
+   "topic": "Input + earlier topics",
+   "prompt": "After this runs, what is the value of msg? Input (↵ = Enter): 25 ↵",
+   "code": "import java.util.*;\nScanner console = new Scanner(System.in);\nint age = console.nextInt();\nint years = 65 - age;\nString msg = years + \" yrs\";",
+   "var": "msg",
+   "input": "25",
+   "answer": "40 yrs",
+   "explanation": "years is 40, and joining a number to a String gives the String 40 yrs.",
+   "unit": "Scanner & Strings"
+  },
+  {
+   "type": "trace",
+   "id": "ss-swap",
+   "topic": "String methods",
+   "prompt": "After this runs, what is the value of c? Input (↵ = Enter): ab cd ↵",
+   "code": "import java.util.*;\nScanner console = new Scanner(System.in);\nString a = console.next();\nString b = console.next();\nString c = b + a;",
+   "var": "c",
+   "input": "ab cd",
+   "answer": "cdab",
+   "explanation": "next() gives ab, then cd; b + a puts the second token first.",
+   "unit": "Scanner & Strings"
+  },
+  {
+   "type": "trace",
+   "id": "ss-mid",
+   "topic": "substring",
+   "prompt": "After this runs, what is the value of m? Input (↵ = Enter): abcdef ↵",
+   "code": "import java.util.*;\nScanner console = new Scanner(System.in);\nString w = console.next();\nString m = w.substring(1, w.length() - 1);",
+   "var": "m",
+   "input": "abcdef",
+   "answer": "bcde",
+   "explanation": "length() is 6, so the end is 5 and substring stops before it: positions 1 to 4. Both the first and last letters are dropped.",
+   "unit": "Scanner & Strings"
+  },
+  {
+   "type": "bug",
+   "id": "ss-noimport",
+   "topic": "Scanner setup",
+   "prompt": "This program won't compile. Which line is the problem? Input (↵ = Enter): 21 ↵",
+   "code": "Scanner console = new Scanner(System.in);\nint n = console.nextInt();\nSystem.out.println(n * 2);",
+   "answer": 1,
+   "explanation": "There is no `import java.util.*;`, so Java does not know the name Scanner. The error is reported where Scanner is first used.",
+   "unit": "Scanner & Strings",
+   "input": "21"
+  },
+  {
+   "type": "bug",
+   "id": "ss-sysout",
+   "topic": "Scanner setup",
+   "prompt": "This program won't compile. Which line is the problem? Input (↵ = Enter): 5 ↵",
+   "code": "import java.util.*;\nScanner console = new Scanner(System.out);\nint n = console.nextInt();\nSystem.out.println(n);",
+   "answer": 2,
+   "explanation": "A Scanner reads from System.in (the keyboard). System.out is the output stream, which a Scanner can't read from.",
+   "unit": "Scanner & Strings",
+   "input": "5"
+  },
+  {
+   "type": "bug",
+   "id": "ss-next-int",
+   "topic": "Scanner read methods",
+   "prompt": "This program won't compile. Which line is the problem? Input (↵ = Enter): 8 ↵",
+   "code": "import java.util.*;\nScanner console = new Scanner(System.in);\nint n = console.next();\nSystem.out.println(n + 1);",
+   "answer": 3,
+   "explanation": "next() gives a String, and a String can't be stored in an int variable: a type mismatch caught at compile time.",
+   "unit": "Scanner & Strings",
+   "input": "8"
+  },
+  {
+   "type": "bug",
+   "id": "ss-int-str",
+   "topic": "Scanner read methods",
+   "prompt": "This program won't compile. Which line is the problem? Input (↵ = Enter): 8 ↵",
+   "code": "import java.util.*;\nScanner console = new Scanner(System.in);\nString name = console.nextInt();\nSystem.out.println(name);",
+   "answer": 3,
+   "explanation": "nextInt() gives an int, which can't be stored in a String variable. Reading a word needs next() or nextLine().",
+   "unit": "Scanner & Strings",
+   "input": "8"
+  },
+  {
+   "type": "bug",
+   "id": "ss-three",
+   "topic": "Input errors",
+   "prompt": "This compiles. Which line crashes when it runs? Input (↵ = Enter): 3 5 ↵",
+   "code": "import java.util.*;\nScanner console = new Scanner(System.in);\nint a = console.nextInt();\nint b = console.nextInt();\nint c = console.nextInt();\nSystem.out.println(a + b + c);",
+   "answer": 5,
+   "explanation": "Only two numbers were typed. The third nextInt() has no token left to read, so it crashes when it runs.",
+   "unit": "Scanner & Strings",
+   "input": "3 5"
+  },
+  {
+   "type": "bug",
+   "id": "ss-word",
+   "topic": "Input errors",
+   "prompt": "This compiles. Which line crashes when it runs? Input (↵ = Enter): forty ↵",
+   "code": "import java.util.*;\nScanner console = new Scanner(System.in);\nint age = console.nextInt();\nSystem.out.println(age + 1);",
+   "answer": 3,
+   "explanation": "forty is not an int, so nextInt() crashes when it runs (an input mismatch). It compiles fine because Java can't know what will be typed.",
+   "unit": "Scanner & Strings",
+   "input": "forty"
+  },
+  {
+   "type": "bug",
+   "id": "ss-length",
+   "topic": "String methods",
+   "prompt": "This program won't compile. Which line is the problem?",
+   "code": "String s = \"hello\";\nint n = s.length;\nSystem.out.println(n);",
+   "answer": 2,
+   "explanation": "length is a method, so it needs parentheses: s.length(). Without them Java looks for a variable called length and can't find one.",
+   "unit": "Scanner & Strings"
+  },
+  {
+   "type": "bug",
+   "id": "ss-dbl-int",
+   "topic": "Input + earlier topics",
+   "prompt": "This program won't compile. Which line is the problem? Input (↵ = Enter): 9.5 ↵",
+   "code": "import java.util.*;\nScanner console = new Scanner(System.in);\ndouble d = console.nextDouble();\nint whole = d / 2;\nSystem.out.println(whole);",
+   "answer": 4,
+   "explanation": "d is a double, so d / 2 is a double, and a double can't be stored in an int variable. The mismatch is caught at compile time.",
+   "unit": "Scanner & Strings",
+   "input": "9.5"
+  },
+  {
+   "type": "bug",
+   "id": "ss-second",
+   "topic": "Input errors",
+   "prompt": "This compiles. Which line crashes when it runs? Input (↵ = Enter): Ana ↵",
+   "code": "import java.util.*;\nScanner console = new Scanner(System.in);\nString first = console.next();\nString last = console.next();\nSystem.out.println(last + first);",
+   "answer": 4,
+   "explanation": "Only one token (Ana) was typed. The first next() uses it, so the second next() has nothing to read and crashes.",
+   "unit": "Scanner & Strings",
+   "input": "Ana"
   }
  ]
 }

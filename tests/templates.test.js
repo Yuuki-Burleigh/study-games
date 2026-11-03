@@ -61,7 +61,7 @@ for (const entry of readJSON('../decks/index.json').decks) {
         if (q.type === 'mc') assert.ok(q.choices.length >= 3, `${q.id}: at least 3 choices`);
         if (q.type === 'num') assert.ok(checkAnswer(q, String(q.answer)), `${q.id}: its own answer must be accepted`);
         assert.equal(JSON.stringify(instantiate(t, seed)), text, `${q.id} is not deterministic`);
-        seen.add(q.code || q.prompt + (q.choices || []).join());
+        seen.add((q.code || q.prompt + (q.choices || []).join()) + (q.input ?? '')); // typed input is part of the problem
       }
       assert.ok(seen.size >= 100, `${t.id}: only ${seen.size} distinct problems in 300 seeds`);
     }
